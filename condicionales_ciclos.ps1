@@ -127,3 +127,32 @@ forEach($numero in $numeros){
 }
 
 # While
+# Mientras la condición sea verdadera se ejecutará el cuerpo del bucle
+$num = 0
+while ($num -ne 3)
+{
+    $num++;
+    Write-Host $num
+}
+$num1 = 0
+# La única diferencia es que ahora se incluye continue, si se cumple la condición dada se saltará dicha iteración
+while ($num1 -ne 5)
+{
+    if ($num1 -eq 1) { $num1 = $num1 + 3 ; Continue }
+    $num1++;
+    Write-Host $num1
+}
+
+# Do while
+# Es en pocas palabras lo mismo que un bucle for pero con la lógica invertida, este también se ejecuta al menos una vez
+$valor = 5
+$multiplication = 1
+do
+{
+    $multiplication = $multiplication * $valor
+    $valor--
+}
+while ($valor -gt 0)
+echo $multiplication
+
+# Los ciclos pueden usar continue y break, continue salta la iteración actual, break sale del ciclo inmediatamente
