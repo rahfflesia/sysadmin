@@ -53,3 +53,18 @@ $obj3 = [PSCustomObject] @{
     Nombre = "Miguel"
     Edad = 23
 }
+
+# El pipeline nos permite encadenar comandos
+# Pero, usualmente necesitaremos verificar si los comandos que estamos usando pueden encadenarse sin problema
+# Para verificar eso podemos utilizar Get-Help -Full seguido del comando del que queremos obtener información
+# Ejemplo de pipeline
+Get-Process -Name Acrobat | Stop-Process
+# Para que esto funcione el valor de retorno de Get-Process debe ser compatible con los parámetros de entrada de Stop-Process
+# Podemos verificar eso con el ccomando anteriormente mencionado
+Get-Help -Full Get-Process
+Get-Help -Full Stop-Process
+# En pocas palabras, es importante verificar los datos de entrada y salida con los pipeline
+
+
+
+
