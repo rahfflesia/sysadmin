@@ -23,3 +23,33 @@ Get-Service | Select-Object -Last 5
 # Where-Object
 # Podemos utilizar Where-Object para filtrar objetos que cumplan con la condición establecida
 Get-Service | Where-Object {$_.Status -eq "Running"}
+
+# Como mencioné los objetos tienen propiedades y métodos
+# Una propiedad sería como una característica del objeto por así decirlo, usualmente almacenan un valor
+# Un método es una acción que se puede realizar sobre un objeto
+(Get-Item .\cmdlets.ps1).IsReadOnly
+# Con esta propiedad podemos verificar si es de solo lectura
+
+# Además de utilizar objetos predefinidos, en ps podemos crear nuestros propios objetos
+# Podemos utilizar PSObject para poder expandirlo dinámicamente usando Add-Member
+# En este caso creamos un objeto con dos propiedades y un método
+# NoteProperty -> Propiedad
+# ScriptMethod -> Método
+$obj = New-Object PSObject
+$obj | Add-Member -MemberType NoteProperty -Name Nombre -Value "Miguel"
+$obj | Add-Member -MemberType NoteProperty -Name Edad -Value 23
+$obj | Add-Member -MemberType ScriptMethod -Name Saludar -Value { Write-Host "Hola mundo" }
+
+# Igualmente podemos crear un objeto a utilizando un tabla hash durante la creación del objeto
+$obj2 = New-Object -TypeName PSObject -Property @{
+    Nombre = "Miguel"
+    Edad = 23
+}
+$obj2 | Add-Member -MemberType ScriptMethod -Name Saludar -Value { Write-Host "Adios mundo"}
+$obj2 | Get-Member
+
+# Otra manera en la que podemos crear un objeto es usando el acelerador PSCustomObject lo que nos ahorra escribir algunos parámetros
+$obj3 = [PSCustomObject] @{
+    Nombre = "Miguel"
+    Edad = 23
+}
