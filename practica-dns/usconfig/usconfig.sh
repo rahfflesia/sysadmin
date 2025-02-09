@@ -63,7 +63,7 @@ if esIpValida "$ip" && esDominioValido "$dominio"; then
     sudo named-checkzone "${dominio}" "/etc/bind/${dbFile}"
 
     # Reiniciar el servicio bind9
-    sudo systemctl restart bind
+    sudo systemctl restart bind9
 else
     echo "Dirección ip o dominio inválido"
 fi
