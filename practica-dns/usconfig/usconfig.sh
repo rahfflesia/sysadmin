@@ -13,7 +13,7 @@ zona="zone ${dominio} { type master; file \"/etc/bind/${dbFile}\"; };"
 echo "${zona}"
 
 # Agregar la zona al archivo de configuración
-sudo printf "%s\n" "$zona" >> /etc/bind/named.conf.local
+sudo printf "%s\n" "\"$zona\"" >> /etc/bind/named.conf.local
 
 # Crear el archivo de zona
 sudo touch /etc/bind/"${dbFile}"
