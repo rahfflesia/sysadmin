@@ -19,7 +19,10 @@ sudo printf "%s\n" "$zona" >> /etc/bind/named.conf.local
 sudo touch /etc/bind/"${dbFile}"
 
 # Insertar la configuración en el archivo db
-sudo printf "TTL 604800\n" >> /etc/bind/"${dbFile}"
+sudo printf ";\n"
+sudo printf "; BIND data file for local loopback interface\n"
+sudo printf ";\n"
+sudo printf "\$TTL 604800\n" >> /etc/bind/"${dbFile}"
 sudo printf "@ IN SOA ${dominio}. admin.${dominio}. ( 10 ; Serial 604800; Refresh 86400; Retry 2419200; Expire 604800 ) ; Negative Cache TTL;\n" >> /etc/bind/"${dbFile}"
 sudo printf "@ IN NS ${dominio}.\n" >> /etc/bind/"${dbFile}"
 sudo printf "@ IN A ${ip}\n" >> /etc/bind/"${dbFile}"
