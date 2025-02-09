@@ -1,5 +1,7 @@
 #!/bin/bash
 # Para que el script funcione bind9 debe estar instalado
+# Esta versión del script ya funciona, solo falta agregar validaciones
+
 
 echo "Ingresa la dirección ip: "
 read ip
