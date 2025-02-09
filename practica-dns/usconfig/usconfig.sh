@@ -26,12 +26,6 @@ echo "Ingresa el dominio: "
 read dominio
 
 if esIpValida "$ip" && esDominioValido "$dominio"; then
-    main
-else
-    echo "Dirección ip o dominio inválido"
-fi
-
-function main(){
     dbFile="db.${dominio}"
     zona="zone \"${dominio}\" { type master; file \"/etc/bind/${dbFile}\"; };"
 
@@ -69,9 +63,10 @@ function main(){
     sudo named-checkzone "${dominio}" "/etc/bind/${dbFile}"
 
     # Reiniciar el servicio bind9
-    sudo systemctl restart bind9
-    #########
-}
+    sudo systemctl restart bind
+else
+    echo "Dirección ip o dominio inválido"
+fi
 # Pasos en pocas palabras: 
 # Entra a sudo nano /etc/bind/named.conf.local
 # Ingresa el archivo del dominio local
