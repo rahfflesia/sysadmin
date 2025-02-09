@@ -7,17 +7,18 @@ echo "Ingresa el dominio: "
 read dominio
 
 dbFile="db.${dominio}";
-zona="zone ${dominio} { type: master; file \"/etc/bind/${dbFile}\"; };"
+zona="zone ${dominio} { type master; file \"/etc/bind/${dbFile}\"; };"
 echo "${dbFile}"
 
-sudo echo $zona >> /etc/bind/named.conf.local
+sudo printf $zona >> /etc/bind/named.conf.local
 sudo touch /etc/bind/"${dbFile}"
 # Inserción del formato del archivo
-sudo echo "TTL 604800" >> /etc/bind/"${dbFile}"
-sudo echo "@ IN SOA ${dominio}. admin.${dominio}. ( 10 ; Serial 604800; Refresh 86400; Retry 2419200; Expire 604800 ) ; Negative Cache TTL;" >> /etc/bind/"${dbFile}"
-sudo echo "@ IN NS ${dominio}." >> /etc/bind/"${dbFile}"
-sudo echo "@ IN A ${ip}" >> /etc/bind/"${dbFile}"
-sudo echo "www IN A ${ip}" >> /etc/bind/"${dbFile}"
+sudo printf "TTL 604800" >> /etc/bind/"${dbFile}"
+sudo printf "@ IN SOA ${dominio}. admin.${dominio}. ( 10 ; Serial 604800; Refresh 86400; Retry 2419200; Expire 604800 ) ; Negative Cache TTL;" >> /etc/bind/"${dbFile}"
+sudo printf "@ IN NS ${dominio}." >> /etc/bind/"${dbFile}"
+sudo printf "@ IN A ${ip}" >> /etc/bind/"${dbFile}"
+sudo printf "www IN A ${ip}" >> /etc/bind/"${dbFile}"
+sudo printf "\n"
 
 sudo named-checkconf
 sudo named-checkzone "${dominio}" "/etc/bind/${dbFile}"
