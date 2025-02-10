@@ -31,14 +31,13 @@ catch {
 }
 
 # Ejemplo de bloque try / finally
-$comando = [System.Data.SqlClient.SqlCommand]::New(queryString, connection)
+# $comando = [System.Data.SqlClient.SqlCommand]::New(queryString, connection)
 try {
-    $commando.Conecction.Open()
-    $comando.ExecuteNonQuery()
+    echo "Abro conexion"
+    echo "Ejecuto la consulta"
 }
 finally {
-    echo "Ha ocurrido un error..."
-    $comando.Connection.Close()
+    echo "Independientemente del estado cierro la conexion"
 }
 
 # Para mostrar información sobre el error podemos usar $PSItem o $_
@@ -82,7 +81,8 @@ throw (New-Object -TypeName System.IO.FileNotFoundException -ArgumentList "No se
 # Y después seguir con el flujo de manera normal
 trap {
     Write-Output $PSItem.ToString()
+    continue
 }
-throw [System.Exception]::new('primero')
-throw [System.Exception]::new('segundo')
-throw [System.Exception]::new('tercero')
+throw [System.Exception]::new("primero")
+throw [System.Exception]::new("segundo")
+throw [System.Exception]::new("tercero")
