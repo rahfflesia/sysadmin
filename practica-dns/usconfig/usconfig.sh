@@ -21,8 +21,6 @@ function esDominioValido() {
 }
 
 sudo apt install -y bind9*
-sudo printf "allow-query { any; };" >> /etc/bind/named.conf.options
-sudo printf "allow-query-cache { any; }" >> /etc/bind/named.conf.options
 
 echo "Ingresa la dirección ip: "
 read ip
