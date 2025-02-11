@@ -14,6 +14,10 @@ function Es-DominioValido($dominio){
 
 if((Es-IpValida -ip $ip) -and (Es-DominioValido -dominio $dominio)){
     try{
+        # Instalo servicio de DNS
+        Install-WindowsFeature -Name DNS
+        # Instalo RSAT de DNS
+        Install-WindowsFeature RSAT-DNS-Server
         Add-DnsServerPrimaryZone -Name $dominio -Zonefile $zonefile
         # Agrego -> www.dominio.com
         Add-DnsServerResourceRecordA -IPv4Address $ip -Name www -Zonename $dominio
