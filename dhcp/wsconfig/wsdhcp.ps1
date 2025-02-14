@@ -58,5 +58,6 @@ echo "Ip del servidor dhcp: $ipDhcp"
 Set-DhcpServerv4OptionValue -ScopeId $ipBase -DnsServer 8.8.8.8 -Router $gateway # El router o puerta de enlace tiene que ser la ip del servidor dhcp en la red interna y no la puerta de enlace del adaptador puente
 Get-DhcpServerv4Lease -ScopeId $ipBase
 
+$natNombre = Get-Random
 # Configuración NAT para que los clientes tengan acceso a internet
-New-NetNat -Name "NAT Interna" -InternalIPInterfaceAddressPrefix "$ipBase/$bits" # El prefijo debe de ser el ScopeId del servidor o la ip con terminacion en cero x.x.0.0 por ejemplo
+New-NetNat -Name $natNombre.toString() -InternalIPInterfaceAddressPrefix "$ipBase/$bits" # El prefijo debe de ser el ScopeId del servidor o la ip con terminacion en cero x.x.0.0 por ejemplo
