@@ -57,7 +57,7 @@ sudo apt-get install isc-dhcp-server
 echo "Ingresa el nombre del grupo: "
 read grupo
 echo "Ingresa la ip inicial: "
-read ipDhcp
+read ipInicial
 echo "Ingresa la ip final: "
 read ipFinal
 echo "Ingresa la mascara de subred: "
@@ -66,9 +66,11 @@ echo "Ingresa el servidor dns: "
 read dns
 echo "Ingresa la puerta de enlace: "
 read gateway
+echo "Ingresa la ip que tendra el DHCP: "
+read ipDhcp
 
-# Asigno la primera ip de la subred al servidor dhcp, en mi caso la interfaz enp0s8 contendrá la dirección ip del dhcp
-sudo ifconfig enp0s8 "${ipInicial}" netmask "${mascara}"
+# Asigno la ip de la subred al servidor dhcp, en mi caso la interfaz enp0s8 contendrá la dirección ip del dhcp
+sudo ifconfig enp0s8 "${ipDhcp}" netmask "${mascara}"
 
 $rutaArchivoConfiguracion = "/etc/dhcp/dhcpd.conf"
 
@@ -76,8 +78,7 @@ $rutaArchivoConfiguracion = "/etc/dhcp/dhcpd.conf"
 sudo printf "\n" >> $rutaArchivoConfiguracion
 sudo printf "group ${grupo} {\n" >> $rutaArchivoConfiguracion
 
-ipBase=$(obtenerIpBase $ipDhcp $mascara)
-ipInicial=""
+ipBase=$(obtenerIpBase $ipInicial $mascara)
 broadcast=$(obtenerBroadcast $ipBase)
 
 sudo printf "   subnet ${ipBase} netmask ${mascara} {\n" >> $rutaArchivoConfiguracion
