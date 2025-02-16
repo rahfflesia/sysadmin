@@ -68,7 +68,7 @@ read ipDhcp
 # Asigno la ip de la subred al servidor dhcp, en mi caso la interfaz enp0s8 contendrá la dirección ip del dhcp
 sudo ifconfig enp0s8 "${ipDhcp}" netmask "${mascara}"
 
-$rutaArchivoConfiguracion = "/etc/dhcp/dhcpd.conf"
+rutaArchivoConfiguracion="/etc/dhcp/dhcpd.conf"
 # Escritura de los parámetros de configuración en el archivo
 sudo printf "\n" >> $rutaArchivoConfiguracion
 sudo printf "group ${grupo} {\n" >> $rutaArchivoConfiguracion
@@ -82,13 +82,23 @@ sudo printf "       option domain-name-servers ${dns};\n" >> $rutaArchivoConfigu
 sudo printf '       option domain-name "local";\n' >> $rutaArchivoConfiguracion
 sudo printf "       option subnet-mask ${mascara};\n" >> $rutaArchivoConfiguracion
 sudo printf "       option routers ${ipDhcp};\n" >> $rutaArchivoConfiguracion
-sudo printf "       option broadcast-address ${broadcast}\n" >> $rutaArchivoConfiguracion
+sudo printf "       option broadcast-address ${broadcast};\n" >> $rutaArchivoConfiguracion
 sudo printf "       ping-check true;\n" >> $rutaArchivoConfiguracion
 sudo printf "   }\n" >> $rutaArchivoConfiguracion
 sudo printf "}\n" >> $rutaArchivoConfiguracion
 
 # Agrego la interfaz de red que va a actuar como dhcp
-sudo printf "INTERFACESv4=\"enp0s8\"" >> /etc/default/isc-dhcp-server
+sudo printf "INTERFACESv4=\"enp0s8\"\n" >> /etc/default/isc-dhcp-server
+
+# Reglas NAT para que los clientes tengan salida a internet
+sudo su
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sysctl -p
+
+# La interfaz con salida a internet en mi caso es enp0s3
+iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
+iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf
 sudo service isc-dhcp-server restart
