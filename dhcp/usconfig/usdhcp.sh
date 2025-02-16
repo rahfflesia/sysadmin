@@ -73,7 +73,7 @@ read ipDhcp
 sudo ifconfig enp0s8 "${ipDhcp}" netmask "${mascara}"
 
 $rutaArchivoConfiguracion = "/etc/dhcp/dhcpd.conf"
-
+sudo printf "ping-check true;\n" >> $rutaArchivoConfiguracion
 # Escritura de los parámetros de configuración en el archivo
 sudo printf "\n" >> $rutaArchivoConfiguracion
 sudo printf "group ${grupo} {\n" >> $rutaArchivoConfiguracion
