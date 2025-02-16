@@ -73,7 +73,6 @@ read ipDhcp
 sudo ifconfig enp0s8 "${ipDhcp}" netmask "${mascara}"
 
 $rutaArchivoConfiguracion = "/etc/dhcp/dhcpd.conf"
-sudo printf "ping-check true;\n" >> $rutaArchivoConfiguracion
 # Escritura de los parámetros de configuración en el archivo
 sudo printf "\n" >> $rutaArchivoConfiguracion
 sudo printf "group ${grupo} {\n" >> $rutaArchivoConfiguracion
@@ -87,7 +86,8 @@ sudo printf "       option domain-name-servers ${dns};\n" >> $rutaArchivoConfigu
 sudo printf '       option domain-name "local";\n' >> $rutaArchivoConfiguracion
 sudo printf "       option subnet-mask ${mascara};\n" >> $rutaArchivoConfiguracion
 sudo printf "       option routers ${ipDhcp};\n" >> $rutaArchivoConfiguracion
-sudo printf "       option broadcast-address ${broadcast}" >> $rutaArchivoConfiguracion
+sudo printf "       option broadcast-address ${broadcast}\n" >> $rutaArchivoConfiguracion
+sudo printf "       ping-check true;\n" >> $rutaArchivoConfiguracion
 sudo printf "   }\n" >> $rutaArchivoConfiguracion
 sudo printf "}\n" >> $rutaArchivoConfiguracion
 
