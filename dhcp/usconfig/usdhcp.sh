@@ -91,14 +91,13 @@ sudo printf "}\n" >> $rutaArchivoConfiguracion
 sudo printf "INTERFACESv4=\"enp0s8\"\n" >> /etc/default/isc-dhcp-server
 
 # Reglas NAT para que los clientes tengan salida a internet
-sudo su
-echo 1 > /proc/sys/net/ipv4/ip_forward
-sysctl -p
+sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+sudo sysctl -p
 
 # La interfaz con salida a internet en mi caso es enp0s3
-iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
-iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
-iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
+sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf
 sudo service isc-dhcp-server restart
