@@ -7,10 +7,6 @@ function esIpValida(){
     fi
 }
 
-function esConfiguracionValida(){
-
-}
-
 # La función espera en el primer parámetro la ip y en el segundo la máscara de subred
 function obtenerIpBase(){
     arrayIp=
