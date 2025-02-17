@@ -39,7 +39,7 @@ if(Es-ConfiguracionValida -ipInicial $ipInicial -ipFinal $ipFinal -mascara $masc
         Get-DhcpServerv4Scope | ForEach-Object { Remove-DhcpServerv4Scope -ScopeId $_.ScopeId -Confirm:$false -Force} # Borro scopes anteriores, en caso de que existan
         # Agrego el ámbito
         Add-DhcpServerv4Scope -Name $nombreAmbito -StartRange $ipInicial -EndRange $ipFinal -SubnetMask $mascara
-        # Cálculo la ip base, es decir la ip con formato x.x.x.0, ejemplo -> ip: 192.168.1.100, ip base: 192.168.1.0
+        # Obtengo la ip base, es decir la ip con formato x.x.x.0, ejemplo -> ip: 192.168.1.100, ip base: 192.168.1.0
         $ipBase = (Get-DhcpServerv4Scope).ScopeId.IPAddressToString
         # Excluyo la ip que se asigne al dhcp
         Add-DhcpServerv4ExclusionRange -ScopeId $ipBase -StartRange $ipDhcp -EndRange $ipDhcp
