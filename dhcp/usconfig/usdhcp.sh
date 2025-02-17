@@ -54,9 +54,6 @@ function esConfiguracionValida(){
     fi
 }
 
-# Instalo el servicio de dhcp
-sudo apt-get install isc-dhcp-server
-
 # Pido los parámetros
 echo "Ingresa el nombre del grupo: "
 read grupo
@@ -74,6 +71,8 @@ echo "Ingresa la ip que tendra el DHCP: "
 read ipDhcp
 
 if esConfiguracionValida "$ipInicial" "$ipFinal" "$mascara" "$dns" "$gateway" "$ipDhcp"; then
+    # Instalo el servicio de dhcp
+    sudo apt-get install isc-dhcp-server
     # Asigno la ip de la subred al servidor dhcp, en mi caso la interfaz enp0s8 contendrá la dirección ip del dhcp
     sudo ifconfig enp0s8 "${ipDhcp}" netmask "${mascara}"
 
