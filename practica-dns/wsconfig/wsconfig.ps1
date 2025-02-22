@@ -11,7 +11,7 @@ if((Es-IpValida -ip $ip) -and (Es-DominioValido -dominio $dominio)){
         Instalar-Dns -ip $ip -dominio $dominio -zonefile $zonefile
     }
     catch{
-        echo "Ha ocurrido un error, verifique los datos ingresados"
+        echo $Error
     }
 }
 else{
