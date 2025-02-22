@@ -11,7 +11,7 @@ $ipDhcp = Read-Host "Ingresa la ip que tendra el servidor DHCP "
 
 if(Es-ConfiguracionValida -ipInicial $ipInicial -ipFinal $ipFinal -mascara $mascara -dns $dns -gateway $gateway -ipDhcp $ipDhcp){
     try{
-        Configurar-Dhcp $nombreAmbito $ipInicial $ipFinal $mascara $ipDhcp $dns $gateway
+        Configurar-Dhcp -nombreAmbito $nombreAmbito -ipInicial $ipInicial -ipFinal $ipFinal -mascara $mascara -ipDhcp $ipDhcp -dns $dns -gateway $gateway
     }
     catch{
         echo $Error
