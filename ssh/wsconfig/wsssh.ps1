@@ -4,6 +4,6 @@ Set-Service -Name sshd -StartupType "Automatic"
 Start-Service sshd
 
 Get-NetTCPConnection -State Listen | Where {$_.localport -eq "22"}
-Enable-NetFirewallRule -Name *OpenSSH-Server* -Profile Any
+Enable-NetFirewallRule -Name *OpenSSH-Server*
 
-Get-NetFireWallRule -Name "OpenSSH Server"
+Get-NetFirewallRule -Group "OpenSSH Server"
