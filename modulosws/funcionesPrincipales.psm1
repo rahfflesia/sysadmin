@@ -47,3 +47,15 @@ function Configurar-Dhcp($nombreAmbito, $ipInicial, $ipFinal, $mascara, $ipDhcp,
     # Configuración NAT para que los clientes tengan acceso a internet
     New-NetNat -Name $natNombre.toString() -InternalIPInterfaceAddressPrefix "$ipBase/$bits" # El prefijo debe de ser el ScopeId del servidor o la ip con terminacion en cero x.x.0.0 por ejemplo
 }
+
+function Configurar-Ssh(){
+    Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+    Set-Service -Name ssh-agent -StartupType "Automatic"
+    Set-Service -Name sshd -StartupType "Automatic"
+    Start-Service sshd
+
+    Get-NetTCPConnection -State Listen | Where {$_.localport -eq "22"}
+    Enable-NetFirewallRule -Name *OpenSSH-Server*
+
+    Get-NetFirewallRule -Group "OpenSSH Server"
+}
