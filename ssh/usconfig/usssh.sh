@@ -1,4 +1,2 @@
-sudo apt-get upgrade
-sudo apt install -y ssh
-sudo systemctl status ssh
-sudo systemctl start ssh.service
+source /home/jj/sysadmin/modulosus/funcionesPrincipales.sh
+mainSsh
