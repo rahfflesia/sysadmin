@@ -1,3 +1,4 @@
+#!/bin/bash
 # Primer parámetro ip, segundo parámetro dominio
 function mainDns(){
     if esIpValida "$1" && esDominioValido "$2"; then
