@@ -27,10 +27,6 @@ function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
         $grupoUsuarios.SetInfo()
         $grupoUsuarios.Description = $descripcion
         $grupoUsuarios.SetInfo()
-        return $nombreGrupo
-    }
-    else{
-        Get-LocalGroup -ErrorAction SilentlyContinue
     }
     return $null
 }
@@ -105,6 +101,7 @@ if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "W
 
 Import-Module WebAdministration
 
+# Variables globales de configuracion
 $nombreSitio = "Servidor FTP"
 $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
@@ -138,11 +135,11 @@ while($true){
                 $password = Read-Host "Ingresa la contrasena" -AsSecureString
                 $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
                 try{
-                    Crear-UsuarioFtp $usuario $password
-                    Agregar-UsuarioAGrupoFTP $usuario $grupo
-                    Habilitar-Autenticacion $nombreSitio $nombreGrupo
-                    Permitir-SSL $rutaSitioIIS
-                    Establecer-PermisosNtfs $rutaFisicaFTP $grupo $nombreSitio
+                    Crear-UsuarioFtp -usuario $usuario -contrasena $password
+                    Agregar-UsuarioAGrupoFTP -usuario $usuario -nombreGrupo $grupo
+                    Habilitar-Autenticacion -nombreSitio $nombreSitio -nombreGrupo $grupo
+                    Permitir-SSL -rutaSitioFtp $rutaSitioIIS
+                    Establecer-PermisosNtfs -rutaSitio $rutaFisicaFTP -nombreGrupo $grupo -nombreSitio $nombreSitio
                     echo "Configuracion establecida correctamente"
                 }
                 catch{
