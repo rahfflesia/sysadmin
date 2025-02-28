@@ -1,3 +1,5 @@
+$ADSI = [ADSI]"WinNT://$env:ComputerName"
+
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
@@ -10,29 +12,21 @@ function Check-WindowsFeature {
     }
 }
 
-function Get-ADSI(){
-    $ADSI = [ADSI]"WinNT://$env:ComputerName"
-    return $ADSI
-}
-
 function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta){
-    New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta
+    New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
     return $nombreSitio
 }
 
 function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
     if(-not(Get-LocalGroup -Name $nombreGrupo)){
-        $ADSI = Get-ADSI
         $grupoUsuarios = $ADSI.Create("Group", "$nombreGrupo")
         $grupoUsuarios.SetInfo()
         $grupoUsuarios.Description = $descripcion
         $grupoUsuarios.SetInfo()
     }
-    return $null
 }
 
 function Crear-UsuarioFtp([string]$usuario, [string]$contrasena){
-    $ADSI = Get-ADSI
     $usuarioFtp = $ADSI.Create("User", "$usuario")
     $usuarioFtp.SetInfo()
     $usuarioFtp.SetPassword("$contrasena")
@@ -104,7 +98,7 @@ Import-Module WebAdministration
 $nombreSitio = "Servidor FTP"
 $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
-Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFTP -Force
+Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
 Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
 Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
 
