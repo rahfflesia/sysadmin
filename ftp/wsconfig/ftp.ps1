@@ -41,7 +41,7 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena){
 
 function Agregar-UsuarioAGrupoFTP([string]$usuario, [string]$nombreGrupo){
     if($nombreGrupo -ne $null){
-        $cuentaUsuario = New-Object System.Security.Principal-NTAccount("$usuario")
+        $cuentaUsuario = New-Object System.Security.Principal.NTAccount("$usuario")
         $SID = $cuentaUsuario.Translate([System.Security.Principal.SecurityIdentifier])
         $grupo = [ADSI]"WinNT://$env:ComputerName/$nombreGrupo,Group"
         $user = [ADSI]"WinNT://$SID"
