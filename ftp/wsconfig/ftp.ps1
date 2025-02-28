@@ -104,7 +104,7 @@ Import-Module WebAdministration
 $nombreSitio = "Servidor FTP"
 $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
-Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFTP
+Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFTP -Force
 Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
 Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
 
