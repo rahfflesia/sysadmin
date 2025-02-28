@@ -143,7 +143,7 @@ while($true){
                     echo "Configuracion establecida correctamente"
                 }
                 catch{
-                    echo $Error
+                    echo $Error[0]
                 }
             }
             2 {
