@@ -64,10 +64,9 @@ function Habilitar-Autenticacion([string]$nombreSitio, [string]$nombreGrupo){
             roles = "$nombreGrupo"
             permissions = 3
         }
+        PSPath = "IIS:\"
+        Location = $nombreSitio
     }
-
-    PSPath = "IIS:\"
-    Location = $nombreSitio
     Add-WebConfiguration @param
 }
 
