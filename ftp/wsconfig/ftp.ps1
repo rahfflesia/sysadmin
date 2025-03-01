@@ -125,12 +125,17 @@ while($true){
     if($intOpcion -is [int]){
         switch($opcion){
             1 {
-                $usuario = Read-Host "Ingresa el nombre de usuario"
-                $password = Read-Host "Ingresa la contrasena" -AsSecureString
-                $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
-                Crear-Usuario -nombreUsuario $usuario -contrasena $password
-                Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
-                Reiniciar-Sitio -nombreSitioIIS $nombreSitio
+                try{
+                    $usuario = Read-Host "Ingresa el nombre de usuario"
+                    $password = Read-Host "Ingresa la contrasena" -AsSecureString
+                    $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
+                    Crear-Usuario -nombreUsuario $usuario -contrasena $password
+                    Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
+                    Reiniciar-Sitio -nombreSitioIIS $nombreSitio
+                }
+                catch{
+                    echo $Error[0]
+                }
             }
             2 {
                 $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
