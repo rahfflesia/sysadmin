@@ -66,21 +66,21 @@ function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
     $Group.Add($User.Path)
 }
 
-function Habilitar-Autenticacion([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
+function Habilitar-Autenticacion(){
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
 }
 
 function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombreSitio){
     Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location $nombreSitio
 }
 
-function Habilitar-SSL([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+function Habilitar-SSL(){
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
 }
 
-function Reiniciar-Sitio([String]$nombreSitioIIS){
-    Restart-WebItem "IIS:\Sites\$nombreSitioIIS"
+function Reiniciar-Sitio(){
+    Restart-WebItem "IIS:\Sites\FTP"
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
@@ -89,7 +89,7 @@ $rutaFisica = "C:\FTP\"
 
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP "FTP" 21 $rutaFisica
-Habilitar-SSL -nombreSitioIIS $nombreSitio
+Habilitar-SSL
 
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
@@ -102,7 +102,7 @@ if(!(Get-LocalGroup -Name "recursadores")){
 }
 
 # Habilitar autenticacion básica
-Habilitar-Autenticacion -nombreSitioIIS $nombreSitio
+Habilitar-Autenticacion
 
 while($true){
     echo "Menu"
@@ -133,7 +133,7 @@ while($true){
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
-                    Reiniciar-Sitio -nombreSitioIIS $nombreSitio
+                    Reiniciar-Sitio
                 }
                 catch{
                     echo $Error[0]
