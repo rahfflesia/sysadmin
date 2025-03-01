@@ -1,12 +1,5 @@
 $ADSI = [ADSI]"WinNT://$env:ComputerName"
 
-if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server")){
-    Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
-    Install-WindowsFeature Web-Server -IncludeAllSubFeature -IncludeManagementTools
-}
-
-Import-Module WebAdministration
-
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
@@ -19,6 +12,13 @@ function Check-WindowsFeature {
     }
 }
 
+if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server")){
+    Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
+    Install-WindowsFeature Web-Server -IncludeAllSubFeature -IncludeManagementTools
+}
+
+Import-Module WebAdministration
+
 function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta){
     New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
     return $nombreSitio
@@ -30,9 +30,6 @@ function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
         $grupoUsuarios.SetInfo()
         $grupoUsuarios.Description = $descripcion
         $grupoUsuarios.SetInfo()
-    }
-    else {
-        echo "Ese grupo ya existe"
     }
 }
 
