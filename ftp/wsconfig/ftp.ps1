@@ -3,7 +3,7 @@ function Check-WindowsFeature {
     param(
         [Parameter(Position=0,Mandatory=$true)] [string]$FeatureName 
     )  
-  if((Get-WindowsOptionalFeature -FeatureName $FeatureName -Online).State -eq "Enabled") {
+    if((Get-WindowsOptionalFeature -FeatureName $FeatureName -Online).State -eq "Enabled") {
         return $true
     } else {
         return $false
@@ -53,37 +53,11 @@ Crear-SitioFtp -nombreSitio "ServidorFTP" -ruta $rutaGeneral
 $rutaSitioFtp = "IIS:\Sites\ServidorFTP"
 Set-ItemProperty -Path $rutaSitioFtp -Name "ftpServer.security.authentication.anonymousAuthentication.enabled" -Value $true
 
-function Establecer-Permisos([string]$ruta, [string]$grupo) {
-    try {
-        $grupoCompleto = "$env:ComputerName\$grupo"
-        $acl = Get-Acl $ruta
-
-        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            $grupoCompleto,
-            "Modify",            
-            "ContainerInherit,ObjectInherit",
-            "None",              
-            "Allow"
-        )
-
-        $acl.AddAccessRule($accessRule)
-
-        Set-Acl -Path $ruta -AclObject $acl
-
-        Write-Host "Permisos establecidos correctamente para el grupo '$grupo' en la ruta '$ruta'."
-    }
-    catch {
-        Write-Host "Ocurrió un error al establecer permisos: $_"
-    }
-}
-
+# Deshabilitar SSL
 function Deshabilitar-SSL([string]$rutaSitioFtp){
-    $SSLPolicy = @(
-        "ftpServer.security.ssl.controlChannelPolicy",
-        "ftpServer.security.ssl.dataChannelPolicy"
-    )
-    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[0] -Value $false
-    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[1] -Value $false
+    # Desactivar SSL para el canal de control y de datos
+    Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "controlChannelPolicy" -Value "None" -PSPath "IIS:\"
+    Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "dataChannelPolicy" -Value "None" -PSPath "IIS:\"
 }
 
 Establecer-Permisos -ruta $rutaGeneral -grupo "Everyone"
