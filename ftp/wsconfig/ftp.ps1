@@ -1,5 +1,3 @@
-$ADSI = [ADSI]"WinNT://$env:ComputerName"
-
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
@@ -18,86 +16,63 @@ if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "W
     Install-WindowsFeature Web-Basic-Auth
 }
 
-Import-Module WebAdministration
-
-function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta){
-    New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
-    return $nombreSitio
-}
-
-function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
+function crearGrupo([string]$nombreGrupo){
     if(-not(Get-LocalGroup -Name $nombreGrupo)){
-        $grupoUsuarios = $ADSI.Create("Group", "$nombreGrupo")
-        $grupoUsuarios.SetInfo()
-        $grupoUsuarios.Description = $descripcion
-        $grupoUsuarios.SetInfo()
+        New-LocalGroup -Name $nombreGrupo -Description "Grupo FTP de $nombreGrupo"
     }
 }
 
-function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo){
+Import-Module WebAdministration
+
+function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta) {
+    New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
+}
+
+crearGrupo "reprobados"
+crearGrupo "recursadores"
+
+$rutaGeneral = "C:\FTP\General"
+$rutaReprobados = "C:\FTP\Reprobados"
+$rutaRecursadores = "C:\FTP\Recursadores"
+
+New-Item -ItemType Directory -Path $rutaGeneral
+New-Item -ItemType Directory -Path $rutaReprobados
+New-Item -ItemType Directory -Path $rutaRecursadores
+
+Crear-SitioFtp -nombreSitio "ServidorFTP" -ruta $rutaGeneral
+
+$rutaSitioFtp = "IIS:\Sites\ServidorFTP"
+Set-ItemProperty -Path $rutaSitioFtp -Name "ftpServer.security.authentication.anonymousAuthentication.enabled" -Value $true
+
+function Establecer-Permisos([string]$ruta, [string]$grupo) {
+    $acl = Get-Acl $ruta
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+        "$env:ComputerName\$grupo",
+        "Modify",
+        "ContainerInherit,ObjectInherit",
+        "None",
+        "Allow"
+    )
+    $acl.AddAccessRule($accessRule)
+    Set-Acl -Path $ruta -AclObject $acl
+}
+
+Establecer-Permisos -ruta $rutaGeneral -grupo "Everyone"
+Establecer-Permisos -ruta $rutaReprobados -grupo "reprobados"
+Establecer-Permisos -ruta $rutaRecursadores -grupo "recursadores"
+
+function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo) {
     $passwordSecure = ConvertTo-SecureString -String $contrasena -AsPlainText -Force
     New-LocalUser -Name $usuario -Password $passwordSecure -FullName $usuario -Description "Usuario FTP"
     Add-LocalGroupMember -Group $grupo -Member $usuario
 }
 
-function Agregar-UsuarioAGrupoFTP([string]$usuario, [string]$nombreGrupo){
-    $cuentaUsuario = New-Object System.Security.Principal.NTAccount("$usuario")
-    $SID = $cuentaUsuario.Translate([System.Security.Principal.SecurityIdentifier])
-    $grupo = [ADSI]"WinNT://$env:ComputerName/$nombreGrupo,Group"
-    $user = [ADSI]"WinNT://$SID"
-    $grupo.Add($user.Path)
-}
+Crear-UsuarioFtp -usuario "usuario1" -contrasena "password1" -grupo "reprobados"
+Crear-UsuarioFtp -usuario "usuario2" -contrasena "password2" -grupo "recursadores"
 
-function Habilitar-Autenticacion([string]$nombreSitio, [string]$usuario){
-    $rutaSitioFtp = "IIS:\Sites\$nombreSitio"
-    $basicAuth = "ftpServer.security.authentication.basicAuthentication.enabled"
-    Set-ItemProperty -Path $rutaSitioFtp -Name $basicAuth -Value $True
+Restart-WebItem "IIS:\Sites\ServidorFTP"
 
-    $Param = @{
-        Filter = "/system.ftpServer/security/authorization"
-        Value = @{
-            accessType = "Allow"
-            users = "$usuario"
-            permissions = 3
-        }
-        PSPath = "IIS:\"
-        Location = $nombreSitio
-    }
-    Add-WebConfiguration @param
-}
-
-function Permitir-SSL([string]$rutaSitioFtp){
-    $SSLPolicy = @(
-        "ftpServer.security.ssl.controlChannelPolicy",
-        "ftpServer.security.ssl.dataChannelPolicy"
-    )
-    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[0] -Value $false
-    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[1] -Value $false
-}
-
-function Establecer-PermisosNtfs([string]$rutaSitio, [string]$nombreGrupo, [string]$nombreSitio){
-    $cuentaUsuario = New-Object System.Security.Principal.NTAccount("$nombreGrupo")
-    $reglaDeAcceso = [System.Security.AccessControl.FileSystemAccessRule]::new($cuentaUsuario,
-        "ReadAndExecute",
-        "ContainerInherit,ObjectInherit",
-        "None",
-        "Allow"
-    )
-    $ACL = Get-Acl -Path $rutaSitio
-    $ACL.SetAccessRule($reglaDeAcceso)
-    $ACL | Set-Acl -Path $rutaSitio
-    Restart-WebItem "IIS:\Sites\$nombreSitio" -Verbose
-}
-
-# Variables globales de configuracion
-$nombreSitio = "Servidor FTP"
-$rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
-$rutaSitioIIS = "IIS:\Sites\$nombreSitio"
-Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
-Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
-Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
-
-while($true){
+<#while($true){
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
@@ -122,17 +97,6 @@ while($true){
                 $usuario = Read-Host "Ingresa el nombre de usuario"
                 $password = Read-Host "Ingresa la contrasena" -AsSecureString
                 $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
-                try{
-                    Crear-UsuarioFtp -usuario $usuario -contrasena $password -grupo $grupo
-                    Agregar-UsuarioAGrupoFTP -usuario $usuario -nombreGrupo $grupo
-                    Habilitar-Autenticacion -nombreSitio $nombreSitio -usuario $usuario
-                    Permitir-SSL -rutaSitioFtp $rutaSitioIIS
-                    Establecer-PermisosNtfs -rutaSitio $rutaFisicaFTP -nombreGrupo $grupo -nombreSitio $nombreSitio
-                    echo "Configuracion establecida correctamente"
-                }
-                catch{
-                    echo $Error[0]
-                }
             }
             2 {
                 $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
@@ -142,4 +106,4 @@ while($true){
         }
     }
     echo `n
-}
+}#>
