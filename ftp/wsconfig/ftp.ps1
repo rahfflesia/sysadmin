@@ -22,6 +22,8 @@ if(-not(Check-WindowsFeature "Web-Basic-Auth")){
     Install-WindowsFeature Web-Basic-Auth
 }
 
+Import-Module WebAdministration
+
 $ADSI = [ADSI]"WinNT://$env:ComputerName"
 
 function Crear-Ruta([String]$ruta){
@@ -65,7 +67,7 @@ function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
 }
 
 function Habilitar-Autenticacion([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
 }
 
 function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombreSitio){
@@ -73,12 +75,12 @@ function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombr
 }
 
 function Habilitar-SSL([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
 }
 
 function Reiniciar-Sitio([String]$nombreSitioIIS){
-    Restart-WebItem "IIS:\Sites\'$nombreSitioIIS'"
+    Restart-WebItem "IIS:\Sites\$nombreSitioIIS"
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
@@ -95,7 +97,7 @@ if(!(Get-LocalGroup -Name "reprobados")){
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
-    Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
+    $nombre = Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
     Agregar-Permisos -nombreGrupo $nombre -numero 3 -nombreSitio $nombreSitio
 }
 
