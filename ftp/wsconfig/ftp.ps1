@@ -73,8 +73,8 @@ function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombr
 }
 
 function Habilitar-SSL([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
 }
 
 function Reiniciar-Sitio([String]$nombreSitioIIS){
@@ -100,7 +100,7 @@ if(!(Get-LocalGroup -Name "recursadores")){
 }
 
 # Habilitar autenticacion básica
-Habilitar-Autenticacion $nombreSitio
+Habilitar-Autenticacion -nombreSitioIIS $nombreSitio
 
 while($true){
     echo "Menu"
