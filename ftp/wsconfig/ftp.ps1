@@ -53,7 +53,18 @@ function Establecer-Permisos([string]$ruta, [string]$grupo) {
         "None",
         "Allow"
     )
-    $acl.AddAccessRule($accessRule)
+    do {
+        $check = 'ok'
+        try {
+            $acl.AddAccessRule($accessRule)
+        } catch [System.Management.Automation.RuntimeException] {
+            $_.Exception.Message
+            $check = 'error'
+            Start-Sleep -Seconds 2
+        }
+    } until (
+        $check -eq 'ok'
+    )
     Set-Acl -Path $ruta -AclObject $acl
 }
 
@@ -67,8 +78,8 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo)
     Add-LocalGroupMember -Group $grupo -Member $usuario
 }
 
-Crear-UsuarioFtp -usuario "usuario1" -contrasena "password1" -grupo "reprobados"
-Crear-UsuarioFtp -usuario "usuario2" -contrasena "password2" -grupo "recursadores"
+Crear-UsuarioFtp -usuario "usuario1" -contrasena "#password222#" -grupo "reprobados"
+Crear-UsuarioFtp -usuario "usuario2" -contrasena "#password222#" -grupo "recursadores"
 
 Restart-WebItem "IIS:\Sites\ServidorFTP"
 
