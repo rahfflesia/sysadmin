@@ -1,3 +1,4 @@
+# Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
 Install-WindowsFeature Web-Server -IncludeManagementTools
 Install-WindowsFeature Web-Ftp-Server -IncludeAllSubFeature
 Install-WindowsFeature Web-Basic-Auth
