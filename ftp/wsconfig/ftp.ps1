@@ -28,8 +28,8 @@ function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta) 
     New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
 }
 
-crearGrupo "reprobados"
-crearGrupo "recursadores"
+crearGrupo -nombreGrupo "reprobados"
+crearGrupo -nombreGrupo "recursadores"
 
 $rutaGeneral = "C:\FTP\General"
 $rutaReprobados = "C:\FTP\Reprobados"
