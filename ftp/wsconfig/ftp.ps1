@@ -77,6 +77,15 @@ function Establecer-Permisos([string]$ruta, [string]$grupo) {
     }
 }
 
+function Deshabilitar-SSL([string]$rutaSitioFtp){
+    $SSLPolicy = @(
+        "ftpServer.security.ssl.controlChannelPolicy",
+        "ftpServer.security.ssl.dataChannelPolicy"
+    )
+    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[0] -Value $false
+    Set-ItemProperty -Path $rutaSitioFtp -Name $SSLPolicy[1] -Value $false
+}
+
 Establecer-Permisos -ruta $rutaGeneral -grupo "Everyone"
 Establecer-Permisos -ruta $rutaReprobados -grupo "reprobados"
 Establecer-Permisos -ruta $rutaRecursadores -grupo "recursadores"
@@ -87,8 +96,7 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo)
     Add-LocalGroupMember -Group $grupo -Member $usuario
 }
 
-Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "controlChannelPolicy" -Value "None" -PSPath "IIS:\"
-Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "dataChannelPolicy" -Value "None" -PSPath "IIS:\"
+Deshabilitar-SSL -rutaSitioFtp $rutaSitioFtp
 
 Crear-UsuarioFtp -usuario "usuario1" -contrasena "#password222#" -grupo "reprobados"
 Crear-UsuarioFtp -usuario "usuario2" -contrasena "#password222#" -grupo "recursadores"
