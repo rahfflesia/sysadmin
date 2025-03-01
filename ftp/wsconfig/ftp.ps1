@@ -34,11 +34,10 @@ function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
     }
 }
 
-function Crear-UsuarioFtp([string]$usuario, [string]$contrasena){
-    $usuarioFtp = $ADSI.Create("User", "$usuario")
-    $usuarioFtp.SetInfo()
-    $usuarioFtp.SetPassword("$contrasena")
-    $usuarioFtp.SetInfo()
+function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo){
+    $passwordSecure = ConvertTo-SecureString -String $contrasena -AsPlainText -Force
+    New-LocalUser -Name $usuario -Password $passwordSecure -FullName $usuario -Description "Usuario FTP"
+    Add-LocalGroupMember -Group $grupo -Member $usuario
 }
 
 function Agregar-UsuarioAGrupoFTP([string]$usuario, [string]$nombreGrupo){
@@ -49,7 +48,7 @@ function Agregar-UsuarioAGrupoFTP([string]$usuario, [string]$nombreGrupo){
     $grupo.Add($user.Path)
 }
 
-function Habilitar-Autenticacion([string]$nombreSitio, [string]$nombreGrupo){
+function Habilitar-Autenticacion([string]$nombreSitio, [string]$usuario){
     $rutaSitioFtp = "IIS:\Sites\$nombreSitio"
     $basicAuth = "ftpServer.security.authentication.basicAuthentication.enabled"
     Set-ItemProperty -Path $rutaSitioFtp -Name $basicAuth -Value $True
@@ -58,7 +57,7 @@ function Habilitar-Autenticacion([string]$nombreSitio, [string]$nombreGrupo){
         Filter = "/system.ftpServer/security/authorization"
         Value = @{
             accessType = "Allow"
-            roles = "$nombreGrupo"
+            users = "$usuario"
             permissions = 3
         }
         PSPath = "IIS:\"
@@ -96,7 +95,7 @@ $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
 Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
 Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
-Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"#>
+Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
 
 while($true){
     echo "Menu"
@@ -124,9 +123,9 @@ while($true){
                 $password = Read-Host "Ingresa la contrasena" -AsSecureString
                 $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
                 try{
-                    Crear-UsuarioFtp -usuario $usuario -contrasena $password
+                    Crear-UsuarioFtp -usuario $usuario -contrasena $password -grupo $grupo
                     Agregar-UsuarioAGrupoFTP -usuario $usuario -nombreGrupo $grupo
-                    Habilitar-Autenticacion -nombreSitio $nombreSitio -nombreGrupo $grupo
+                    Habilitar-Autenticacion -nombreSitio $nombreSitio -usuario $usuario
                     Permitir-SSL -rutaSitioFtp $rutaSitioIIS
                     Establecer-PermisosNtfs -rutaSitio $rutaFisicaFTP -nombreGrupo $grupo -nombreSitio $nombreSitio
                     echo "Configuracion establecida correctamente"
