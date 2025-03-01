@@ -1,4 +1,4 @@
-<#$ADSI = [ADSI]"WinNT://$env:ComputerName"
+$ADSI = [ADSI]"WinNT://$env:ComputerName"
 
 function Check-WindowsFeature {
     [CmdletBinding()]
@@ -98,40 +98,7 @@ Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
 Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
 Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"#>
 
-Install-WindowsFeature Web-Server
-Install-WindowsFeature Web-Ftp-Server
-Install-WindowsFeature Web-Basic-Auth
-New-WebFtpSite -Name "FTP" -Port 21 -PhysicalPath "C:\Users\Administrador\Servidor-FTP\publica"
-
-$nombreGrupo = "FTP"
-$ADSI = [ADSI]"WinNT://$env:ComputerName"
-$grupoDeUsuarios = $ADSI.Create("Group", "$nombreGrupo")
-$grupoDeUsuarios.SetInfo()
-$grupoDeUsuarios.Description = "Grupo de usuarios del servidor FTP"
-$grupoDeUsuarios.SetInfo()
-
-$nombreUsuario = "rafflezzia"
-$contra = "12345678"
-$crearUsuarioFTP = $ADSI.Create("User", "$nombreUsuario")
-$crearUsuarioFTP.SetInfo()
-$crearUsuarioFTP.SetPassword("$contra")
-$crearUsuarioFTP.SetInfo()
-
-$cuentaUsuario = New-Object System.Security.Principal.NTAccount("$nombreUsuario")
-$SID = $cuentaUsuario.Translate([System.Security.Principal.SecurityIdentifier])
-$grupo = [ADSI]"WinNT://$env:ComputerName/$nombreGrupo,Group"
-$usuario = [ADSI]"WinNT://$SID"
-$grupo.Add($usuario.Path)
-
-Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.basicAuthentication.enabled -Value $true
-Add-WebConfiguration "/system.ftpServer/security/authorization" -Value @{accessType="Allow";roles="FTP";permissions=3} -PSPath IIS:\ -Location "FTP"
-
-Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
-
-Restart-WebItem "IIS:\Sites\FTP"
-
-<#while($true){
+while($true){
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
@@ -176,4 +143,4 @@ Restart-WebItem "IIS:\Sites\FTP"
         }
     }
     echo `n
-}#>
+}
