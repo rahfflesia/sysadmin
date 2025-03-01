@@ -65,7 +65,7 @@ function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
 }
 
 function Habilitar-Autenticacion([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
 }
 
 function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombreSitio){
@@ -73,12 +73,12 @@ function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombr
 }
 
 function Habilitar-SSL([String]$nombreSitioIIS){
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-    Set-ItemProperty "IIS:\Sites\$nombreSitioIIS" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\'$nombreSitioIIS'" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
 }
 
 function Reiniciar-Sitio([String]$nombreSitioIIS){
-    Restart-WebItem "IIS:\Sites\$nombreSitioIIS"
+    Restart-WebItem "IIS:\Sites\'$nombreSitioIIS'"
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
