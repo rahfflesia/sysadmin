@@ -94,8 +94,7 @@ $nombreSitio = "Servidor FTP"
 $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
 Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
-Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
-Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
+Crear-Grupo -nombreGrupo "FTP" -descripcion "Los usuarios de este grupo pueden intercambiar archivos mediante FTP"
 
 while($true){
     echo "Menu"
@@ -121,7 +120,7 @@ while($true){
             1 {
                 $usuario = Read-Host "Ingresa el nombre de usuario"
                 $password = Read-Host "Ingresa la contrasena" -AsSecureString
-                $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
+                $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
                 try{
                     Crear-UsuarioFtp -usuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupoFTP -usuario $usuario -nombreGrupo $grupo
