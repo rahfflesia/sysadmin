@@ -1,5 +1,12 @@
 $ADSI = [ADSI]"WinNT://$env:ComputerName"
 
+if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server")){
+    Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
+    Install-WindowsFeature Web-Server -IncludeAllSubFeature -IncludeManagementTools
+}
+
+Import-Module WebAdministration
+
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
@@ -24,6 +31,9 @@ function Crear-Grupo([string]$nombreGrupo, [string]$descripcion){
         $grupoUsuarios.Description = $descripcion
         $grupoUsuarios.SetInfo()
     }
+    else {
+        echo "Ese grupo ya existe"
+    }
 }
 
 function Crear-UsuarioFtp([string]$usuario, [string]$contrasena){
@@ -34,16 +44,11 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena){
 }
 
 function Agregar-UsuarioAGrupoFTP([string]$usuario, [string]$nombreGrupo){
-    if($nombreGrupo -ne $null){
-        $cuentaUsuario = New-Object System.Security.Principal.NTAccount("$usuario")
-        $SID = $cuentaUsuario.Translate([System.Security.Principal.SecurityIdentifier])
-        $grupo = [ADSI]"WinNT://$env:ComputerName/$nombreGrupo,Group"
-        $user = [ADSI]"WinNT://$SID"
-        $grupo.Add($user.Path)
-    }
-    else{
-        echo "Error, grupo con valor nulo, puede que el grupo ya exista"
-    }
+    $cuentaUsuario = New-Object System.Security.Principal.NTAccount("$usuario")
+    $SID = $cuentaUsuario.Translate([System.Security.Principal.SecurityIdentifier])
+    $grupo = [ADSI]"WinNT://$env:ComputerName/$nombreGrupo,Group"
+    $user = [ADSI]"WinNT://$SID"
+    $grupo.Add($user.Path)
 }
 
 function Habilitar-Autenticacion([string]$nombreSitio, [string]$nombreGrupo){
@@ -86,13 +91,6 @@ function Establecer-PermisosNtfs([string]$rutaSitio, [string]$nombreGrupo, [stri
     $ACL | Set-Acl -Path $rutaSitio
     Restart-WebItem "IIS:\Sites\$nombreSitio" -Verbose
 }
-
-if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server")){
-    Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
-    Install-WindowsFeature Web-Server -IncludeAllSubFeature -IncludeManagementTools
-}
-
-Import-Module WebAdministration
 
 # Variables globales de configuracion
 $nombreSitio = "Servidor FTP"
