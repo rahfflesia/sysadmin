@@ -88,7 +88,7 @@ $rutaRaiz = "C:\FTP"
 $rutaFisica = "C:\FTP\"
 
 Crear-Ruta $rutaRaiz
-$nombreSitio = Crear-SitioFTP "FTP" 21 $rutaFisica
+$nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 Habilitar-SSL
 
 if(!(Get-LocalGroup -Name "reprobados")){
