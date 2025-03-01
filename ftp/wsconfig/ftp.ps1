@@ -12,9 +12,10 @@ function Check-WindowsFeature {
     }
 }
 
-if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server")){
+if(-not(Check-WindowsFeature "Web-FTP-Server") -and -not(Check-WindowsFeature "Web-Server") -and -not(Check-WindowsFeature "Web-Basic-Auth")){
     Install-WindowsFeature Web-FTP-Server -IncludeAllSubFeature
     Install-WindowsFeature Web-Server -IncludeAllSubFeature -IncludeManagementTools
+    Install-WindowsFeature Web-Basic-Auth
 }
 
 Import-Module WebAdministration
@@ -94,7 +95,8 @@ $nombreSitio = "Servidor FTP"
 $rutaFisicaFTP = "C:\Users\Administrador\Servidor-FTP\Publica"
 $rutaSitioIIS = "IIS:\Sites\$nombreSitio"
 Crear-SitioFtp -nombreSitio $nombreSitio -ruta $rutaFisicaFTP
-Crear-Grupo -nombreGrupo "FTP" -descripcion "Los usuarios de este grupo pueden intercambiar archivos mediante FTP"
+Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
+Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
 
 while($true){
     echo "Menu"
@@ -120,7 +122,7 @@ while($true){
             1 {
                 $usuario = Read-Host "Ingresa el nombre de usuario"
                 $password = Read-Host "Ingresa la contrasena" -AsSecureString
-                $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
+                $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
                 try{
                     Crear-UsuarioFtp -usuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupoFTP -usuario $usuario -nombreGrupo $grupo
