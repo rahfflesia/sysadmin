@@ -53,27 +53,27 @@ $rutaSitioFtp = "IIS:\Sites\ServidorFTP"
 Set-ItemProperty -Path $rutaSitioFtp -Name "ftpServer.security.authentication.anonymousAuthentication.enabled" -Value $true
 
 function Establecer-Permisos([string]$ruta, [string]$grupo) {
-    $acl = Get-Acl $ruta
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-        "$env:ComputerName\$grupo",
-        "Modify",
-        "ContainerInherit,ObjectInherit",
-        "None",
-        "Allow"
-    )
-    do {
-        $check = 'ok'
-        try {
-            $acl.AddAccessRule($accessRule)
-        } catch [System.Management.Automation.RuntimeException] {
-            $_.Exception.Message
-            $check = 'error'
-            Start-Sleep -Seconds 2
-        }
-    } until (
-        $check -eq 'ok'
-    )
-    Set-Acl -Path $ruta -AclObject $acl
+    try {
+        $grupoCompleto = "$env:ComputerName\$grupo"
+        $acl = Get-Acl $ruta
+
+        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            $grupoCompleto,
+            "Modify",            
+            "ContainerInherit,ObjectInherit",
+            "None",              
+            "Allow"
+        )
+
+        $acl.AddAccessRule($accessRule)
+
+        Set-Acl -Path $ruta -AclObject $acl
+
+        Write-Host "Permisos establecidos correctamente para el grupo '$grupo' en la ruta '$ruta'."
+    }
+    catch {
+        Write-Host "Ocurrió un error al establecer permisos: $_"
+    }
 }
 
 Establecer-Permisos -ruta $rutaGeneral -grupo "Everyone"
