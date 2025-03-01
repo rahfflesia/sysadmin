@@ -35,9 +35,17 @@ $rutaGeneral = "C:\FTP\General"
 $rutaReprobados = "C:\FTP\Reprobados"
 $rutaRecursadores = "C:\FTP\Recursadores"
 
-New-Item -ItemType Directory -Path $rutaGeneral
-New-Item -ItemType Directory -Path $rutaReprobados
-New-Item -ItemType Directory -Path $rutaRecursadores
+if(!(Test-Path $rutaGeneral)){
+    New-Item -ItemType Directory -Path $rutaGeneral
+}
+
+if(!(Test-Path $rutaReprobados)){
+    New-Item -ItemType Directory -Path $rutaReprobados
+}
+
+if(!(Test-Path $rutaRecursadores)){
+    New-Item -ItemType Directory -Path $rutaRecursadores
+}
 
 Crear-SitioFtp -nombreSitio "ServidorFTP" -ruta $rutaGeneral
 
