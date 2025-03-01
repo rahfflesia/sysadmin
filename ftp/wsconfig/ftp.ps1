@@ -3,7 +3,7 @@ function Check-WindowsFeature {
     param(
         [Parameter(Position=0,Mandatory=$true)] [string]$FeatureName 
     )  
-    if((Get-WindowsOptionalFeature -FeatureName $FeatureName -Online).State -eq "Enabled") {
+  if((Get-WindowsOptionalFeature -FeatureName $FeatureName -Online).State -eq "Enabled") {
         return $true
     } else {
         return $false
@@ -53,9 +53,31 @@ Crear-SitioFtp -nombreSitio "ServidorFTP" -ruta $rutaGeneral
 $rutaSitioFtp = "IIS:\Sites\ServidorFTP"
 Set-ItemProperty -Path $rutaSitioFtp -Name "ftpServer.security.authentication.anonymousAuthentication.enabled" -Value $true
 
-# Deshabilitar SSL
-function Deshabilitar-SSL([string]$rutaSitioFtp){
-    # Desactivar SSL para el canal de control y de datos
+function Establecer-Permisos([string]$ruta, [string]$grupo) {
+    try {
+        $grupoCompleto = "$env:ComputerName\$grupo"
+        $acl = Get-Acl $ruta
+
+        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            $grupoCompleto,
+            "Modify",            
+            "ContainerInherit,ObjectInherit",
+            "None",              
+            "Allow"
+        )
+
+        $acl.AddAccessRule($accessRule)
+
+        Set-Acl -Path $ruta -AclObject $acl
+
+        Write-Host "Permisos establecidos correctamente para el grupo '$grupo' en la ruta '$ruta'."
+    }
+    catch {
+        Write-Host "Ocurrió un error al establecer permisos: $_"
+    }
+}
+
+function Deshabilitar-SSL() {
     Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "controlChannelPolicy" -Value "None" -PSPath "IIS:\"
     Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "dataChannelPolicy" -Value "None" -PSPath "IIS:\"
 }
@@ -72,8 +94,8 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo)
 
 Deshabilitar-SSL -rutaSitioFtp $rutaSitioFtp
 
-Crear-UsuarioFtp -usuario "usuario1" -contrasena "#password222#" -grupo "reprobados"
-Crear-UsuarioFtp -usuario "usuario2" -contrasena "#password222#" -grupo "recursadores"
+Crear-UsuarioFtp -usuario "mrgarza" -contrasena "#password222#" -grupo "reprobados"
+Crear-UsuarioFtp -usuario "mrorozco" -contrasena "#password222#" -grupo "recursadores"
 
 Restart-WebItem "IIS:\Sites\ServidorFTP"
 
