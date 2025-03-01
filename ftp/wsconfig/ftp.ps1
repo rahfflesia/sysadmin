@@ -28,6 +28,7 @@ function Crear-SitioFtp([string]$nombreSitio, [int]$puerto = 21, [string]$ruta) 
     New-WebFtpSite -Name $nombreSitio -Port $puerto -PhysicalPath $ruta -Force
 }
 
+crearGrupo -nombreGrupo "Everyone"
 crearGrupo -nombreGrupo "reprobados"
 crearGrupo -nombreGrupo "recursadores"
 
@@ -85,6 +86,9 @@ function Crear-UsuarioFtp([string]$usuario, [string]$contrasena, [string]$grupo)
     New-LocalUser -Name $usuario -Password $passwordSecure -FullName $usuario -Description "Usuario FTP"
     Add-LocalGroupMember -Group $grupo -Member $usuario
 }
+
+Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "controlChannelPolicy" -Value "None" -PSPath "IIS:\"
+Set-WebConfigurationProperty -Filter "/system.ftpServer/security/ssl" -Name "dataChannelPolicy" -Value "None" -PSPath "IIS:\"
 
 Crear-UsuarioFtp -usuario "usuario1" -contrasena "#password222#" -grupo "reprobados"
 Crear-UsuarioFtp -usuario "usuario2" -contrasena "#password222#" -grupo "recursadores"
