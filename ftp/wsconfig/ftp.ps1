@@ -88,11 +88,7 @@ function Reiniciar-Sitio(){
 }
 
 function Deshabilitar-AccesoAnonimo(){
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $false
-}
-
-function Habilitar-AccesoAnonimoGeneral(){
-    Set-WebConfigurationProperty -filter "/system.ftpServer/security/authentication/anonymousAuthentication" -name "enabled" -value "True" -PSPath "IIS:\Sites\FTP" -location "FTP/General"
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
@@ -113,28 +109,7 @@ if(!(Get-LocalGroup -Name "recursadores")){
 # Habilitar autenticacion básica
 Habilitar-Autenticacion
 Habilitar-SSL
-Deshabilitar-AccesoAnonimo
-Habilitar-AccesoAnonimoGeneral
-
-icacls "C:\FTP\General" /inheritance:r
-icacls "C:\FTP\General" /remove:g "Usuarios Autenticados"
-icacls "C:\FTP\General" /grant "Usuarios:(OI)(CI)R"
-
-icacls "C:\FTP\Reprobados" /inheritance:r
-icacls "C:\FTP\Reprobados" /remove:g "Usuarios Autenticados"
-icacls "C:\FTP\Reprobados" /grant "reprobados:(OI)(CI)M"
-Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
-
-icacls "C:\FTP\Recursadores" /inheritance:r
-icacls "C:\FTP\Recursadores" /remove:g "Usuarios Autenticados"
-icacls "C:\FTP\Recursadores" /grant "reprobados:(OI)(CI)M"
-Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "General"
-
-if (!(Get-SmbShare -Name "ShareFTP" -ErrorAction SilentlyContinue)) {
-    New-SmbShare -Name "ShareFTP" -Path $rutaRaiz -FullAccess Administradores
-}
-
-Set-SmbShare -Name "ShareFTP" -FolderEnumerationMode AccessBased
+Habilitar-AccesoAnonimo
 
 while($true){
     echo "Menu"
