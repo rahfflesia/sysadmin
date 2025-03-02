@@ -75,16 +75,7 @@ function Habilitar-Autenticacion(){
 }
 
 function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$carpetaSitio){
-    if ($nombreGrupo -eq "IUSR") {
-        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="IUSR";permissions=1} -PSPath IIS:\ -location "FTP/$carpetaSitio"
-    }
-    elseif ($nombreGrupo -eq "Authenticated Users") {
-        # Para los usuarios autenticados, damos acceso completo (lectura y escritura, permissions=3)
-        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="Authenticated Users";permissions=3} -PSPath IIS:\ -location "FTP/$carpetaSitio"
-    }
-    else {
-        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP/$carpetaSitio"
-    }
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP/$carpetaSitio"
 }
 
 function Habilitar-SSL(){
@@ -98,12 +89,6 @@ function Reiniciar-Sitio(){
 
 function Habilitar-AccesoAnonimo(){
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
-    icacls "C:\FTP\General" /grant IUSR:"(OI)(CI)R" /T /C
-    icacls "C:\FTP\Reprobados" /deny IUSR:"(OI)(CI)M" /T /C
-    icacls "C:\FTP\Recursadores" /deny IUSR:"(OI)(CI)M" /T /C 
-    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="IUSR";permissions=1} -PSPath IIS:\ -location "FTP/General"
-    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/Recursadores"
-    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/Reprobados"
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
@@ -113,16 +98,17 @@ $rutaFisica = "C:\FTP\"
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 
+New-WebVirtualDirectory -Site $nombreSitio -Name "Reprobados" -PhysicalPath "C:\FTP\Reprobados"
+New-WebVirtualDirectory -Site $nombreSitio -Name "Recursadores" -PhysicalPath "C:\FTP\Recursadores"
+
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
    Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
-   Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "Reprobados"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
     $nombre = Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
     Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "General"
-    Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "Recursadores"
 }
 
 # Habilitar autenticacion básica
