@@ -98,10 +98,6 @@ $rutaFisica = "C:\FTP\"
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 
-$ftpShareName = "FTPShare"
-New-SmbShare -Name $ftpShareName -Path $rutaRaiz -FullAccess Administradores
-Set-SmbShare -Name $ftpShareName -FolderEnumerationMode AccessBased
-
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
    Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
@@ -114,6 +110,12 @@ if(!(Get-LocalGroup -Name "recursadores")){
     $nombre = Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
     Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "General"
 }
+
+if (!(Get-SmbShare -Name "ShareFTP" -ErrorAction SilentlyContinue)) {
+    New-SmbShare -Name "ShareFTP" -Path $rutaRaiz -FullAccess Administradores
+}
+
+Set-SmbShare -Name "ShareFTP" -FolderEnumerationMode AccessBased
 
 # Habilitar autenticacion básica
 Habilitar-Autenticacion
