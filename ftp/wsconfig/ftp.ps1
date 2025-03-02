@@ -74,8 +74,17 @@ function Habilitar-Autenticacion(){
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
 }
 
-function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$nombreSitio){
-    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location $nombreSitio
+function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$carpetaSitio){
+    if ($nombreGrupo -eq "IUSR") {
+        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="IUSR";permissions=1} -PSPath IIS:\ -location "FTP/$carpetaSitio"
+    }
+    elseif ($nombreGrupo -eq "Authenticated Users") {
+        # Para los usuarios autenticados, damos acceso completo (lectura y escritura, permissions=3)
+        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="Authenticated Users";permissions=3} -PSPath IIS:\ -location "FTP/$carpetaSitio"
+    }
+    else {
+        Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP/$carpetaSitio"
+    }
 }
 
 function Habilitar-SSL(){
@@ -106,12 +115,14 @@ $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFis
 
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
-   Agregar-Permisos -nombreGrupo $nombre -numero 3 -nombreSitio $nombreSitio
+   Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
+   Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "Reprobados"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
     $nombre = Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
-    Agregar-Permisos -nombreGrupo $nombre -numero 3 -nombreSitio $nombreSitio
+    Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "General"
+    Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "Recursadores"
 }
 
 # Habilitar autenticacion básica
