@@ -87,6 +87,16 @@ function Reiniciar-Sitio(){
     Restart-WebItem "IIS:\Sites\FTP"
 }
 
+function Habilitar-AccesoAnonimo(){
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
+    icacls "C:\FTP\General" /grant IUSR:R /T /C
+    icacls "C:\FTP\Recursadores" /deny IUSR:(OI)(CI)(M)
+    icacls "C:\FTP\Reprobados" /deny IUSR:(OI)(CI)(M)
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="IUSR";permissions=1} -PSPath IIS:\ -location "FTP/publica"
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/recursadores"
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/reprobados"
+}
+
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
 $rutaRaiz = "C:\FTP"
 $rutaFisica = "C:\FTP\"
@@ -107,6 +117,7 @@ if(!(Get-LocalGroup -Name "recursadores")){
 # Habilitar autenticacion básica
 Habilitar-Autenticacion
 Habilitar-SSL
+Habilitar-AccesoAnonimo
 
 while($true){
     echo "Menu"
