@@ -105,9 +105,9 @@ Set-SmbShare -Name $ftpShareName -FolderEnumerationMode AccessBased
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
    Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
-   icacls $carpeta /inheritance:r
-   icacls $carpeta /remove:g "Usuarios Autenticados"
-   icacls $carpeta /grant "reprobados:(OI)(CI)M"
+   icacls "C:\FTP\Reprobados" /inheritance:r
+   icacls "C:\FTP\Reprobados" /remove:g "Usuarios Autenticados"
+   icacls "C:\FTP\Reprobados" /grant "reprobados:(OI)(CI)M"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
