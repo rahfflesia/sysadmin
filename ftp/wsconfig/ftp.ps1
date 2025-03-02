@@ -24,8 +24,6 @@ if(-not(Check-WindowsFeature "Web-Basic-Auth")){
 
 Import-Module WebAdministration
 
-$ADSI = [ADSI]"WinNT://$env:ComputerName"
-
 function Crear-Ruta([String]$ruta){
     if(!(Test-Path $ruta)){
         mkdir $ruta
@@ -37,9 +35,14 @@ function Crear-SitioFTP([String]$nombreSitio, [Int]$puerto = 21, [String]$rutaFi
     return $nombreSitio
 }
 
+function Get-ADSI(){
+    return [ADSI]"WinNT://$env:ComputerName"
+}
+
 function Crear-Grupo([String]$nombreGrupo, [String]$descripcion){
     # Creación del grupo
     $FTPUserGroupName = $nombreGrupo
+    $ADSI = Get-ADSI
     $FTPUserGroup = $ADSI.Create("Group", "$FTPUserGroupName")
     $FTPUserGroup.SetInfo()
     $FTPUserGroup.Description = $descripcion
@@ -51,6 +54,7 @@ function Crear-Usuario([String]$nombreUsuario, [String]$contrasena){
     # Creación del usuario
     $FTPUserName = $nombreUsuario
     $FTPPassword = $contrasena
+    $ADSI = Get-ADSI
     $CreateUserFTPUser = $ADSI.Create("User", "$FTPUserName")
     $CreateUserFTPUser.SetInfo()
     $CreateUserFTPUser.SetPassword("$FTPPassword")
@@ -89,7 +93,6 @@ $rutaFisica = "C:\FTP\"
 
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
-Habilitar-SSL
 
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
@@ -103,6 +106,7 @@ if(!(Get-LocalGroup -Name "recursadores")){
 
 # Habilitar autenticacion básica
 Habilitar-Autenticacion
+Habilitar-SSL
 
 while($true){
     echo "Menu"
@@ -129,7 +133,7 @@ while($true){
             1 {
                 try{
                     $usuario = Read-Host "Ingresa el nombre de usuario"
-                    $password = Read-Host "Ingresa la contrasena" -AsSecureString
+                    $password = Read-Host "Ingresa la contrasena"
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
