@@ -98,12 +98,16 @@ $rutaFisica = "C:\FTP\"
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 
-New-WebVirtualDirectory -Site $nombreSitio -Name "Reprobados" -PhysicalPath "C:\FTP\Reprobados"
-New-WebVirtualDirectory -Site $nombreSitio -Name "Recursadores" -PhysicalPath "C:\FTP\Recursadores"
+$ftpShareName = "FTPShare"
+New-SmbShare -Name $ftpShareName -Path $rutaRaiz -FullAccess Administradores
+Set-SmbShare -Name $ftpShareName -FolderEnumerationMode AccessBased
 
 if(!(Get-LocalGroup -Name "reprobados")){
    $nombre = Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
    Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
+   icacls $carpeta /inheritance:r
+   icacls $carpeta /remove:g "Usuarios Autenticados"
+   icacls $carpeta /grant "$grupo:(OI)(CI)M"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
