@@ -107,7 +107,7 @@ if(!(Get-LocalGroup -Name "reprobados")){
    Agregar-Permisos -nombreGrupo "reprobados" -numero 3 -carpetaSitio "General"
    icacls $carpeta /inheritance:r
    icacls $carpeta /remove:g "Usuarios Autenticados"
-   icacls $carpeta /grant "$grupo:(OI)(CI)M"
+   icacls $carpeta /grant "reprobados:(OI)(CI)M"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
