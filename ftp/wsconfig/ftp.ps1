@@ -89,9 +89,9 @@ function Reiniciar-Sitio(){
 
 function Habilitar-AccesoAnonimo(){
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
-    icacls "C:\FTP\General" /grant IUSR:R /T /C
-    icacls "C:\FTP\Recursadores" /deny IUSR:(OI)(CI)(M)
-    icacls "C:\FTP\Reprobados" /deny IUSR:(OI)(CI)(M)
+    icacls "C:\FTP\publica" /grant IUSR:R /T /C
+    icacls "C:\FTP\recursadores" /deny IUSR:(OI)(CI)(M)
+    icacls "C:\FTP\reprobados" /deny IUSR:(OI)(CI)(M)
     Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";users="IUSR";permissions=1} -PSPath IIS:\ -location "FTP/publica"
     Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/recursadores"
     Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Deny";users="IUSR"} -PSPath IIS:\ -location "FTP/reprobados"
