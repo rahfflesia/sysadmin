@@ -145,6 +145,8 @@ while($true){
                     mkdir "C:\FTP\LocalUser\$usuario"
                     mkdir "C:\FTP\Usuarios\$usuario"
                     icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
+                    icacls "C:\FTP\General" /grant "$($usuario):(OI)(CI)F"
+                    icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
                     New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
                     icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
                     New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
