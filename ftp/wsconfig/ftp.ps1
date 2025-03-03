@@ -141,31 +141,47 @@ while($true){
                 try{
                     $usuario = Read-Host "Ingresa el nombre de usuario"
                     $password = Read-Host "Ingresa la contrasena"
-                    $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
-                    Crear-Usuario -nombreUsuario $usuario -contrasena $password
-                    Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
-                    mkdir "C:\FTP\LocalUser\$usuario"
-                    mkdir "C:\FTP\Usuarios\$usuario"
-                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
-                    icacls "C:\FTP\$grupo" /grant "$($grupo):(OI)(CI)F"
-                    icacls "C:\FTP\General" /grant "$($usuario):(OI)(CI)F"
-                    icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
-                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
-                    icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
-                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
-                    icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
-                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
-                    icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
-                    Reiniciar-Sitio
-                    echo "Usuario creado exitosamente"
+                    $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
+                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or Get-LocalUser -Name $usuario){
+                        echo "El grupo es invalido o el usuario ya existe"
+                    }
+                    else{
+                        Crear-Usuario -nombreUsuario $usuario -contrasena $password
+                        Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
+                        mkdir "C:\FTP\LocalUser\$usuario"
+                        mkdir "C:\FTP\Usuarios\$usuario"
+                        icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
+                        icacls "C:\FTP\$grupo" /grant "$($grupo):(OI)(CI)F"
+                        icacls "C:\FTP\General" /grant "$($usuario):(OI)(CI)F"
+                        icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
+                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
+                        icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
+                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
+                        icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
+                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
+                        icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
+                        Reiniciar-Sitio
+                        echo "Usuario creado exitosamente"
+                    }
                 }
                 catch{
-                    echo $Error[0]
+                    echo $Error[0].ToString()
                 }
             }
             2 {
-                $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
-                $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
+                try{
+                    $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
+                    $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
+                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or !(Get-LocalUser -Name $usuarioACambiar)){
+                        echo "El grupo es invalido o el usuario no existe"
+                    }
+                    else{
+                        echo "Hacer el proceso de cambio de grupo"
+                    }
+                }
+                catch{
+                    echo $Error[0].ToString()
+                }
             }
             default {"Ingresa un numero dentro del rango (1..3)"}
         }
