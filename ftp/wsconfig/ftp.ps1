@@ -1,3 +1,4 @@
+#Script 100% funcional windows server
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
@@ -142,7 +143,7 @@ while($true){
                     $usuario = Read-Host "Ingresa el nombre de usuario"
                     $password = Read-Host "Ingresa la contrasena"
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
-                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or Get-LocalUser -Name $usuario){
+                    if(($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or (Get-LocalUser -Name $usuario -SilentlyContinue)){
                         echo "El grupo es invalido o el usuario ya existe"
                     }
                     else{
@@ -172,7 +173,7 @@ while($true){
                 try{
                     $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
                     $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
-                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or !(Get-LocalUser -Name $usuarioACambiar)){
+                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or !(Get-LocalUser -Name $usuarioACambiar -SilentlyContinue)){
                         echo "El grupo es invalido o el usuario no existe"
                     }
                     else{
@@ -183,8 +184,8 @@ while($true){
                         else{
                             $grupoActual = "reprobados"
                         }
-                        Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupo
-                        rm "C:\FTP\LocalUser\$usuario\$grupoActual"
+                        Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupoActual
+                        rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual"
                         Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
                         New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
                         icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
