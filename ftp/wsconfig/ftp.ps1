@@ -143,8 +143,7 @@ while($true){
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
                     mkdir "C:\FTP\LocalUser\$usuario"
-                    icacls "C:\FTP\LocalUser\$usuario" /grant "$env:ComputerName\${usuario}:(OI)(CI)M"
-                    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$usuario";permissions=3} -PSPath IIS:\ -location "FTP/LocalUser/$usuario"
+                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
                     Reiniciar-Sitio
                     echo "Usuario creado exitosamente"
                 }
