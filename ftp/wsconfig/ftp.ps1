@@ -98,7 +98,7 @@ $rutaFisica = "C:\FTP\"
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 
-Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.userIsolation.mode -Value 2
+Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.userIsolation.mode -Value 3
 
 if(!(Get-LocalGroup -Name "reprobados")){
    Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
@@ -143,7 +143,7 @@ while($true){
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
                     mkdir "C:\FTP\LocalUser\$usuario"
-                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
+                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F" /T
                     Reiniciar-Sitio
                     echo "Usuario creado exitosamente"
                 }
