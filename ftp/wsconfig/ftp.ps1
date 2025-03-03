@@ -113,11 +113,6 @@ Habilitar-Autenticacion
 Habilitar-SSL
 Habilitar-AccesoAnonimo
 
-# Otorgo permisos al grupo de reprobados sobre su carpeta
-icacls "C:\FTP\Reprobados" /grant "reprobados:(OI)(CI)F" /T
-# Otorgo permisos al grupo de recursadores sobre su carpeta
-icacls "C:\FTP\Recursadores" /grant "recursadores:(OI)(CI)F" /T
-
 while($true){
     echo "Menu"
     echo "1. Agregar usuario"
@@ -145,8 +140,6 @@ while($true){
                     $usuario = Read-Host "Ingresa el nombre de usuario"
                     $password = Read-Host "Ingresa la contrasena"
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
-                    $aux = (Get-Culture).TextInfo
-                    $grupoCap = $aux.ToTitleCase($grupo)
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
                     mkdir "C:\FTP\LocalUser\$usuario"
@@ -157,7 +150,7 @@ while($true){
                     New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
                     icacls "C:\FTP\LocalUser\Usuarios\$usuario" /grant "$($usuario):(OI)(CI)F"
                     icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
-                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupoCap"
+                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
                     icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
                     Reiniciar-Sitio
                     echo "Usuario creado exitosamente"
