@@ -176,7 +176,19 @@ while($true){
                         echo "El grupo es invalido o el usuario no existe"
                     }
                     else{
-                        echo "Hacer el proceso de cambio de grupo"
+                        $grupoActual = ""
+                        if($grupo.ToLower() -eq "reprobados"){
+                            $grupoActual = "recursadores"
+                        }
+                        else{
+                            $grupoActual = "reprobados"
+                        }
+                        Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupo
+                        rm "C:\FTP\LocalUser\$usuario\$grupoActual"
+                        Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
+                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
+                        icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
+                        icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
                     }
                 }
                 catch{
