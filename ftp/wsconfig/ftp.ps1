@@ -143,7 +143,11 @@ while($true){
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
                     mkdir "C:\FTP\LocalUser\$usuario"
-                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F" /T
+                    icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
+                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
+                    icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
+                    New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\$usuario"
+                    icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
                     Reiniciar-Sitio
                     echo "Usuario creado exitosamente"
                 }
