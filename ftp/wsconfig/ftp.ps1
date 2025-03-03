@@ -87,7 +87,7 @@ function Reiniciar-Sitio(){
     Restart-WebItem "IIS:\Sites\FTP"
 }
 
-function Deshabilitar-AccesoAnonimo(){
+function Habilitar-AccesoAnonimo(){
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
 }
 
@@ -98,12 +98,14 @@ $rutaFisica = "C:\FTP\"
 Crear-Ruta $rutaRaiz
 $nombreSitio = Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
 
+Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.userIsolation.mode -Value 2
+
 if(!(Get-LocalGroup -Name "reprobados")){
    Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
 }
 
 if(!(Get-LocalGroup -Name "recursadores")){
-    Agregar-Permisos -nombreGrupo "recursadores" -numero 3 -carpetaSitio "General"
+    Crear-Grupo -nombreGrupo "recursadores" -descripcion "Grupo FTP de recursadores"
 }
 
 # Habilitar autenticacion básica
@@ -140,6 +142,8 @@ while($true){
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario"
                     Crear-Usuario -nombreUsuario $usuario -contrasena $password
                     Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
+                    mkdir "C:\FTP\LocalUser\$usuario"
+                    icacls "C:\FTP\LocalUser\$usuario" /grant "$env:ComputerName\$usuario:(OI)(CI)M"
                     Reiniciar-Sitio
                     echo "Usuario creado exitosamente"
                 }
