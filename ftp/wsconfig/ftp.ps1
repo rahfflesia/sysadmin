@@ -113,6 +113,8 @@ Habilitar-Autenticacion
 Habilitar-SSL
 Habilitar-AccesoAnonimo
 
+icacls "C:\FTP\LocalUser\Public\General" /grant "IIS_IUSRS:(R)"
+
 while($true){
     echo "Menu"
     echo "1. Agregar usuario"
