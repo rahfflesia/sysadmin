@@ -143,8 +143,8 @@ while($true){
                     $usuario = Read-Host "Ingresa el nombre de usuario"
                     $password = Read-Host "Ingresa la contrasena"
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
-                    if(($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or (Get-LocalUser -Name $usuario -SilentlyContinue)){
-                        echo "El grupo es invalido o el usuario ya existe"
+                    if(($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or (Get-LocalUser -Name $usuario -SilentlyContinue) -or ([String]::IsNullOrEmpty($usuario)) -or ([String]::IsNullOrEmpty($grupo)) -or ([String]::IsNullOrEmpty($password))){
+                        echo "El grupo es invalido o el usuario ya existe o algunos de los campos es nulo o contiene caracteres vacios"
                     }
                     else{
                         Crear-Usuario -nombreUsuario $usuario -contrasena $password
@@ -173,8 +173,8 @@ while($true){
                 try{
                     $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
                     $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
-                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or !(Get-LocalUser -Name $usuarioACambiar -SilentlyContinue)){
-                        echo "El grupo es invalido o el usuario no existe"
+                    if($grupo.ToLower() -ne "reprobados" -or $grupo.ToLower() -ne "recursadores" -or !(Get-LocalUser -Name $usuarioACambiar -SilentlyContinue) -or ([String]::IsNullOrEmpty($usuarioACambiar)) -or ([String]::IsNullOrEmpty($grupo))){
+                        echo "El grupo es invalido o el usuario no existe o algunos de los campos es nulo o contiene espacios en blanco"
                     }
                     else{
                         $grupoActual = ""
