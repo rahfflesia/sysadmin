@@ -33,37 +33,38 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || $(-z "$grupo") || $(-z "$usuario") || $(id "$usuario" > /dev/null 2>&1) ]]; then
-                echo "Has ingresado un grupo invalido, espacios en blanco o el usuario ya existe"
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || id "$usuario" &>/dev/null ]]; then
+                echo "Has ingresado un grupo inválido, espacios en blanco o el usuario ya existe"
             else
-                sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
-                sudo passwd $usuario
+                sudo useradd -m -d "/home/jj/ftp/usuarios/$usuario" "$usuario"
+                sudo passwd "$usuario"
 
-                sudo usermod -G $grupo $usuario
+                sudo usermod -G "$grupo" "$usuario"
 
-                sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
-                sudo chmod 755 /home/jj/ftp/usuarios/$usuario
+                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario"
 
-                sudo mkdir /home/jj/ftp/users/$usuario
-                sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
+                sudo mkdir -p "/home/jj/ftp/users/$usuario"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$usuario"
                 
-                sudo mkdir /home/jj/ftp/usuarios/$usuario/general
-                sudo chmod 755 /home/jj/ftp/usuarios/$usuario/general
+                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/general"
 
-                sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
-                sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
+                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
-                sudo chown $usuario /home/jj/ftp/usuarios/$usuario/general
-                sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$usuario
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 # Enlaces
-                sudo mount --bind /home/jj/ftp/usuarios/$usuario/general /home/jj/ftp/general
-                sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
-                sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/general" "/home/jj/ftp/general"
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$usuario" "/home/jj/ftp/users/$usuario"
 
                 echo "Registro realizado correctamente"
             fi
+
         ;;
         "2")
             grupoActual=""
