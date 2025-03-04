@@ -19,7 +19,6 @@ do
             read grupo
 
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
-            sudo chown -R $usuario:$usuario /home/jj/ftp/usuarios/$usuario
             sudo passwd $usuario
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
@@ -28,10 +27,14 @@ do
             sudo chmod 755 /home/jj/ftp/users/$usuario
 
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
-            sudo mkdir /home/jj/ftp/usuarios/$usuario/General
-            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/General
+            sudo mkdir /home/jj/ftp/usuarios/$usuario/general
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/general
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
+
+            sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo chown $usuario /home/jj/ftp/usuarios/$usuario/general
+            sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$usuario
 
             # Enlaces
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/General /home/jj/ftp/general
