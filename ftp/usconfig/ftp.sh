@@ -27,7 +27,7 @@ do
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
             sudo passwd $usuario
 
-            sudo usermod -a -G $grupo $usuario
+            sudo usermod -G $grupo $usuario
 
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
@@ -38,6 +38,7 @@ do
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/general
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/general
+
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
 
@@ -48,7 +49,7 @@ do
             # Enlaces
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/general /home/jj/ftp/general
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
-            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario --verbose
 
             echo "Registro realizado correctamente"
         ;;
@@ -70,19 +71,28 @@ do
 
             sudo usermod -G $grupo $usuario
 
-            echo "Grupos actuales de $usuario despues del cambio"
+            echo "Grupos actuales de $usuario después del cambio"
             groups $usuario
 
-            sudo rm -r /home/jj/ftp/usuarios/$usuario/$grupoActual
+            if mountpoint -q "/home/jj/ftp/$grupoActual"; then
+                sudo umount /home/jj/ftp/$grupoActual
+            fi
+
+            if [ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]; then
+                sudo rm -r /home/jj/ftp/usuarios/$usuario/$grupoActual
+            fi
 
             sudo mkdir -p /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
 
+            sudo mkdir -p /home/jj/ftp/$grupo
+
             # Enlace
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
 
-            echo "Se realizo el cambio de grupo"
+            echo "Se realizó el cambio de grupo"
+
         ;;
         "3")
             echo "Saliendo..."
