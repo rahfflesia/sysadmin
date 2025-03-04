@@ -2,6 +2,9 @@
 sudo apt-get upgrade
 sudo apt install vsftpd
 
+sudo groupadd reprobados --force
+sudo groupadd recursadores --force
+
 while :
 do
     echo "Menu"
@@ -20,6 +23,9 @@ do
 
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
             sudo passwd $usuario
+
+            sudo usermod -a -G $grupo $usuario
+
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
 
