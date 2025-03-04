@@ -17,9 +17,8 @@ do
             read usuario
             echo "Ingresa el nombre del grupo (reprobados/recursadores): "
             read grupo
-            sudo useradd $usuario
-            sudo passwd $usuario
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
+            sudo passwd $usuario
             sudo chmod 750 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
             sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
