@@ -29,18 +29,17 @@ do
 
             sudo usermod -G $grupo $usuario
 
-            sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario
 
             sudo mkdir /home/jj/ftp/users/$usuario
-            sudo chmod 755 /home/jj/ftp/users/$usuario
-
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
+            
             sudo mkdir /home/jj/ftp/usuarios/$usuario/general
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/general
 
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
-            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
 
             sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chown $usuario /home/jj/ftp/usuarios/$usuario/general
@@ -49,7 +48,7 @@ do
             # Enlaces
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/general /home/jj/ftp/general
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
-            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario --verbose
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
 
             echo "Registro realizado correctamente"
         ;;
