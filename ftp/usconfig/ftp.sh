@@ -43,12 +43,43 @@ do
             sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$usuario
 
             # Enlaces
-            sudo mount --bind /home/jj/ftp/usuarios/$usuario/General /home/jj/ftp/general
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/general /home/jj/ftp/general
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
             sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
+
+            echo "Registro realizado correctamente"
         ;;
         "2")
-            echo "Cambio de grupo"
+            $grupoActual=""
+            echo "Nombre de usuario: "
+            read usuario
+            echo "Nuevo grupo de usuario: "
+            read grupo
+
+            if [[ "$grupo" == "reprobados" ]]; then
+                $grupoActual="recursadores"
+            else
+                $grupoActual="reprobados"
+            fi
+
+            echo "Grupos actuales de $usuario"
+            groups $usuario
+
+            sudo usermod -G $grupo $usuario
+
+            echo "Grupos actuales de $usuario despues del cambio"
+            groups $usuario
+
+            sudo rm -r /home/jj/ftp/usuarios/$usuario/$grupoActual
+
+            sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
+
+            # Enlace
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
+
+            echo "Se realizo el cambio de grupo"
         ;;
         "3")
             echo "Saliendo..."
