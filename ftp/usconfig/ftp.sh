@@ -1,3 +1,4 @@
+# Script funcional, faltan validaciones
 #!/bin/bash
 sudo apt-get upgrade
 sudo apt install vsftpd
