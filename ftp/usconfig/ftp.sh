@@ -84,8 +84,10 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || ! id "$usuario" &>/dev/null ]]; then
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
+            elif !id "$usuario" &>/dev/null; then
+                echo "El usuario no existe"
             else
                 if [[ "$grupo" == "reprobados" ]]; then
                     grupoActual="recursadores"
