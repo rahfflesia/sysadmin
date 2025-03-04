@@ -33,7 +33,7 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || id "$usuario" > /dev/null 2>&1 ]]; then
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || $(-z "$grupo") || $(-z "$usuario") || $(id "$usuario" > /dev/null 2>&1) ]]; then
                 echo "Has ingresado un grupo invalido, espacios en blanco o el usuario ya existe"
             else
                 sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
@@ -80,7 +80,7 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || ! id "$usuario" > /dev/null 2>&1 ]]; then
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || $(-z "$grupo") || $(-z "$usuario") || !$(id "$usuario" > /dev/null 2>&1) ]]; then
                 echo "Has ingresado un grupo invalido, campos vacios o el usuario no existe"
             else
                 if [[ "$grupo" == "reprobados" ]]; then
