@@ -80,8 +80,8 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || $(-z "$grupo") || $(-z "$usuario") || !$(id "$usuario" > /dev/null 2>&1) ]]; then
-                echo "Has ingresado un grupo invalido, campos vacios o el usuario no existe"
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || ! id "$usuario" &>/dev/null ]]; then
+                echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
             else
                 if [[ "$grupo" == "reprobados" ]]; then
                     grupoActual="recursadores"
@@ -90,15 +90,15 @@ do
                 fi
 
                 echo "Grupos actuales de $usuario"
-                groups $usuario
+                groups "$usuario"
 
-                sudo usermod -G $grupo $usuario
+                sudo usermod -G "$grupo" "$usuario"
 
                 echo "Grupos actuales de $usuario después del cambio"
-                groups $usuario
+                groups "$usuario"
 
                 if mountpoint -q "/home/jj/ftp/$grupoActual"; then
-                    sudo umount /home/jj/ftp/$grupoActual
+                    sudo umount "/home/jj/ftp/$grupoActual"
                 fi
 
                 if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
