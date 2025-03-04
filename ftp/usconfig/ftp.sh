@@ -17,15 +17,26 @@ do
             read usuario
             echo "Ingresa el nombre del grupo (reprobados/recursadores): "
             read grupo
+
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
+            sudo chown -R $usuario:$usuario /home/jj/ftp/usuarios/$usuario
             sudo passwd $usuario
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
+
+            sudo mkdir /home/jj/ftp/users/$usuario
+            sudo chmod 755 /home/jj/ftp/users/$usuario
+
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/General
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/General
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
+
+            # Enlaces
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/General /home/jj/ftp/general
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
+            sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
         ;;
         "2")
             echo "Cambio de grupo"
