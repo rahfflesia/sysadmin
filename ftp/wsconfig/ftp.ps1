@@ -126,7 +126,6 @@ while($true){
         $opcion = Read-Host "Selecciona una opcion"
         $intOpcion = [int]$opcion
     }
-
     catch{
         echo "Has ingresado un valor no entero"
     }
