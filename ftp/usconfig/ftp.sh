@@ -19,13 +19,13 @@ do
             read grupo
             sudo useradd -m -d /home/jj/ftp/usuarios/$usuario $usuario
             sudo passwd $usuario
-            sudo chmod 750 /home/jj/ftp/usuarios/$usuario
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$usuario
-            sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$usuario
             sudo mkdir /home/jj/ftp/usuarios/$usuario/General
-            sudo chmod 700 /home/jj/ftp/usuarios/$usuario/General
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/General
             sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
-            sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
         ;;
         "2")
             echo "Cambio de grupo"
