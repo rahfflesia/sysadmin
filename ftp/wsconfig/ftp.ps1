@@ -177,6 +177,13 @@ while($true){
             2 {
                 try{
                     $usuarioACambiar = Read-Host "Ingresa el usuario a cambiar de grupo"
+                    try{
+                        $mostrarGrupo = Get-LocalGroup | Where-Object { (Get-LocalGroupMember -Group $_.Name).Name -match "\\$usuarioACambiar$"} | Select-Object -ExpandProperty Name
+                        echo "Grupo actual de $usuarioACambiar -> $mostrarGrupo"
+                    }
+                    catch{
+                        $Error[0].ToString()
+                    }
                     $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
                     if (($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or
                     -not (Get-LocalUser -Name $usuarioACambiar -ErrorAction SilentlyContinue) -or
@@ -185,7 +192,7 @@ while($true){
                         echo "El grupo es inválido, el usuario no existe o algunos de los campos son nulos o contienen espacios en blanco"
                     }
                     else{
-                        $mostrarGrupo = Get-LocalGroup | Where-Object { (Get-LocalGroupMember -Group $_.Name).Name -match "\\$usuarioACambiar$"} | Select-Object -ExpandProperty Name
+                        echo "Grupo actual del usuario $usuarioACambiar -> $mostrarGrupo"
                         $grupoActual = ""
                         if($grupo.ToLower() -eq "reprobados"){
                             $grupoActual = "recursadores"
@@ -193,7 +200,6 @@ while($true){
                         else{
                             $grupoActual = "reprobados"
                         }
-                        echo "Grupo actual del usuario $usuarioACambiar -> $mostrarGrupo"
                         Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupoActual
                         rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual"
                         Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
