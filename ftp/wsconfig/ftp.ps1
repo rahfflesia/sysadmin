@@ -185,6 +185,7 @@ while($true){
                         echo "El grupo es inválido, el usuario no existe o algunos de los campos son nulos o contienen espacios en blanco"
                     }
                     else{
+                        $mostrarGrupo = Get-LocalGroup | Where-Object { (Get-LocalGroupMember -Group $_.Name).Name -match "\\$usuarioACambiar$"} | Select-Object -ExpandProperty Name
                         $grupoActual = ""
                         if($grupo.ToLower() -eq "reprobados"){
                             $grupoActual = "recursadores"
@@ -192,6 +193,7 @@ while($true){
                         else{
                             $grupoActual = "reprobados"
                         }
+                        echo "Grupo actual del usuario $usuarioACambiar -> $mostrarGrupo"
                         Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupoActual
                         rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual"
                         Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
