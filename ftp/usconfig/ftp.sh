@@ -5,6 +5,9 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
+# Carpeta de usuarios anónimos
+sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
+
 while :
 do
     echo "Menu"
@@ -50,16 +53,16 @@ do
             echo "Registro realizado correctamente"
         ;;
         "2")
-            $grupoActual=""
+            grupoActual=""
             echo "Nombre de usuario: "
             read usuario
             echo "Nuevo grupo de usuario: "
             read grupo
 
             if [[ "$grupo" == "reprobados" ]]; then
-                $grupoActual="recursadores"
+                grupoActual="recursadores"
             else
-                $grupoActual="reprobados"
+                grupoActual="reprobados"
             fi
 
             echo "Grupos actuales de $usuario"
@@ -72,7 +75,7 @@ do
 
             sudo rm -r /home/jj/ftp/usuarios/$usuario/$grupoActual
 
-            sudo mkdir /home/jj/ftp/usuarios/$usuario/$grupo
+            sudo mkdir -p /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chmod 755 /home/jj/ftp/usuarios/$usuario/$grupo
             sudo chown $usuario /home/jj/ftp/usuarios/$usuario/$grupo
 
