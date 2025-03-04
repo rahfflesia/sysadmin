@@ -33,8 +33,10 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" || id "$usuario" &>/dev/null ]]; then
+            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido, espacios en blanco o el usuario ya existe"
+            elif id "$usuario" &>/dev/null; then
+                echo "El usuario ya existe"
             else
                 sudo useradd -m -d "/home/jj/ftp/usuarios/$usuario" "$usuario"
                 sudo passwd "$usuario"
@@ -64,6 +66,7 @@ do
 
                 echo "Registro realizado correctamente"
             fi
+
 
         ;;
         "2")
