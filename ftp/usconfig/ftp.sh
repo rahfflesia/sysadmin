@@ -1,4 +1,5 @@
-# Script funcional, faltan validaciones
+# Script 100% funcional
+# Ambos scripts funcionan, cualquier caso puedo volver a este commit
 #!/bin/bash
 sudo apt-get upgrade
 sudo apt install vsftpd

@@ -1,4 +1,5 @@
-#Script 100% funcional windows server con validaciones, ya funciona cualquier cosa puedo volver a este commit
+# Script 100% funcional
+# Ambos scripts funcionan, cualquier caso puedo volver a este commit
 function Check-WindowsFeature {
     [CmdletBinding()]
     param(
