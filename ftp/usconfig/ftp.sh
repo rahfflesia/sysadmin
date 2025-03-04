@@ -93,12 +93,12 @@ do
                     grupoActual="reprobados"
                 fi
 
-                echo "Grupos actuales de $usuario"
+                echo "Grupos actuales de $usuario:"
                 groups "$usuario"
 
                 sudo usermod -G "$grupo" "$usuario"
 
-                echo "Grupos actuales de $usuario después del cambio"
+                echo "Grupos actuales de $usuario después del cambio:"
                 groups "$usuario"
 
                 if mountpoint -q "/home/jj/ftp/$grupoActual"; then
@@ -120,6 +120,7 @@ do
 
                 echo "Se realizó el cambio de grupo"
             fi
+
 
         ;;
         "3")
