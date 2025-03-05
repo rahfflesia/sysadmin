@@ -128,13 +128,13 @@ do
         "3")
             echo "Ingresa el usuario a eliminar: "
             read usuario
-            if !id "$usuario" &>/dev/null; then
-                echo "El usuario no existe"
-            else
+            if id "$usuario" &>/dev/null; then
                 sudo userdel $usuario -f
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
                 sudo rm -r "/home/jj/ftp/users/$usuario"
                 echo "Usuario eliminado"
+            else
+                echo "El usuario no existe"
             fi
         ;;
         "4")
