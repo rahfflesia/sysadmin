@@ -225,7 +225,6 @@ while($true){
             }
             3 {
                 $usuarioAEliminar = Read-Host "Ingresa el usuario a eliminar"
-                $grupoAcc = Get-LocalGroup | Where-Object { (Get-LocalGroupMember -Group $_.Name).Name -match "\\$usuarioAEliminar$"} | Select-Object -ExpandProperty Name
 
                 if(!(Get-LocalUser -Name $usuarioAEliminar -ErrorAction SilentlyContinue)){
                     echo "El usuario no existe"
@@ -239,8 +238,7 @@ while($true){
                 else{
                     rm "C:\FTP\LocalUser\$usuarioAEliminar" -Recurse -Force
                     rm "C:\FTP\Usuarios\$usuarioAEliminar" -Recurse -Force
-                    Remove-ADGroupMember -Identity $grupoAcc -Members $usuarioAEliminar -Confirm:$false
-                    Remove-LocalGroupMember -Group $grupoAcc -Member $usuarioAEliminar
+                    Remove-LocalUser -Name $usuarioAEliminar
                     echo "Usuario eliminado"
                 }
             }
