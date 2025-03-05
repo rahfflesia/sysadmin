@@ -127,6 +127,8 @@ do
             echo "Ingresa el usuario a eliminar: "
             read usuario
             if id "$usuario" &>/dev/null; then
+                sudo umount "/home/jj/ftp/usuarios/$usuario"
+                sudo umount "/home/jj/ftp/users/$usuario"
                 sudo userdel $usuario -f
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
                 sudo rm -r "/home/jj/ftp/users/$usuario"
