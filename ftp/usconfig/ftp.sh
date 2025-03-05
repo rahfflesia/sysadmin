@@ -112,8 +112,6 @@ do
                     sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                    sudo mkdir -p "/home/jj/ftp/$grupo"
-
                     # Enlace
                     sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
 
