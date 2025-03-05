@@ -1,5 +1,6 @@
 # Script 100% funcional
 # Ambos scripts funcionan, cualquier caso puedo volver a este commit
+# Script de bash con validaciones 100% funcional
 #!/bin/bash
 sudo apt-get upgrade
 sudo apt install vsftpd
@@ -127,7 +128,6 @@ do
             echo "Ingresa el usuario a eliminar: "
             read usuario
             if id "$usuario" &>/dev/null; then
-                sudo umount "/home/jj/ftp/usuarios/$usuario"
                 sudo umount "/home/jj/ftp/users/$usuario"
                 sudo userdel $usuario -f
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
