@@ -109,7 +109,7 @@ do
                     fi
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo mkdir -p "/home/jj/ftp/$grupo"
