@@ -57,15 +57,10 @@ function Crear-Usuario([String]$nombreUsuario, [String]$contrasena){
     $FTPUserName = $nombreUsuario
     $FTPPassword = $contrasena
     $ADSI = Get-ADSI
-    try{
-        $CreateUserFTPUser = $ADSI.Create("User", "$FTPUserName")
-        $CreateUserFTPUser.SetInfo()
-        $CreateUserFTPUser.SetPassword("$FTPPassword")
-        $CreateUserFTPUser.SetInfo()
-    }
-    catch{
-        echo $Error[0].ToString()
-    }
+    $CreateUserFTPUser = $ADSI.Create("User", "$FTPUserName")
+    $CreateUserFTPUser.SetInfo()
+    $CreateUserFTPUser.SetPassword("$FTPPassword")
+    $CreateUserFTPUser.SetInfo()
 }
 
 function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
