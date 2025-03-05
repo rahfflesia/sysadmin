@@ -129,9 +129,11 @@ do
             read usuario
             if id "$usuario" &>/dev/null; then
                 sudo umount "/home/jj/ftp/users/$usuario"
-                sudo userdel $usuario -f
+                sudo umount "/home/jj/ftp/usuarios/$usuario"
+
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
                 sudo rm -r "/home/jj/ftp/users/$usuario"
+                sudo userdel $usuario -f
                 echo "Usuario eliminado"
             else
                 echo "El usuario no existe"
