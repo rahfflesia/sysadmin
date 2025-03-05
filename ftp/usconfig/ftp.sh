@@ -84,10 +84,10 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
-            elif !id "$usuario" &>/dev/null; then
-                echo "El usuario no existe"
+            if [[ -z "$usuario" || ! id "$usuario" &>/dev/null ]]; then
+                echo "El usuario no existe o no fue ingresado"
+            elif [[ "$grupo" != "reprobados" && "$grupo" != "recursadores" || -z "$grupo" ]]; then
+                echo "Has ingresado un grupo inválido o el campo grupo está vacío"
             else
                 if [[ "$grupo" == "reprobados" ]]; then
                     grupoActual="recursadores"
@@ -122,8 +122,6 @@ do
 
                 echo "Se realizó el cambio de grupo"
             fi
-
-
         ;;
         "3")
             echo "Ingresa el usuario a eliminar: "
