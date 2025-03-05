@@ -53,14 +53,19 @@ function Crear-Grupo([String]$nombreGrupo, [String]$descripcion){
 }
 
 function Crear-Usuario([String]$nombreUsuario, [String]$contrasena){
-    # Creación del usuario
-    $FTPUserName = $nombreUsuario
-    $FTPPassword = $contrasena
-    $ADSI = Get-ADSI
-    $CreateUserFTPUser = $ADSI.Create("User", "$FTPUserName")
-    $CreateUserFTPUser.SetInfo()
-    $CreateUserFTPUser.SetPassword("$FTPPassword")
-    $CreateUserFTPUser.SetInfo()
+    try{
+        # Creación del usuario
+        $FTPUserName = $nombreUsuario
+        $FTPPassword = $contrasena
+        $ADSI = Get-ADSI
+        $CreateUserFTPUser = $ADSI.Create("User", "$FTPUserName")
+        $CreateUserFTPUser.SetInfo()
+        $CreateUserFTPUser.SetPassword("$FTPPassword")
+        $CreateUserFTPUser.SetInfo()
+    }
+    catch{
+        echo $Error[0].ToString()
+    }
 }
 
 function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
@@ -152,7 +157,7 @@ while($true){
                         echo "El grupo es invalido, el usuario ya existe o algunos de los campos son nulos o vacíos"
                     }
                     elseif((Get-LocalUser -Name $usuario -ErrorAction SilentlyContinue)){
-                        Remove-LocalUser -Name $usuarioAEliminar
+                        Remove-LocalUser -Name $usuario
                     }
                     elseif ($usuario.length -gt 20){
                         echo "El nombre de usuario excede el maximo de caracteres permitido para un usuario"
