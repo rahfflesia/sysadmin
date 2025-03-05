@@ -239,6 +239,7 @@ while($true){
                 else{
                     rm "C:\FTP\LocalUser\$usuarioAEliminar" -Recurse -Force
                     rm "C:\FTP\Usuarios\$usuarioAEliminar" -Recurse -Force
+                    Remove-ADGroupMember -Identity $grupoAcc -Members $usuarioAEliminar -Confirm:$false
                     Remove-LocalGroupMember -Group $grupoAcc -Member $usuarioAEliminar
                     echo "Usuario eliminado"
                 }
