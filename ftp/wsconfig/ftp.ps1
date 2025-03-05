@@ -152,7 +152,7 @@ while($true){
                         echo "El grupo es invalido, el usuario ya existe o algunos de los campos son nulos o vacíos"
                     }
                     elseif((Get-LocalUser -Name $usuario -ErrorAction SilentlyContinue)){
-                        echo "El usuario ya existe"
+                        Remove-LocalUser -Name $usuarioAEliminar
                     }
                     elseif ($usuario.length -gt 20){
                         echo "El nombre de usuario excede el maximo de caracteres permitido para un usuario"
