@@ -15,7 +15,8 @@ do
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
-    echo "3. Salir"
+    echo "3. Eliminar usuario"
+    echo "4. Salir"
     echo "Selecciona una opcion: "
     read opcion
 
@@ -27,7 +28,7 @@ do
             read grupo
 
             declare -l grupo
-            grupo=$grupo;
+            grupo=$grupo
             echo "$grupo"
 
             declare -l usuario
@@ -35,7 +36,7 @@ do
             echo "$usuario"
 
             if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                echo "Has ingresado un grupo inválido, espacios en blanco o el usuario ya existe"
+                echo "Has ingresado un grupo inválido o espacios en blanco"
             elif id "$usuario" &>/dev/null; then
                 echo "El usuario ya existe"
             else
@@ -67,8 +68,6 @@ do
 
                 echo "Registro realizado correctamente"
             fi
-
-
         ;;
         "2")
             grupoActual=""
@@ -127,11 +126,23 @@ do
 
         ;;
         "3")
+            echo "Ingresa el usuario a eliminar: "
+            read usuario
+            if !id "$usuario" &>/dev/null; then
+                echo "El usuario no existe"
+            else
+                sudo userdel $usuario -f
+                sudo rm -r "/home/jj/ftp/usuarios/$usuario"
+                sudo rm -r "/home/jj/ftp/users/$usuario"
+                echo "Usuario eliminado"
+            fi
+        ;;
+        "4")
             echo "Saliendo..."
             break
         ;;
         *)
-            echo "Selecciona una opcion dentro del rango (1..3)"
+            echo "Selecciona una opcion dentro del rango (1..4)"
         ;;
     esac
     echo ""
