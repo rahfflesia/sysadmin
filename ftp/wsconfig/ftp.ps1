@@ -212,7 +212,7 @@ while($true){
                             $grupoActual = "reprobados"
                         }
                         Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupoActual
-                        rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual"
+                        rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual" -Recurse
                         Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
                         New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
                         icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
@@ -225,6 +225,8 @@ while($true){
             }
             3 {
                 $usuarioAEliminar = Read-Host "Ingresa el usuario a eliminar"
+                $grupoAcc = Get-LocalGroup | Where-Object { (Get-LocalGroupMember -Group $_.Name).Name -match "\\$usuarioAEliminar$"} | Select-Object -ExpandProperty Name
+
                 if(!(Get-LocalUser -Name $usuarioAEliminar -ErrorAction SilentlyContinue)){
                     echo "El usuario no existe"
                 }
@@ -235,9 +237,9 @@ while($true){
                     echo "El campo de usuario no debe quedar vacio ni contener valores nulos"
                 }
                 else{
-                    rm "C:\FTP\LocalUser\$usuarioAEliminar" -recurse -force
-                    rm "C:\FTP\Usuarios\$usuarioAEliminar" -recurse -force
-                    Remove-LocalGroupMember -Name $usuarioAEliminar
+                    rm "C:\FTP\LocalUser\$usuarioAEliminar" -Recurse -Force
+                    rm "C:\FTP\Usuarios\$usuarioAEliminar" -Recurse -Force
+                    Remove-LocalGroupMember -Group $grupoAcc -Member $usuarioAEliminar
                     echo "Usuario eliminado"
                 }
             }
