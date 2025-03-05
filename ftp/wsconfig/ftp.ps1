@@ -121,7 +121,8 @@ while($true){
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
-    echo "3. Salir"
+    echo "3. Eliminar usuario"
+    echo "4. Salir"
 
     try{
         $opcion = Read-Host "Selecciona una opcion"
@@ -131,7 +132,7 @@ while($true){
         echo "Has ingresado un valor no entero"
     }
 
-    if($intOpcion -eq 3){
+    if($intOpcion -eq 4){
         echo "Saliendo..."
         break
     }
@@ -144,12 +145,17 @@ while($true){
                     $password = Read-Host "Ingresa la contrasena"
                     $grupo = Read-Host "Ingresa el grupo al que pertenecera el usuario (reprobados/recursadores)"
                     if (($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or
-                    (Get-LocalUser -Name $usuario -ErrorAction SilentlyContinue) -or
                     ([String]::IsNullOrEmpty($usuario)) -or
                     ([String]::IsNullOrEmpty($grupo)) -or
                     ([String]::IsNullOrEmpty($password))) {
                     
                         echo "El grupo es invalido, el usuario ya existe o algunos de los campos son nulos o vacíos"
+                    }
+                    elseif((Get-LocalUser -Name $usuario -ErrorAction SilentlyContinue)){
+                        echo "El usuario ya existe"
+                    }
+                    elseif ($usuario.length -gt 20){
+                        echo "El nombre de usuario excede el maximo de caracteres permitido para un usuario"
                     }
                     else{
                         Crear-Usuario -nombreUsuario $usuario -contrasena $password
@@ -186,10 +192,15 @@ while($true){
                     }
                     $grupo = Read-Host "Ingresa el nuevo grupo del usuario"
                     if (($grupo.ToLower() -ne "reprobados" -and $grupo.ToLower() -ne "recursadores") -or
-                    -not (Get-LocalUser -Name $usuarioACambiar -ErrorAction SilentlyContinue) -or
                     [String]::IsNullOrEmpty($usuarioACambiar) -or
                     [String]::IsNullOrEmpty($grupo)) {
                         echo "El grupo es inválido, el usuario no existe o algunos de los campos son nulos o contienen espacios en blanco"
+                    }
+                    elseif(-not (Get-LocalUser -Name $usuarioACambiar -ErrorAction SilentlyContinue)){
+                        echo "El usuario no existe"
+                    }
+                    elseif ($usuarioACambiar.length -gt 20){
+                        echo "El nombre de usuario excede el maximo de caracteres permitido para un usuario"
                     }
                     else{
                         echo "Grupo actual del usuario $usuarioACambiar -> $mostrarGrupo"
@@ -212,7 +223,25 @@ while($true){
                     echo $Error[0].ToString()
                 }
             }
-            default {"Ingresa un numero dentro del rango (1..3)"}
+            3 {
+                $usuarioAEliminar = Read-Host "Ingresa el usuario a eliminar"
+                if(!(Get-LocalUser -Name $usuarioAEliminar -ErrorAction SilentlyContinue)){
+                    echo "El usuario no existe"
+                }
+                elseif($usuarioAEliminar.length -gt 20){
+                    echo "El nombre de usuario excede el valor maximo de caracteres permitidos"
+                }
+                elseif([String]::IsNullOrEmpty($usuarioAEliminar)){
+                    echo "El campo de usuario no debe quedar vacio ni contener valores nulos"
+                }
+                else{
+                    rm "C:\FTP\LocalUser\$usuarioAEliminar" -recurse -force
+                    rm "C:\FTP\Usuarios\$usuarioAEliminar" -recurse -force
+                    Remove-LocalGroupMember -Name $usuarioAEliminar
+                    echo "Usuario eliminado"
+                }
+            }
+            default {"Ingresa un numero dentro del rango (1..4)"}
         }
     }
     echo `n
