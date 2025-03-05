@@ -68,6 +68,7 @@ do
                 sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$usuario" "/home/jj/ftp/users/$usuario"
 
                 echo "Registro realizado correctamente"
+                sudo systemctl restart vsftpd
             fi
         ;;
         "2")
@@ -118,6 +119,7 @@ do
                     sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
 
                     echo "Se realizó el cambio de grupo"
+                    sudo systemctl restart vsftpd
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
             else
@@ -128,13 +130,11 @@ do
             echo "Ingresa el usuario a eliminar: "
             read usuario
             if id "$usuario" &>/dev/null; then
-                sudo umount "/home/jj/ftp/users/$usuario"
-                sudo umount "/home/jj/ftp/usuarios/$usuario"
-
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
                 sudo rm -r "/home/jj/ftp/users/$usuario"
                 sudo userdel $usuario -f
                 echo "Usuario eliminado"
+                sudo systemctl restart vsftpd
             else
                 echo "El usuario no existe"
             fi
