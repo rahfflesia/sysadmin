@@ -59,14 +59,14 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
                 sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 # Enlaces
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/general" "/home/jj/ftp/general"
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$usuario" "/home/jj/ftp/users/$usuario"
+                sudo mount --bind /home/jj/ftp/usuarios/$usuario/general /home/jj/ftp/general
+                sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
+                sudo mount --bind /home/jj/ftp/usuarios/$usuario/$usuario /home/jj/ftp/users/$usuario
 
                 echo "Registro realizado correctamente"
                 sudo systemctl restart vsftpd
@@ -117,7 +117,7 @@ do
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
                     # Enlace
-                    sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+                    sudo mount --bind /home/jj/ftp/usuarios/$usuario/$grupo /home/jj/ftp/$grupo
 
                     echo "Se realizó el cambio de grupo"
                     sudo systemctl restart vsftpd
