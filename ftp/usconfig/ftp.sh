@@ -9,10 +9,10 @@ sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
 # Carpeta de usuarios anónimos
-if mountpoint -q /home/jj/ftp/anon/general; then
-    sudo umount /home/jj/ftp/anon/general
+if mountpoint -q /home/jj/ftp/general; then
+    sudo umount /home/jj/ftp/general
 fi
-sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
+sudo mount --bind /home/jj/ftp/anon/general /home/jj/ftp/general
 
 sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
@@ -59,9 +59,9 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                 # Enlaces
-                sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo mount --bind "/home/jj/ftp/users/$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/general" "/home/jj/ftp/general"
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$usuario" "/home/jj/ftp/users/$usuario"
 
                 sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
                 sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
@@ -116,10 +116,11 @@ do
                         sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
 
-                    # Enlace
-                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    
+                    # Enlace
+                    sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo mkdir -p "/home/jj/ftp/$grupo"
