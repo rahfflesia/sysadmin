@@ -110,7 +110,9 @@ do
                         sudo umount "/home/jj/ftp/$grupoActual"
                     fi
 
-
+                    if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
+                        sudo umount "/home/jj/ftp/$grupoActual"
+                    fi
 
                     if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
                         sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
@@ -157,3 +159,4 @@ do
         ;;
     esac
     echo ""
+done
