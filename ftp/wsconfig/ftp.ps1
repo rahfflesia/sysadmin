@@ -250,7 +250,7 @@ while($true){
                             $grupoActual = "reprobados"
                         }
                         Remove-LocalGroupMember -Member $usuarioACambiar -Group $grupoActual
-                        rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual" -Recurse
+                        rm "C:\FTP\LocalUser\$usuarioACambiar\$grupoActual" -Recurse -Force
                         Agregar-UsuarioAGrupo -nombreUsuario $usuarioACambiar -nombreGrupo $grupo
                         New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
                         icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
