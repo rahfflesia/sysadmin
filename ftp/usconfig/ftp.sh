@@ -84,41 +84,46 @@ do
             declare -l usuario
             usuario=$usuario
 
-            if id "$usuario" &>/dev/null; then
-                if [[ "$grupo" == "reprobados" ]]; then
-                    grupoActual="recursadores"
-                else
-                    grupoActual="reprobados"
-                fi
-
-                if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
-                    sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                fi
-
-                echo "Grupos actuales de $usuario:"
-                groups "$usuario"
-
-                sudo usermod -G "$grupo" "$usuario"
-
-                echo "Grupos actuales de $usuario después del cambio:"
-                groups "$usuario"
-
-                if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
-                    sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                fi
-
-                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                sudo chown "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                echo "Se realizó el cambio de grupo correctamente"
-            elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                echo "Has ingresado un grupo inválido o campos vacíos"
+            fuser /home/jj/ftp/usuarios/$usuario/$grupoActual > /dev/null 2>&1
+            if [ $? -eq 0 ]; then
+                echo "El directorio está en uso"
             else
-                echo "El usuario no existe"
+                if id "$usuario" &>/dev/null; then
+                    if [[ "$grupo" == "reprobados" ]]; then
+                        grupoActual="recursadores"
+                    else
+                        grupoActual="reprobados"
+                    fi
+
+                    if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
+                        sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                    fi
+
+                    echo "Grupos actuales de $usuario:"
+                    groups "$usuario"
+
+                    sudo usermod -G "$grupo" "$usuario"
+
+                    echo "Grupos actuales de $usuario después del cambio:"
+                    groups "$usuario"
+
+                    if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
+                        sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                    fi
+
+                    sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                    sudo chown "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                    echo "Se realizó el cambio de grupo correctamente"
+                elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
+                    echo "Has ingresado un grupo inválido o campos vacíos"
+                else
+                    echo "El usuario no existe"
+                fi
             fi
         ;;
         "3")

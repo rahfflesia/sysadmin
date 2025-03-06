@@ -131,7 +131,7 @@ while($true){
         echo "Has ingresado un valor no entero"
     }
 
-    if($intOpcion -eq 4){
+    if($intOpcion -eq 3){
         echo "Saliendo..."
         break
     }
