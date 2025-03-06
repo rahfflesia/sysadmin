@@ -8,6 +8,7 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
+sudo chown jj /home/jj/ftp/general/
 # Carpeta de usuarios anónimos
 sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
 
@@ -58,9 +59,9 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
                 sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 # Enlaces
                 sudo mount --bind "/home/jj/ftp/usuarios/$usuario/general" "/home/jj/ftp/general"
@@ -111,7 +112,7 @@ do
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
