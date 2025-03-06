@@ -57,10 +57,8 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                # Cambiar propietario de todos los directorios creados
                 sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario"
 
-                # Dar permisos 775 a los directorios
                 sudo chmod -R 775 "/home/jj/ftp/usuarios/$usuario"
 
                 # Enlaces
