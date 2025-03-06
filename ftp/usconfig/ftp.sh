@@ -123,7 +123,7 @@ do
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
                     # Enlace
-                    sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     echo "Se realizó el cambio de grupo"
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
