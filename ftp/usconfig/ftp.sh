@@ -8,10 +8,13 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
-sudo chown jj /home/jj/ftp/general
-sudo chmod 755 /home/jj/ftp/general
 # Carpeta de usuarios anónimos
-sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
+if mountpoint -q /home/jj/ftp/general; then
+    sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
+fi
+
+sudo chown :reprobados /home/jj/ftp/reprobados
+sudo chown :recursadores /home/jj/ftp/recursadores
 
 while :
 do
@@ -45,34 +48,34 @@ do
             else
                 sudo useradd -m -d "/home/jj/ftp/usuarios/$usuario" "$usuario"
                 sudo passwd "$usuario"
-
                 sudo usermod -G "$grupo" "$usuario"
 
+
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario"
 
                 sudo mkdir -p "/home/jj/ftp/users/$usuario"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$usuario"
-                
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$usuario"
+
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/general"
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 # Enlaces
-                sudo mount --bind /home/jj/ftp/general /home/jj/ftp/usuarios/$usuario/general
-                sudo mount --bind /home/jj/ftp/$grupo /home/jj/ftp/usuarios/$usuario/$grupo
-                sudo mount --bind /home/jj/ftp/users/$usuario /home/jj/ftp/usuarios/$usuario/$usuario
-
-                sudo chown root:$usuario "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chown root:$usuario "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown root:$usuario "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo mount --bind "/home/jj/ftp/users/$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 echo "Registro realizado correctamente"
-                sudo systemctl restart vsftpd
             fi
         ;;
+
         "2")
             grupoActual=""
             echo "Nombre de usuario: "
@@ -107,22 +110,21 @@ do
                         sudo umount "/home/jj/ftp/$grupoActual"
                     fi
 
+
+
                     if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
                         sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
 
+
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                    # Enlace
-                    sudo mount --bind /home/jj/ftp/$grupo /home/jj/ftp/usuarios/$usuario/$grupo
-
+                    sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
+                    # Enlace
+                    sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
                     echo "Se realizó el cambio de grupo"
-                    sudo systemctl restart vsftpd
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
             else
@@ -132,16 +134,20 @@ do
         "3")
             echo "Ingresa el usuario a eliminar: "
             read usuario
+
             if id "$usuario" &>/dev/null; then
+                sudo umount "/home/jj/ftp/usuarios/$usuario"
+                sudo umount "/home/jj/ftp/users/$usuario"
+                sudo userdel $usuario -f
+
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
                 sudo rm -r "/home/jj/ftp/users/$usuario"
-                sudo userdel $usuario -f
                 echo "Usuario eliminado"
-                sudo systemctl restart vsftpd
             else
                 echo "El usuario no existe"
             fi
         ;;
+
         "4")
             echo "Saliendo..."
             break
@@ -151,4 +157,3 @@ do
         ;;
     esac
     echo ""
-done
