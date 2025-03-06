@@ -8,11 +8,8 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
-# Carpeta de usuarios anónimos
-if mountpoint -q /home/jj/ftp/general; then
-    sudo umount /home/jj/ftp/general
-fi
-sudo mount --bind /home/jj/ftp/anon/general /home/jj/ftp/general
+sudo umount /home/jj/ftp/anon/general
+sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
 
 sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
@@ -95,6 +92,8 @@ do
                         grupoActual="reprobados"
                     fi
 
+                    sudo umount "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+
                     echo "Grupos actuales de $usuario:"
                     groups "$usuario"
 
@@ -103,14 +102,6 @@ do
                     echo "Grupos actuales de $usuario después del cambio:"
                     groups "$usuario"
 
-                    if mountpoint -q "/home/jj/ftp/$grupoActual"; then
-                        sudo umount "/home/jj/ftp/$grupoActual"
-                    fi
-
-                    if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
-                        sudo umount "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                    fi
-
                     if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
                         sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
@@ -118,7 +109,7 @@ do
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     # Enlace
-                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo mount --bind  "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
