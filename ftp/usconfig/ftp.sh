@@ -54,20 +54,20 @@ do
 
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario"
 
                 sudo mkdir -p "/home/jj/ftp/users/$usuario"
-                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/general"
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 # Enlaces
                 sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
@@ -122,8 +122,8 @@ do
 
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chown root:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
                     # Enlace
