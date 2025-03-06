@@ -139,12 +139,12 @@ do
 
             if id "$usuario" &>/dev/null; then
                 sudo umount "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo umount "/home/jj/ftp/users/$usuario/general"
+                sudo umount "/home/jj/ftp/usuarios/$usuario/general"
 
                 if [[ -d "/home/jj/ftp/users/$usuario/reprobados" ]]; then
-                    sudo umount "/home/jj/ftp/users/$usuario/reprobados"
+                    sudo umount "/home/jj/ftp/usuarios/$usuario/reprobados"
                 else
-                    sudo umount "/home/jj/ftp/users/$usuario/recursadores"
+                    sudo umount "/home/jj/ftp/usuarios/$usuario/recursadores"
                 fi
                 
                 sudo userdel $usuario -f
