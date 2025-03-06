@@ -41,6 +41,40 @@ function Get-ADSI(){
     return [ADSI]"WinNT://$env:ComputerName"
 }
 
+Function Validar-Contrasena {
+    param (
+        [string]$Contrasena
+    )
+
+    $longitudMinima = 8
+    $regexMayuscula = "[A-Z]"
+    $regexMinuscula = "[a-z]"
+    $regexNumero = "[0-9]"
+    $regexEspecial = "[!@#$%^&*()\-+=]"
+
+    if ($Contraseña.Length -lt $longitudMinima) {
+        return $false
+    }
+
+    if ($Contraseña -notmatch $regexMayuscula) {
+        return $false
+    }
+
+    if ($Contraseña -notmatch $regexMinuscula) {
+        return $false
+    }
+
+    if ($Contraseña -notmatch $regexNumero) {
+        return $false
+    }
+
+    if ($Contraseña -notmatch $regexEspecial) {
+        return $false
+    }
+
+    return $true
+}
+
 function Crear-Grupo([String]$nombreGrupo, [String]$descripcion){
     # Creación del grupo
     $FTPUserGroupName = $nombreGrupo
@@ -152,28 +186,32 @@ while($true){
                     }
                     elseif((Get-LocalUser -Name $usuario -ErrorAction SilentlyContinue)){
                         echo "El usuario ya existe"
-                        Remove-LocalUser -Name $usuario
                     }
                     elseif ($usuario.length -gt 20){
                         echo "El nombre de usuario excede el maximo de caracteres permitido para un usuario"
                     }
                     else{
-                        Crear-Usuario -nombreUsuario $usuario -contrasena $password
-                        Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
-                        mkdir "C:\FTP\LocalUser\$usuario"
-                        mkdir "C:\FTP\Usuarios\$usuario"
-                        icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
-                        icacls "C:\FTP\$grupo" /grant "$($grupo):(OI)(CI)F"
-                        icacls "C:\FTP\General" /grant "$($usuario):(OI)(CI)F"
-                        icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
-                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
-                        icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
-                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
-                        icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
-                        New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
-                        icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
-                        Reiniciar-Sitio
-                        echo "Usuario creado exitosamente"
+                        if(-not(Validar-Contrasena -Contrasena $password)){
+                            echo "La contraseña no cumple con los lineamientos de seguridad, debe contener al menos una mayuscula, una minuscula, 8 caracteres, un caracter especial y un numero"
+                        }
+                        else{
+                            Crear-Usuario -nombreUsuario $usuario -contrasena $password
+                            Agregar-UsuarioAGrupo -nombreUsuario $usuario -nombreGrupo $grupo
+                            mkdir "C:\FTP\LocalUser\$usuario"
+                            mkdir "C:\FTP\Usuarios\$usuario"
+                            icacls "C:\FTP\LocalUser\$usuario" /grant "$($usuario):(OI)(CI)F"
+                            icacls "C:\FTP\$grupo" /grant "$($grupo):(OI)(CI)F"
+                            icacls "C:\FTP\General" /grant "$($usuario):(OI)(CI)F"
+                            icacls "C:\FTP\$grupo" /grant "$($usuario):(OI)(CI)F"
+                            New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\General" -Target "C:\FTP\General"
+                            icacls "C:\FTP\LocalUser\$usuario\General" /grant "$($usuario):(OI)(CI)F"
+                            New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$usuario" -Target "C:\FTP\Usuarios\$usuario"
+                            icacls "C:\FTP\LocalUser\$usuario\$usuario" /grant "$($usuario):(OI)(CI)F"
+                            New-Item -ItemType Junction -Path "C:\FTP\LocalUser\$usuario\$grupo" -Target "C:\FTP\$grupo"
+                            icacls "C:\FTP\LocalUser\$usuario\$grupo" /grant "$($usuario):(OI)(CI)F"
+                            Reiniciar-Sitio
+                            echo "Usuario creado exitosamente"
+                        }
                     }
                 }
                 catch{
