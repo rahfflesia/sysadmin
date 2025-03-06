@@ -92,7 +92,7 @@ do
                 fi
 
                 if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
-                    sudo umount "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                    sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                 fi
 
                 echo "Grupos actuales de $usuario:"

@@ -121,8 +121,7 @@ while($true){
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
-    echo "3. Eliminar usuario"
-    echo "4. Salir"
+    echo "3. Salir"
 
     try{
         $opcion = Read-Host "Selecciona una opcion"
@@ -224,26 +223,7 @@ while($true){
                     echo $Error[0].ToString()
                 }
             }
-            3 {
-                $usuarioAEliminar = Read-Host "Ingresa el usuario a eliminar"
-
-                if(!(Get-LocalUser -Name $usuarioAEliminar -ErrorAction SilentlyContinue)){
-                    echo "El usuario no existe"
-                }
-                elseif($usuarioAEliminar.length -gt 20){
-                    echo "El nombre de usuario excede el valor maximo de caracteres permitidos"
-                }
-                elseif([String]::IsNullOrEmpty($usuarioAEliminar)){
-                    echo "El campo de usuario no debe quedar vacio ni contener valores nulos"
-                }
-                else{
-                    rm "C:\FTP\LocalUser\$usuarioAEliminar" -Recurse -Force
-                    rm "C:\FTP\Usuarios\$usuarioAEliminar" -Recurse -Force
-                    Remove-LocalUser -Name $usuarioAEliminar
-                    echo "Usuario eliminado"
-                }
-            }
-            default {"Ingresa un numero dentro del rango (1..4)"}
+            default {"Ingresa un numero dentro del rango (1..3)"}
         }
     }
     echo `n
