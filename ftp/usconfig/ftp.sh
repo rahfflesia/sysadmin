@@ -8,9 +8,10 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
-sudo chown jj /home/jj/ftp/general/
+sudo chown jj /home/jj/ftp/general
+sudo chmod 755 /home/jj/ftp/general
 # Carpeta de usuarios anónimos
-sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
+sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
 
 while :
 do
