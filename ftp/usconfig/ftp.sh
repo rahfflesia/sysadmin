@@ -84,17 +84,17 @@ do
             declare -l usuario
             usuario=$usuario
 
+            if [[ "$grupo" == "reprobados" ]]; then
+                grupoActual="recursadores"
+            else
+                grupoActual="reprobados"
+            fi
+
             fuser /home/jj/ftp/usuarios/$usuario/$grupoActual > /dev/null 2>&1
             if [ $? -eq 0 ]; then
                 echo "El directorio está en uso"
             else
                 if id "$usuario" &>/dev/null; then
-                    if [[ "$grupo" == "reprobados" ]]; then
-                        grupoActual="recursadores"
-                    else
-                        grupoActual="reprobados"
-                    fi
-
                     if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
                         sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
