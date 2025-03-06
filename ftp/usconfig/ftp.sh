@@ -9,9 +9,10 @@ sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
 # Carpeta de usuarios anónimos
-if ! mountpoint -q /home/jj/ftp/general; then
-    sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
+if mountpoint -q /home/jj/ftp/anon/general; then
+    sudo umount /home/jj/ftp/anon/general
 fi
+sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
 
 sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
@@ -122,7 +123,7 @@ do
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo mkdir -p "/home/jj/ftp/$grupo"
-                    
+
                     echo "Se realizó el cambio de grupo"
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido o campos vacios"
