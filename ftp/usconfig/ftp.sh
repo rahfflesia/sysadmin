@@ -57,13 +57,10 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                # Cambiar propietario de todos los directorios creados
+                sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario"
 
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                # Dar permisos 775 a los directorios
                 sudo chmod -R 775 "/home/jj/ftp/usuarios/$usuario"
 
                 # Enlaces
@@ -74,7 +71,6 @@ do
                 echo "Registro realizado correctamente"
             fi
         ;;
-
         "2")
             grupoActual=""
             echo "Nombre de usuario: "
