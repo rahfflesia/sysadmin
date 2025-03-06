@@ -15,6 +15,8 @@ fi
 
 sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
+sudo chmod 775 /home/jj/ftp/reprobados
+sudo chmod 775 /home/jj/ftp/recursadores
 
 while :
 do
@@ -52,16 +54,16 @@ do
 
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario"
+                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario"
 
                 sudo mkdir -p "/home/jj/ftp/users/$usuario"
-                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/general"
 
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                 sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                 sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/general"
@@ -120,7 +122,7 @@ do
 
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 755 "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chmod 777 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
@@ -128,7 +130,7 @@ do
                     sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     echo "Se realizó el cambio de grupo"
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                echo "Has ingresado un grupo inválido, campos vacíos o el usuario no existe"
+                echo "Has ingresado un grupo inválido o campos vacios"
             else
                 echo "El usuario no existe"
             fi
