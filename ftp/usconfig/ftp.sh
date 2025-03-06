@@ -111,7 +111,7 @@ do
                     fi
 
                     if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
-                        sudo umount "/home/jj/ftp/$grupoActual"
+                        sudo umount "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
 
                     if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
@@ -138,8 +138,15 @@ do
             read usuario
 
             if id "$usuario" &>/dev/null; then
-                sudo umount "/home/jj/ftp/usuarios/$usuario"
-                sudo umount "/home/jj/ftp/users/$usuario"
+                sudo umount "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo umount "/home/jj/ftp/users/$usuario/general"
+
+                if [[ -d "/home/jj/ftp/users/$usuario/reprobados" ]]; then
+                    sudo umount "/home/jj/ftp/users/$usuario/reprobados"
+                else
+                    sudo umount "/home/jj/ftp/users/$usuario/recursadores"
+                fi
+                
                 sudo userdel $usuario -f
 
                 sudo rm -r "/home/jj/ftp/usuarios/$usuario"
