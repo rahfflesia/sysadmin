@@ -10,7 +10,7 @@ sudo groupadd recursadores --force
 
 # Carpeta de usuarios anónimos
 if ! mountpoint -q /home/jj/ftp/general; then
-    sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
+    sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
 fi
 
 sudo chown :reprobados /home/jj/ftp/reprobados
@@ -115,14 +115,14 @@ do
                         sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
                     fi
 
+                    # Enlace
+                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo mkdir -p "/home/jj/ftp/$grupo"
-
-                    # Enlace
-                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    
                     echo "Se realizó el cambio de grupo"
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido o campos vacios"
@@ -138,7 +138,7 @@ do
                 sudo umount "/home/jj/ftp/usuarios/$usuario/$usuario"
                 sudo umount "/home/jj/ftp/usuarios/$usuario/general"
 
-                if [[ -d "/home/jj/ftp/users/$usuario/reprobados" ]]; then
+                if [[ -d "/home/jj/ftp/usuarios/$usuario/reprobados" ]]; then
                     sudo umount "/home/jj/ftp/usuarios/$usuario/reprobados"
                 else
                     sudo umount "/home/jj/ftp/usuarios/$usuario/recursadores"
