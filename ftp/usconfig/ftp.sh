@@ -113,7 +113,7 @@ do
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chown jj:"$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                    sudo chown jj:"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo mkdir -p "/home/jj/ftp/$grupo"
 
