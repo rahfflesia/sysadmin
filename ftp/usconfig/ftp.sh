@@ -52,14 +52,18 @@ do
                 sudo passwd "$usuario"
                 sudo usermod -G "$grupo" "$usuario"
 
-                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
                 sudo mkdir -p "/home/jj/ftp/users/$usuario"
+                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$usuario"
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario"
+                sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
+                sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
+                sudo chmod 777 /home/jj/ftp/usuarios/$usuario/general
 
-                sudo chmod -R 775 "/home/jj/ftp/usuarios/$usuario"
+                sudo chown -R "$usuario":"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chown -R "$usuario":"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/grupo"
 
                 # Enlaces
                 sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
