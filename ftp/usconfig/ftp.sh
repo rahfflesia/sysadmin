@@ -9,7 +9,7 @@ sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
 # Carpeta de usuarios anónimos
-if mountpoint -q /home/jj/ftp/general; then
+if ! mountpoint -q /home/jj/ftp/general; then
     sudo mount --bind /home/jj/ftp/general/ /home/jj/ftp/anon/general
 fi
 
@@ -57,18 +57,18 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/general"
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
+                # Enlaces
+                sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo mount --bind "/home/jj/ftp/users/$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+
                 sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
                 sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
                 sudo chmod 777 /home/jj/ftp/usuarios/$usuario/general
 
                 sudo chown -R "$usuario":"$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
                 sudo chown -R "$usuario":"$usuario" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/grupo"
-
-                # Enlaces
-                sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
-                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                sudo mount --bind "/home/jj/ftp/users/$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
+                sudo chown -R "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                 echo "Registro realizado correctamente"
             fi
