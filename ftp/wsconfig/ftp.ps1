@@ -52,23 +52,23 @@ Function Validar-Contrasena {
     $regexNumero = "[0-9]"
     $regexEspecial = "[!@#$%^&*()\-+=]"
 
-    if ($Contraseña.Length -lt $longitudMinima) {
+    if ($Contrasena.Length -lt $longitudMinima) {
         return $false
     }
 
-    if ($Contraseña -notmatch $regexMayuscula) {
+    if ($Contrasena -notmatch $regexMayuscula) {
         return $false
     }
 
-    if ($Contraseña -notmatch $regexMinuscula) {
+    if ($Contrasena -notmatch $regexMinuscula) {
         return $false
     }
 
-    if ($Contraseña -notmatch $regexNumero) {
+    if ($Contrasena -notmatch $regexNumero) {
         return $false
     }
 
-    if ($Contraseña -notmatch $regexEspecial) {
+    if ($Contrasena -notmatch $regexEspecial) {
         return $false
     }
 
