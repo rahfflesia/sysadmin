@@ -8,8 +8,10 @@ sudo apt install vsftpd
 sudo groupadd reprobados --force
 sudo groupadd recursadores --force
 
-sudo umount /home/jj/ftp/anon/general
-sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general
+
+if ! mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
+    sudo mount --bind /home/jj/ftp/general /home/jj/ftp/anon/general  
+fi
 
 sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
@@ -78,46 +80,43 @@ do
             read grupo
 
             declare -l grupo
-            grupo=$grupo;
-            echo "$grupo"
-
+            grupo=$grupo
             declare -l usuario
             usuario=$usuario
-            echo "$usuario"
 
             if id "$usuario" &>/dev/null; then
                 if [[ "$grupo" == "reprobados" ]]; then
-                        grupoActual="recursadores"
-                    else
-                        grupoActual="reprobados"
-                    fi
+                    grupoActual="recursadores"
+                else
+                    grupoActual="reprobados"
+                fi
 
+                if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
                     sudo umount "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                fi
 
-                    echo "Grupos actuales de $usuario:"
-                    groups "$usuario"
+                echo "Grupos actuales de $usuario:"
+                groups "$usuario"
 
-                    sudo usermod -G "$grupo" "$usuario"
+                sudo usermod -G "$grupo" "$usuario"
 
-                    echo "Grupos actuales de $usuario después del cambio:"
-                    groups "$usuario"
+                echo "Grupos actuales de $usuario después del cambio:"
+                groups "$usuario"
 
-                    if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
-                        sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                    fi
+                if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
+                    sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                fi
 
-                    sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                    # Enlace
-                    sudo mount --bind  "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                    sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo mkdir -p "/home/jj/ftp/$grupo"
+                sudo chown "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
 
-                    echo "Se realizó el cambio de grupo"
+                echo "Se realizó el cambio de grupo correctamente"
             elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                echo "Has ingresado un grupo inválido o campos vacios"
+                echo "Has ingresado un grupo inválido o campos vacíos"
             else
                 echo "El usuario no existe"
             fi
@@ -127,7 +126,7 @@ do
             break
         ;;
         *)
-            echo "Selecciona una opcion dentro del rango (1..4)"
+            echo "Selecciona una opcion dentro del rango (1..3)"
         ;;
     esac
     echo ""
