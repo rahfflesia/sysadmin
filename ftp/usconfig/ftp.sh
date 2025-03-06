@@ -58,9 +58,9 @@ do
                 sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                 # Enlaces
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/general" "/home/jj/ftp/general"
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
-                sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$usuario" "/home/jj/ftp/users/$usuario"
+                sudo mount --bind "/home/jj/ftp/general" "/home/jj/ftp/usuarios/$usuario/general"
+                sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                sudo mount --bind "/home/jj/ftp/users/$usuario" "/home/jj/ftp/usuarios/$usuario/$usuario"
 
                 sudo chmod 700 /home/jj/ftp/usuarios/$usuario/$usuario
                 sudo chmod 775 /home/jj/ftp/usuarios/$usuario/$grupo
@@ -118,7 +118,7 @@ do
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     # Enlace
-                    sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
+                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
 
                     sudo chown "$usuario" "/home/jj/ftp/usuarios/$usuario/$grupo"
                     sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
