@@ -24,8 +24,7 @@ do
     echo "Menu"
     echo "1. Agregar usuario"
     echo "2. Cambiar usuario de grupo"
-    echo "3. Eliminar usuario"
-    echo "4. Salir"
+    echo "3. Salir"
     echo "Selecciona una opcion: "
     read opcion
 
@@ -117,7 +116,7 @@ do
                     fi
 
                     sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    
+
                     # Enlace
                     sudo mount --bind "/home/jj/ftp/usuarios/$usuario/$grupo" "/home/jj/ftp/$grupo"
 
@@ -133,30 +132,6 @@ do
             fi
         ;;
         "3")
-            echo "Ingresa el usuario a eliminar: "
-            read usuario
-
-            if id "$usuario" &>/dev/null; then
-                sudo umount "/home/jj/ftp/usuarios/$usuario/$usuario"
-                sudo umount "/home/jj/ftp/usuarios/$usuario/general"
-
-                if [[ -d "/home/jj/ftp/usuarios/$usuario/reprobados" ]]; then
-                    sudo umount "/home/jj/ftp/usuarios/$usuario/reprobados"
-                else
-                    sudo umount "/home/jj/ftp/usuarios/$usuario/recursadores"
-                fi
-                
-                sudo userdel $usuario -f
-
-                sudo rm -r "/home/jj/ftp/usuarios/$usuario"
-                sudo rm -r "/home/jj/ftp/users/$usuario"
-                echo "Usuario eliminado"
-            else
-                echo "El usuario no existe"
-            fi
-        ;;
-
-        "4")
             echo "Saliendo..."
             break
         ;;
