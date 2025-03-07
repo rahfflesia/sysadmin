@@ -46,6 +46,10 @@ do
                 echo "El grupo es demasiado largo"
             elif [[ ${#usuario} -gt 20]]; then
                 echo "El usuario es demasiado largo"
+            elif [[ ${#usuario} -lt 4]]; then
+                echo "El usuario es demasiado corto"
+            elif [[ ${#grupo} -lt 4]]; then
+                echo "El grupo es demasiado corto"
             else
                 if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                     echo "Has ingresado un grupo inválido o espacios en blanco"
@@ -101,35 +105,45 @@ do
             if [ $? -eq 0 ]; then
                 echo "El directorio está en uso"
             else
-                if id "$usuario" &>/dev/null; then
-                    if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
-                        sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                    fi
-
-                    echo "Grupos actuales de $usuario:"
-                    groups "$usuario"
-
-                    sudo usermod -G "$grupo" "$usuario"
-
-                    echo "Grupos actuales de $usuario después del cambio:"
-                    groups "$usuario"
-
-                    if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
-                        sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
-                    fi
-
-                    sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                    sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                    sudo chown "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
-                    sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
-
-                    echo "Se realizó el cambio de grupo correctamente"
-                elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
-                    echo "Has ingresado un grupo inválido o campos vacíos"
+                if [[ ${#usuario} -gt 20]]; then
+                    echo "El usuario es demasiado largo"
+                elif [[ ${#usuario} -lt 4]]; then
+                    echo "El usuario es demasiado corto"
+                elif [[ ${#grupo} -gt 20]]; then
+                    echo "El grupo es demasiado largo"
+                elif [[ ${#grupo} -lt 4]]; then
+                    echo "El grupo es demasiado corto"
                 else
-                    echo "El usuario no existe"
+                    if id "$usuario" &>/dev/null; then
+                        if mountpoint -q "/home/jj/ftp/usuarios/$usuario/$grupoActual"; then
+                            sudo umount -f "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                        fi
+
+                        echo "Grupos actuales de $usuario:"
+                        groups "$usuario"
+
+                        sudo usermod -G "$grupo" "$usuario"
+
+                        echo "Grupos actuales de $usuario después del cambio:"
+                        groups "$usuario"
+
+                        if [[ -d "/home/jj/ftp/usuarios/$usuario/$grupoActual" ]]; then
+                            sudo rm -r "/home/jj/ftp/usuarios/$usuario/$grupoActual"
+                        fi
+
+                        sudo mkdir -p "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                        sudo mount --bind "/home/jj/ftp/$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                        sudo chown "$usuario":"$grupo" "/home/jj/ftp/usuarios/$usuario/$grupo"
+                        sudo chmod 775 "/home/jj/ftp/usuarios/$usuario/$grupo"
+
+                        echo "Se realizó el cambio de grupo correctamente"
+                    elif [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
+                        echo "Has ingresado un grupo inválido o campos vacíos"
+                    else
+                        echo "El usuario no existe"
+                    fi
                 fi
             fi
         ;;
