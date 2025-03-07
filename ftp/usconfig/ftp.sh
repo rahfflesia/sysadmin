@@ -42,14 +42,14 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            size=${#usuario}
-
             if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
                 echo "Has ingresado un grupo inválido o espacios en blanco"
             elif id "$usuario" &>/dev/null; then
                 echo "El usuario ya existe"
-            elif ["$usuario" -gt 20]; then
+            elif (( usuario > 20 )); then
                 echo "El usuario excede el limite de caracteres"
+            elif (( grupo > 20 )); then 
+                echo "El grupo excede el limite de caracteres"
             else
                 sudo useradd -m -d "/home/jj/ftp/usuarios/$usuario" "$usuario"
                 sudo passwd "$usuario"
