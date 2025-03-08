@@ -27,7 +27,7 @@ function esPuertoValido(){
 
 function esValorEntero(){
     local valor=$1
-    if [[ "$valor" =~ '^[0-9]+$' ]]; then
+    if [[ "$valor" =~ ^[0-9]+$ ]]; then
         return 0
     else
         return 1
@@ -77,7 +77,7 @@ do
                         # Entrar a la carpeta
                         cd httpd-$ultimaVersionApache
                         # Compilar
-                        ./configure --prefix=/usr/local/apache2 /dev/null 2>&1
+                        ./configure --prefix=/usr/local/apache2 > /dev/null 2>&1
                         # Instalación
                         make > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
@@ -85,8 +85,8 @@ do
                         /usr/local/apache2/bin/httpd -v
 
                         rutaArchivoConfiguracion="/usr/local/apache2/conf/httpd.conf"
-                        # Remuevo el puerto por defecto
-                        sudo sed -i '/^Listen 80$/d' $rutaArchivoConfiguracion
+                        # Remuevo el puerto en uso
+                        sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
 
                         # Añado el puerto proporcionado por el usuario
                         sudo printf "Listen $puerto" >> $rutaArchivoConfiguracion
