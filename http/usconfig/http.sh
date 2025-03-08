@@ -1,3 +1,4 @@
+# Ya funciona la instalacion de apache, en cualquier inconveniente puedo volver a este commit
 # $1 = URL, Retorna el html
 function hacerPeticion(){
     local url=$1
@@ -70,10 +71,11 @@ do
                     else
                         echo "Ultima version -> $ultimaVersionApache"
                         echo "Instalando version $ultimaVersionApache de Apache"
+                        echo "Por favor espere..."
                         linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
                         curl "$linkDescargaApache" -s -o apache.tar.gz
                         # Descomprimir archivo
-                        tar -xvzf apache.tar.gz
+                        tar -xvzf apache.tar.gz > /dev/null 2>&1
                         # Entrar a la carpeta
                         cd httpd-$ultimaVersionApache
                         # Compilar
