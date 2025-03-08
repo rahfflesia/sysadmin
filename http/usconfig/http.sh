@@ -52,7 +52,7 @@ do
                     # Descomprimir archivo
                     tar -xvzf apache.tar.gz
                     # Entrar a la carpeta
-                    cd apache
+                    cd httpd-$ultimaVersionApache
                     # Compilar
                     ./configure --prefix=/usr/local/apache2
                     # Instalación
