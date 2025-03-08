@@ -56,6 +56,7 @@ do
             echo "Instalador de Apache"
             echo "1. Ultima version LTS $ultimaVersionApache"
             echo "2. Version de desarrollo"
+            echo "3. Salir"
             echo "Selecciona una opcion: "
             read opcApache
 
@@ -99,14 +100,44 @@ do
                 "2")
                     echo "Instalando version de desarrollo"
                 ;;
+                "3")
+                    echo "Saliendo..."
+                    break
+                ;;
                 *)
-                    echo "Selecciona una opcion valida (1..2)"
+                    echo "Selecciona una opcion valida (1..3)"
                 ;;
             esac
         ;;
         "2")
         ;;
         "3")
+            nginxDescargas="https://nginx.org/en/download.html"
+            paginaNginx=$(hacerPeticion "$nginxDescargas")
+            ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
+
+            echo "Instalador de Nginx"
+            echo "1. Ultima version LTS"
+            echo "2. Version de desarrollo $ultimaVersionNginxDev"
+            echo "3. Salir"
+            echo "Selecciona una opcion: "
+            read opcNginx
+
+            case "$opcNginx" in
+                "1")
+                ;;
+                "2")
+                    echo "Ingresa el puerto en el que se instalará Nginx: "
+                    read puerto
+                ;;
+                "3")
+                    echo "Saliendo..."
+                    break
+                ;;
+                *)
+                    echo "Selecciona una opcion valida (1..3)"
+                ;;
+            esac
         ;;
         "4")
             echo "Saliendo..."
