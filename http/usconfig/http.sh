@@ -9,11 +9,28 @@ function hacerPeticion(){
 function encontrarValor(){
     local regex=$1
     local string=$2
-
     if [[ $string =~ $regex ]]; then
         echo "${BASH_REMATCH[0]}"
     else
         echo "No se encontro el patron"
+    fi
+}
+
+function esPuertoValido(){
+    local puerto=$1
+    if [[ "$puerto" -lt 0 || "$puerto" -gt 65535 ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function esValorEntero(){
+    local valor=$1
+    if [[ "$valor" =~ '^[0-9]+$' ]]; then
+        return 0
+    else
+        return 1
     fi
 }
 
@@ -35,34 +52,53 @@ do
             paginaApache=$(hacerPeticion "$apacheDescargas")
             ultimaVersionApache=$(encontrarValor "$versionRegex" "$paginaApache")
 
-            # Mostrar pagina para depuracion
-            echo "$paginaApache"
-
             echo "Instalador de Apache"
             echo "1. Ultima version LTS $ultimaVersionApache"
+            echo "2. Version de desarrollo"
             echo "Selecciona una opcion: "
             read opcApache
 
             case "$opcApache" in
                 "1")
-                    echo "Ultima version -> $ultimaVersionApache"
-                    echo "Instalando version $ultimaVersionApache de Apache"
-                    linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
-                    curl "$linkDescargaApache" -o apache.tar.gz
-                    # Descomprimir archivo
-                    tar -xvzf apache.tar.gz
-                    # Entrar a la carpeta
-                    cd httpd-$ultimaVersionApache
-                    # Compilar
-                    ./configure --prefix=/usr/local/apache2
-                    # Instalación
-                    make
-                    sudo make install
-                    # Verificar la instalación
-                    /usr/local/apache2/bin/httpd -v
+                    echo "Ingresa el puerto en el que se instalara Apache: "
+                    read puerto
+
+                    if ! esPuertoValido "$puerto"; then
+                        echo "El puerto debe de estar dentro del rango 0-65535"
+                    elif ! esValorEntero "$puerto"; then
+                        echo "El puerto debe de ser un valor numerico entero"
+                    else
+                        echo "Ultima version -> $ultimaVersionApache"
+                        echo "Instalando version $ultimaVersionApache de Apache"
+                        linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
+                        curl "$linkDescargaApache" -s -o apache.tar.gz
+                        # Descomprimir archivo
+                        tar -xvzf apache.tar.gz
+                        # Entrar a la carpeta
+                        cd httpd-$ultimaVersionApache
+                        # Compilar
+                        ./configure --prefix=/usr/local/apache2 /dev/null 2>&1
+                        # Instalación
+                        make > /dev/null 2>&1
+                        sudo make install > /dev/null 2>&1
+                        # Verificar la instalación
+                        /usr/local/apache2/bin/httpd -v
+
+                        rutaArchivoConfiguracion="/usr/local/apache2/conf/httpd.conf"
+                        # Remuevo el puerto por defecto
+                        sudo sed -i '/^Listen 80$/d' $rutaArchivoConfiguracion
+
+                        # Añado el puerto proporcionado por el usuario
+                        sudo printf "Listen $puerto" >> $rutaArchivoConfiguracion
+                        # Compruebo que realmente esté escuchando en ese puerto
+                        sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
+                    fi
+                ;;
+                "2")
+                    echo "Instalando version de desarrollo"
                 ;;
                 *)
-                    echo "Selecciona una opcion valida"
+                    echo "Selecciona una opcion valida (1..2)"
                 ;;
             esac
         ;;
@@ -75,7 +111,7 @@ do
             break
         ;;
         *)
-            echo "Selecciona una opcion dentro del rango (1..3)"
+            echo "Selecciona una opcion dentro del rango (1..4)"
         ;;
     esac
     echo ""
