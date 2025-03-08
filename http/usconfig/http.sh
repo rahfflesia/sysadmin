@@ -39,7 +39,7 @@ do
             echo "$paginaApache"
 
             echo "Instalador de Apache"
-            echo "1. Version LTS $ultimaVersionApache"
+            echo "1. Ultima version LTS $ultimaVersionApache"
             echo "Selecciona una opcion: "
             read opcApache
 
@@ -48,7 +48,18 @@ do
                     echo "Ultima version -> $ultimaVersionApache"
                     echo "Instalando version $ultimaVersionApache de Apache"
                     linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
-                    curl "$linkDescargaApache"
+                    curl "$linkDescargaApache" -o apache.tar.gz
+                    # Descomprimir archivo
+                    tar -xvzf apache.tar.gz
+                    # Entrar a la carpeta
+                    cd apache
+                    # Compilar
+                    ./configure --prefix=/usr/local/apache2
+                    # Instalación
+                    make
+                    sudo make install
+                    # Verificar la instalación
+                    /usr/local/apache2/bin/httpd -v
                 ;;
                 *)
                     echo "Selecciona una opcion valida"
