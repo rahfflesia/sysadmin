@@ -1,11 +1,11 @@
 # $1 = URL, Retorna el html
 function hacerPeticion(){
     local url=$1
-    local html=curl "$url"
+    local html=$(curl -s "$url")
     echo "${html}"
 }
 
-# $1 = Expresión regular, $2 = String donde buscar
+# $1 = Expresión regular, $2 = String a comparar
 function encontrarValor(){
     local regex=$1
     local string=$2
@@ -13,11 +13,11 @@ function encontrarValor(){
     if [[ $string =~ $regex ]]; then
         echo "${BASH_REMATCH[0]}"
     else
-        return 1
+        echo "No se encontro el patron"
     fi
 }
 
-versionRegex="[0-9]+.[0-9]+.[0-9]+"
+versionRegex= '^[0-9]+\.[0-9]+\.[0-9]+$'
 
 while :
 do
@@ -25,6 +25,7 @@ do
     echo "1. Apache"
     echo "2. Tomcat"
     echo "3. Nginx"
+    echo "4. Salir"
     echo "Selecciona una opcion: "
     read opcion
 
@@ -41,7 +42,8 @@ do
 
             case "$opcApache" in
                 "1")
-                    echo "Instala version $ultimaVersionApache de Apache"
+                    echo "Ultima version -> $ultimaVersionApache"
+                    echo "Instalando version $ultimaVersionApache de Apache"
                     linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
                     curl "$linkDescargaApache"
                 ;;
@@ -53,6 +55,10 @@ do
         "2")
         ;;
         "3")
+        ;;
+        "4")
+            echo "Saliendo..."
+            break
         ;;
         *)
             echo "Selecciona una opcion dentro del rango (1..3)"
