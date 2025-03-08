@@ -17,7 +17,7 @@ function encontrarValor(){
     fi
 }
 
-versionRegex= '^[0-9]+\.[0-9]+\.[0-9]+$'
+versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
 do
@@ -34,6 +34,9 @@ do
             apacheDescargas="https://httpd.apache.org/download.cgi"
             paginaApache=$(hacerPeticion "$apacheDescargas")
             ultimaVersionApache=$(encontrarValor "$versionRegex" "$paginaApache")
+
+            # Mostrar pagina para depuracion
+            echo "$paginaApache"
 
             echo "Instalador de Apache"
             echo "1. Version LTS $ultimaVersionApache"
