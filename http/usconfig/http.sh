@@ -6,7 +6,7 @@ function hacerPeticion(){
     echo "${html}"
 }
 
-# $1 = Expresión regular, $2 = String a comparar
+# $1 = Expresión regular, $2 = String a comparar, $3 = 
 function encontrarValor(){
     local regex=$1
     local string=$2
@@ -101,8 +101,7 @@ do
                     echo "Instalando version de desarrollo"
                 ;;
                 "3")
-                    echo "Saliendo..."
-                    break
+                    echo "Saliendo del menu de apache..."
                 ;;
                 *)
                     echo "Selecciona una opcion valida (1..3)"
@@ -131,8 +130,7 @@ do
                     read puerto
                 ;;
                 "3")
-                    echo "Saliendo..."
-                    break
+                    echo "Saliendo del menu de Nginx..."
                 ;;
                 *)
                     echo "Selecciona una opcion valida (1..3)"
