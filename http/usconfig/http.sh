@@ -35,6 +35,15 @@ function esValorEntero(){
     fi
 }
 
+# $1 = Iteraciones del ciclo, $2 = Conjunto de versiones sobre las cuales iterar
+function obtenerVersionLTS(){
+    local max=$1
+    local versiones=$2
+    for(( i = 0; i < $max; i++)); do
+        
+    done
+}
+
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -114,6 +123,7 @@ do
             nginxDescargas="https://nginx.org/en/download.html"
             paginaNginx=$(hacerPeticion "$nginxDescargas")
             ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
+            versiones="$paginaNginx" | grep -oE "$versionRegex"
 
             echo "Instalador de Nginx"
             echo "1. Ultima version LTS"
@@ -125,7 +135,7 @@ do
             case "$opcNginx" in
                 "1")
                     echo "Ultima version LTS"
-                    grep -i "$versionRegex" "$paginaNginx"
+                    echo "$versiones"
                 ;;
                 "2")
                     echo "Ingresa el puerto en el que se instalará Nginx: "
