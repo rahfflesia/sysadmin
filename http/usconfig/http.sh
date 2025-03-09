@@ -55,15 +55,15 @@ function instalarServicioHTTP(){
     echo "Ultima version -> $versionAMostrar"
     echo "Instalando version $versionAMostrar de $nombreServicio"
     echo "Por favor espere..."
-    curl "$linkDescarga" -s -o
+    curl -O "$linkDescarga"
     # Descomprimir archivo
     sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
     # Entrar a la carpeta
     cd "$nombreArchivoDescomprimido"
     # Compilar
-    sudo ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+    ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
     # Instalación
-    sudo make > /dev/null 2>&1
+    make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
 }
 
