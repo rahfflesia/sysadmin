@@ -43,6 +43,30 @@ function obtenerVersionLTS(){
     echo "${versionesArray[$indice]}"
 }
 
+# $1 = Última versión a mostrar, $2 = Link de descarga, $3 = Nombre que se le pondrá al archivo descargado, $4 = Nombre del archivo una vez descomprimido
+# $ 5 = Nombre del servicio a instalar (apache, nginx)
+function instalarServicioHTTP(){
+    local versionAMostrar=$1
+    local linkDescarga=$2
+    local nombreArchivo=$3
+    local nombreArchivoDescomprimido=$4
+    local nombreServicio=$5
+
+    echo "Ultima version -> $versionAMostrar"
+    echo "Instalando version $versionAMosstrar de $nombreServicio"
+    echo "Por favor espere..."
+    curl "$linkDescarga" -s -o $nombreArchivo
+    # Descomprimir archivo
+    tar -xvzf $nombreArchivo > /dev/null 2>&1
+    # Entrar a la carpeta
+    cd "$nombreArchivoDescomprimido"
+    # Compilar
+    ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+    # Instalación
+    make > /dev/null 2>&1
+    sudo make install > /dev/null 2>&1
+}
+
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -59,10 +83,10 @@ do
         "1")
             apacheDescargas="https://httpd.apache.org/download.cgi"
             paginaApache=$(hacerPeticion "$apacheDescargas")
-            ultimaVersionApache=$(encontrarValor "$versionRegex" "$paginaApache")
+            ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
 
             echo "Instalador de Apache"
-            echo "1. Ultima version LTS $ultimaVersionApache"
+            echo "1. Ultima version LTS $ultimaVersionLTSApache"
             echo "2. Version de desarrollo"
             echo "3. Salir"
             echo "Selecciona una opcion: "
@@ -78,27 +102,12 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        echo "Ultima version -> $ultimaVersionApache"
-                        echo "Instalando version $ultimaVersionApache de Apache"
-                        echo "Por favor espere..."
-                        linkDescargaApache="https://dlcdn.apache.org/httpd/httpd-$ultimaVersionApache.tar.gz"
-                        curl "$linkDescargaApache" -s -o apache.tar.gz
-                        # Descomprimir archivo
-                        tar -xvzf apache.tar.gz > /dev/null 2>&1
-                        # Entrar a la carpeta
-                        cd httpd-$ultimaVersionApache
-                        # Compilar
-                        ./configure --prefix=/usr/local/apache2 > /dev/null 2>&1
-                        # Instalación
-                        make > /dev/null 2>&1
-                        sudo make install > /dev/null 2>&1
+                        instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "apache.tar.gz" "httpd-$ultimaVersionLTSApache" "Apache"
                         # Verificar la instalación
                         /usr/local/apache2/bin/httpd -v
-
                         rutaArchivoConfiguracion="/usr/local/apache2/conf/httpd.conf"
                         # Remuevo el puerto en uso
                         sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
-
                         # Añado el puerto proporcionado por el usuario
                         sudo printf "Listen $puerto" >> $rutaArchivoConfiguracion
                         # Compruebo que realmente esté escuchando en ese puerto
