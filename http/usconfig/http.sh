@@ -53,7 +53,7 @@ function instalarServicioHTTP(){
     local nombreServicio=$5
 
     echo "Ultima version -> $versionAMostrar"
-    echo "Instalando version $versionAMosstrar de $nombreServicio"
+    echo "Instalando version $versionAMostrar de $nombreServicio"
     echo "Por favor espere..."
     curl "$linkDescarga" -s -o $nombreArchivo
     # Descomprimir archivo
@@ -132,10 +132,10 @@ do
             paginaNginx=$(hacerPeticion "$nginxDescargas")
             ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
             versiones=$(echo "$paginaNginx" | grep -oE "$versionRegex")
-            versionLTS=$(obtenerVersionLTS 8 "$versiones")
+            nginxVersionLTS=$(obtenerVersionLTS 8 "$versiones")
 
             echo "Instalador de Nginx"
-            echo "1. Ultima version LTS $versionLTS"
+            echo "1. Ultima version LTS $nginxVersionLTS"
             echo "2. Version de desarrollo $ultimaVersionNginxDev"
             echo "3. Salir"
             echo "Selecciona una opcion: "
@@ -143,11 +143,30 @@ do
 
             case "$opcNginx" in
                 "1")
-                    echo "Ultima version LTS"
+                    echo "Ingresa el puerto en el que se instalará Nginx: "
+                    read puerto
+
+                    if ! esPuertoValido "$puerto"; then
+                        echo "El puerto debe de estar dentro del rango 0-65535"
+                    elif ! esValorEntero "$puerto"; then
+                        echo "El puerto debe de ser un valor numerico entero"
+                    else
+                        instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "Nginx"
+                        service nginx status
+                    fi
                 ;;
                 "2")
                     echo "Ingresa el puerto en el que se instalará Nginx: "
                     read puerto
+
+                    if ! esPuertoValido "$puerto"; then
+                        echo "El puerto debe de estar dentro del rango 0-65535"
+                    elif ! esValorEntero "$puerto"; then
+                        echo "El puerto debe de ser un valor numerico entero"
+                    else
+                        instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "Nginx"
+                        service nginx status
+                    fi
                 ;;
                 "3")
                     echo "Saliendo del menu de Nginx..."
