@@ -67,6 +67,11 @@ function instalarServicioHTTP(){
     sudo make install > /dev/null 2>&1
 }
 
+function desinstalarNginx(){
+    /usr/local/nginx/sbin/nginx -s stop
+    sudo rm -rf /usr/local/nginx
+}
+
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -146,6 +151,11 @@ do
                     echo "Ingresa el puerto en el que se instalará Nginx: "
                     read puerto
 
+                    # Desinstalar en caso de que exista una version anterior
+                    if [[ -x /usr/local/nginx/sbin/nginx ]]; then
+                        desinstalarNginx
+                    fi
+
                     if ! esPuertoValido "$puerto"; then
                         echo "El puerto debe de estar dentro del rango 0-65535"
                     elif ! esValorEntero "$puerto"; then
@@ -158,6 +168,11 @@ do
                 "2")
                     echo "Ingresa el puerto en el que se instalará Nginx: "
                     read puerto
+
+                    # Desinstalar en caso de que exista una version anterior
+                    if [[ -x /usr/local/nginx/sbin/nginx ]]; then
+                        desinstalarNginx
+                    fi
 
                     if ! esPuertoValido "$puerto"; then
                         echo "El puerto debe de estar dentro del rango 0-65535"
