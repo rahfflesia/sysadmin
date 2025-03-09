@@ -140,7 +140,7 @@ do
             versiones=$(echo "$paginaNginx" | grep -oE "$versionRegex")
             nginxVersionLTS=$(obtenerVersionLTS 8 "$versiones")
 
-            $rutaArchivoConfiguracion = "/usr/local/nginx/conf/nginx.conf"
+            rutaArchivoConfiguracion="/usr/local/nginx/conf/nginx.conf"
 
             echo "Instalador de Nginx"
             echo "1. Ultima version LTS $nginxVersionLTS"
@@ -162,8 +162,8 @@ do
                         instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
                         /usr/local/nginx/sbin/nginx -v
 
-                        sed -E "/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" $rutaArchivoConfiguracion
-                        sudo grep -i "listen\s\s\s\s\s\s\s" $rutaArchivoConfiguracion
+                        sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
+                        sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
                     fi
                 ;;
                 "2")
@@ -177,8 +177,8 @@ do
                     else
                         instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
                         /usr/local/nginx/sbin/nginx -v
-                        sed -E "/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" $rutaArchivoConfiguracion
-                        sudo grep -i "listen\s\s\s\s\s\s\s" $rutaArchivoConfiguracion
+                        sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
+                        sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
 
                     fi
                 ;;
