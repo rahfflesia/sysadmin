@@ -55,15 +55,15 @@ function instalarServicioHTTP(){
     echo "Ultima version -> $versionAMostrar"
     echo "Instalando version $versionAMostrar de $nombreServicio"
     echo "Por favor espere..."
-    curl "$linkDescarga" -s -o $nombreArchivo
+    curl "$linkDescarga" -s -O $nombreArchivo
     # Descomprimir archivo
-    tar -xvzf $nombreArchivo > /dev/null 2>&1
+    sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
     # Entrar a la carpeta
     cd "$nombreArchivoDescomprimido"
     # Compilar
-    ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+    sudo ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
     # Instalación
-    make > /dev/null 2>&1
+    sudo make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
 }
 
@@ -152,7 +152,7 @@ do
                         echo "El puerto debe de ser un valor numerico entero"
                     else
                         instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "Nginx"
-                        service nginx status
+                        /usr/local/nginx/sbin/nginx -v
                     fi
                 ;;
                 "2")
@@ -165,7 +165,7 @@ do
                         echo "El puerto debe de ser un valor numerico entero"
                     else
                         instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "Nginx"
-                        service nginx status
+                        /usr/local/nginx/sbin/nginx -v
                     fi
                 ;;
                 "3")
