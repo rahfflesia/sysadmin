@@ -124,6 +124,8 @@ do
 
             case "$opcNginx" in
                 "1")
+                    echo "Ultima version LTS"
+                    grep -i "$versionRegex" "$paginaNginx"
                 ;;
                 "2")
                     echo "Ingresa el puerto en el que se instalará Nginx: "
