@@ -151,7 +151,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "Nginx"
+                        instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx.tar.gz" "nginx-$nginxVersionLTS" "Nginx"
                         /usr/local/nginx/sbin/nginx -v
                     fi
                 ;;
@@ -164,7 +164,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "Nginx"
+                        instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx.tar.gz" "nginx-$ultimaVersionNginxDev" "Nginx"
                         /usr/local/nginx/sbin/nginx -v
                     fi
                 ;;
