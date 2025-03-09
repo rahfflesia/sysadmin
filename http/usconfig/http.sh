@@ -55,7 +55,7 @@ function instalarServicioHTTP(){
     echo "Ultima version -> $versionAMostrar"
     echo "Instalando version $versionAMostrar de $nombreServicio"
     echo "Por favor espere..."
-    curl -O "$linkDescarga"
+    curl -s -O "$linkDescarga"
     # Descomprimir archivo
     sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
     # Entrar a la carpeta
