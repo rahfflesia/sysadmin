@@ -153,7 +153,7 @@ do
                         echo "El puerto debe de ser un valor numerico entero"
                     else
                         echo "Ultima version -> $ultimaVersionLTSLighttpd"
-                        echo "Instalando version $ultimaVersionLTSLighttpd de Lightspeed"
+                        echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
                         echo "Por favor espere..."
                         curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
                         sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
@@ -163,6 +163,9 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/lighttpd.conf
+                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto" "$rutaArchivoConfiguracion"
+                        sudo grep -i "server.port" "$rutaArchivConfiguracion"
                         cd ..
                     fi
                 ;;
@@ -176,9 +179,9 @@ do
                         echo "El puerto debe de ser un valor numerico entero"
                     else
                         echo "Ultima version -> $ultimaVersionDevLighttpd"
-                        echo "Instalando version $ultimaVersionDevLighttpd de Lightspeed"
+                        echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
                         echo "Por favor espere..."
-                        curl -s -O "home/jj/sysadmin/http/usconfig" "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
+                        curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
                         sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionDevLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
@@ -186,6 +189,9 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.conf
+                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto" "$rutaArchivoConfiguracion"
+                        sudo grep -i "server.port" "$rutaArchivConfiguracion"
                         cd ..
                     fi
                 ;;
