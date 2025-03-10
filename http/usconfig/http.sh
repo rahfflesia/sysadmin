@@ -74,7 +74,7 @@ while :
 do
     echo "Elige el servicio a instalar"
     echo "1. Apache"
-    echo "2. Cherokee"
+    echo "2. Lighttpd"
     echo "3. Nginx"
     echo "4. Salir"
     echo "Selecciona una opcion: "
@@ -127,15 +127,15 @@ do
             esac
         ;;
         "2")
-            cherokeeDescargas="https://cherokee-project.com/downloads.html"
-            paginaCherokee=$(hacerPeticion "$cherokeeDescargas")
-            versiones=$(echo "$paginaCherokee" | grep -oE "$versionRegex")
-            ultimaVersionLTSCherokee=$(obtenerVersionLTS 3 "$versiones")
-            ultimaVersionDevCherokee=$(obtenerVersionLTS 2 "$versiones")
+            lightDescargas="https://www.lighttpd.net/releases/"
+            paginaLight=$(hacerPeticion "$lightDescargas" "$paginaLight")
+            ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex") 
+            versiones=$(echo "$paginaLight" | grep -oE "$versionRegex")
+            ultimaVersionLTSLighttpd=$(obtenerVersionLTS 2 "$versiones")
 
-            echo "Instalador de Cherokee"
-            echo "1. Ultima version LTS $ultimaVersionLTSCherokee"
-            echo "2. Version de desarrollo $ultimaVersionDevCherokee"
+            echo "Instalador de Lighttpd"
+            echo "1. Ultima version LTS $ultimaVersionLTSLighttpd"
+            echo "2. Version de desarrollo $ultimaVersionDevLighttpd"
             echo "3. Salir"
             echo "Selecciona una opcion: "
             read opcCherokee
@@ -152,14 +152,14 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$ultimaVersionLTSCherokee" "https://github.com/cherokee/webserver/archive/v-$ultimaVersionLTSCherokee.zip" "" "" "cherokee"
+                        instalarServicioHTTP "https://www.lighttpd.net/2025/1/10/1.4.77/" "" "" "lighttpd"
                     fi
                 ;;
                 "2")
                     echo "Instalando version de desarrollo..."
                 ;;
                 "3")
-                    echo "Saliendo del menu de cherokee..."
+                    echo "Saliendo del menu de Lighttpd..."
                 ;;
                 *)
                     echo "Selecciona una opcion dentro del rango (1..3)"
