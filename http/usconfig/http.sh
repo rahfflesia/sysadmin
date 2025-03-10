@@ -153,7 +153,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$ultimaVersionLTSTomcat" "https://dlcdn.apache.org/tomcat/tomcat-10/v$ultimaVersionLTSTomcat/bin/apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat" "tomcat"
+                        instalarServicioHTTP "$ultimaVersionLTSTomcat" "https://dlcdn.apache.org/tomcat/tomcat-10/v$ultimaVersionLTSTomcat/bin/apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat" "tomcat"
                         sudo bash /usr/local/tomcat/bin/version.sh
                     fi
                 ;;
