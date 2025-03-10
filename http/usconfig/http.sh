@@ -129,7 +129,7 @@ do
         "2")
             liteSpeedDescargas="https://www.litespeedtech.com/products/litespeed-web-server/download"
             paginaLiteSpeed=$(hacerPeticion "$liteSpeedDescargas")
-            ultimaVersionDevLiteSpeed=$(encontrarValor "$versionRegex" "$paginaTomcatLTS")
+            ultimaVersionDevLiteSpeed=$(encontrarValor "$versionRegex" "$paginaLiteSpeed")
             versiones=$(echo "$paginaLiteSpeed" | grep -oE "$versionRegex")
             ultimaVersionLTSLiteSpeed=$(obtenerVersionLTS 2 "$versiones")
 
@@ -152,7 +152,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        
+                        echo "Instalando litespeed (dummy)"
                     fi
                 ;;
                 "2")
