@@ -7,7 +7,7 @@ function Es-Numerico([string]$string){
 }
 
 function hacerPeticion([string]$url){
-    return Invoke-WebRequest -URI $url
+    return Invoke-WebRequest -UseBasicParsing -URI $url
 }
 
 function encontrarValor([string]$regex, [string]$pagina, [int]$indice){
@@ -20,7 +20,7 @@ $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 while($true){
     echo "Elige el servicio a instalar"
     echo "1. IIS"
-    echo "2. Apache"
+    echo "2. Caddy"
     echo "3. Nginx"
     echo "4. Salir"
     $opc = Read-Host "Selecciona una opcion"
@@ -35,7 +35,7 @@ while($true){
             }
         }
         "2"{
-            echo "Instalador de Apache"
+            echo "Instalador de Caddy"
             echo "1. Version LTS "
             echo "2. Version de desarrollo "
             echo "3. Salir"
@@ -45,10 +45,10 @@ while($true){
                     # Implementar
                 }
                 "2"{
-                    echo "Apache no cuenta con una version de desarrollo"
+                    echo "Caddy no cuenta con una version de desarrollo"
                 }
                 "3"{
-                    echo "Saliendo del menu de apache..."
+                    echo "Saliendo del menu de caddy..."
                 }
                 default {"Selecciona una opcion dentro del rango (1..3)"}
             }
