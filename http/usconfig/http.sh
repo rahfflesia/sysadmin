@@ -159,7 +159,7 @@ do
                         sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionLTSLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
-                        ./configure --prefix=/usr/local/"Lightspeed" > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
@@ -181,7 +181,7 @@ do
                         sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionDevLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
-                        ./configure --prefix=/usr/local/"Lightspeed" > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
