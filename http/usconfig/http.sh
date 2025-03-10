@@ -129,7 +129,7 @@ do
         "2")
             lightDescargas="https://www.lighttpd.net/releases/"
             paginaLight=$(hacerPeticion "$lightDescargas" "$paginaLight")
-            ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex") 
+            ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex" "$paginaLight") 
             versiones=$(echo "$paginaLight" | grep -oE "$versionRegex")
             ultimaVersionLTSLighttpd=$(obtenerVersionLTS 2 "$versiones")
 
@@ -185,6 +185,7 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
+                    fi
                 ;;
                 "3")
                     echo "Saliendo del menu de Lighttpd..."
