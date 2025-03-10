@@ -130,8 +130,8 @@ do
             cherokeeDescargas="https://cherokee-project.com/downloads.html"
             paginaCherokee=$(hacerPeticion "$cherokeeDescargas")
             versiones=$(echo "$paginaCherokee" | grep -oE "$versionRegex")
-            ultimaVersionLTSCherokee=$(obtenerVersionLTS 2 "$versiones")
-            ultimaVersionDevCherokee=$(obtenerVersionLTS 3 "$versiones")
+            ultimaVersionLTSCherokee=$(obtenerVersionLTS 3 "$versiones")
+            ultimaVersionDevCherokee=$(obtenerVersionLTS 2 "$versiones")
 
             echo "Instalador de Cherokee"
             echo "1. Ultima version LTS $ultimaVersionLTSCherokee"
@@ -152,7 +152,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        echo "Instalando..."
+                        instalarServicioHTTP "$ultimaVersionLTSCherokee" "https://github.com/cherokee/webserver/archive/v-$ultimaVersionLTSCherokee.zip" "" "" "cherokee"
                     fi
                 ;;
                 "2")
