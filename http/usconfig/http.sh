@@ -74,7 +74,7 @@ while :
 do
     echo "Elige el servicio a instalar"
     echo "1. Apache"
-    echo "2. LiteSpeed"
+    echo "2. Cherokee"
     echo "3. Nginx"
     echo "4. Salir"
     echo "Selecciona una opcion: "
@@ -127,24 +127,24 @@ do
             esac
         ;;
         "2")
-            liteSpeedDescargas="https://www.litespeedtech.com/products/litespeed-web-server/download"
-            paginaLiteSpeed=$(hacerPeticion "$liteSpeedDescargas")
-            versiones=$(echo "$paginaLiteSpeed" | grep -oE "$versionRegex")
-            ultimaVersionDevLiteSpeed=$(obtenerVersionLTS 2 "$versiones")
-            ultimaVersionLTSLiteSpeed=$(obtenerVersionLTS 6 "$versiones")
+            cherokeeDescargas="https://cherokee-project.com/downloads.html"
+            paginaCherokee=$(hacerPeticion "$cherokeeDescargas")
+            ultimaVersionDevCherokee=$(encontrarValor "$versionRegex" "$paginaCherokee")
+            versiones=$(echo "$paginaCherokee" | grep -oE "$versionRegex")
+            ultimaVersionLTSCherokee=$(obtenerVersionLTS 2 "$versiones")
 
-            echo "Instalador de LiteSpeed"
-            echo "1. Ultima version LTS $ultimaVersionLTSLiteSpeed"
-            echo "2. Version de desarrollo $ultimaVersionDevLiteSpeed"
+            echo "Instalador de Cherokee"
+            echo "1. Ultima version LTS $ultimaVersionLTSCherokee"
+            echo "2. Version de desarrollo $ultimaVersionDevCherokee"
             echo "3. Salir"
             echo "Selecciona una opcion: "
-            read opcLiteSpeed
+            read opcCherokee
 
             rutaArchivoConfiguracion=""
 
-            case "$opcLiteSpeed" in
+            case "$opcCherokee" in
                 "1")
-                    echo "Ingresa el puerto en el que se instalara LiteSpeed: "
+                    echo "Ingresa el puerto en el que se instalara Cherokee: "
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
@@ -152,9 +152,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        echo "Instalando version $ultimaVersionLTSLiteSpeed"
-                        instalarServicioHTTP "$ultimaVersionLTSLiteSpeed" "https://www.litespeedtech.com/packages/6.0/lsws-$ultimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "lsws-$ultimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "lsws-"."$ultimaVersionLTSLiteSpeed" "litespeed"
-                        /usr/local/lsws/bin/lshttpd -v
+                        echo "Instalando..."
                     fi
                 ;;
                 "2")
