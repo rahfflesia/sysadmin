@@ -11,8 +11,8 @@ function hacerPeticion([string]$url){
 }
 
 function encontrarValor([string]$regex, [string]$pagina){
-    $coincidencias = [regex]::Matches($pagina, $regex)
-    return $coincidencias | ForEach-Object { $_.Value }
+    $coincidencias = [regex]::Matches($pagina, $regex) | ForEach-Object { $_.Value }
+    return $coincidencias
 }
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
