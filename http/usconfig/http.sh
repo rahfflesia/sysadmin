@@ -138,13 +138,13 @@ do
             echo "2. Version de desarrollo $ultimaVersionDevLighttpd"
             echo "3. Salir"
             echo "Selecciona una opcion: "
-            read opcCherokee
+            read opcLighttpd
 
             rutaArchivoConfiguracion=""
 
-            case "$opcCherokee" in
+            case "$opcLighttpd" in
                 "1")
-                    echo "Ingresa el puerto en el que se instalara Cherokee: "
+                    echo "Ingresa el puerto en el que se instalara Lighttpd: "
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
@@ -152,11 +152,39 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "https://www.lighttpd.net/2025/1/10/1.4.77/" "" "" "lighttpd"
+                        echo "Ultima version -> $ultimaVersionLTSLighttpd"
+                        echo "Instalando version $ultimaVersionLTSLighttpd de Lightspeed"
+                        echo "Por favor espere..."
+                        curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                        sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
+                        cd "lighttpd-$ultimaVersionLTSLighttpd"
+                        sudo bash autogen.sh > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/"Lightspeed" > /dev/null 2>&1
+                        make -j$(nproc) > /dev/null 2>&1
+                        sudo make install > /dev/null 2>&1
+                        /usr/local/lighttpd/sbin/lighttpd -v
                     fi
                 ;;
                 "2")
-                    echo "Instalando version de desarrollo..."
+                    echo "Ingresa el puerto en el que se instalara Lighttpd: "
+                    read puerto
+
+                    if ! esPuertoValido "$puerto"; then
+                        echo "El puerto debe de estar dentro del rango 0-65535"
+                    elif ! esValorEntero "$puerto"; then
+                        echo "El puerto debe de ser un valor numerico entero"
+                    else
+                        echo "Ultima version -> $ultimaVersionDevLighttpd"
+                        echo "Instalando version $ultimaVersionDevLighttpd de Lightspeed"
+                        echo "Por favor espere..."
+                        curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
+                        sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
+                        cd "lighttpd-$ultimaVersionDevLighttpd"
+                        sudo bash autogen.sh > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/"Lightspeed" > /dev/null 2>&1
+                        make -j$(nproc) > /dev/null 2>&1
+                        sudo make install > /dev/null 2>&1
+                        /usr/local/lighttpd/sbin/lighttpd -v
                 ;;
                 "3")
                     echo "Saliendo del menu de Lighttpd..."
