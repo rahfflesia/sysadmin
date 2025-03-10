@@ -152,7 +152,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$ultimaVersionLTSLiteSpeed" "https://www.litespeedtech.com/packages/6.0/lsws-$ultimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "" "lsws-$utlimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "litespeed"
+                        instalarServicioHTTP "$ultimaVersionLTSLiteSpeed" "https://www.litespeedtech.com/packages/6.0/lsws-$ultimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "lsws-$ultimaVersionLTSLiteSpeed-ent-x86_64-linux.tar.gz" "lsws-$utlimaVersionLTSLiteSpeed" "litespeed"
                         /usr/local/lsws/bin/lshttpd -v
                     fi
                 ;;
