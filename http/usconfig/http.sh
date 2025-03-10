@@ -129,9 +129,9 @@ do
         "2")
             liteSpeedDescargas="https://www.litespeedtech.com/products/litespeed-web-server/download"
             paginaLiteSpeed=$(hacerPeticion "$liteSpeedDescargas")
-            ultimaVersionDevLiteSpeed=$(encontrarValor "$versionRegex" "$paginaLiteSpeed")
             versiones=$(echo "$paginaLiteSpeed" | grep -oE "$versionRegex")
-            ultimaVersionLTSLiteSpeed=$(obtenerVersionLTS 2 "$versiones")
+            ultimaVersionDevLiteSpeed=$(obtenerVersionLTS 2 "$versiones")
+            ultimaVersionLTSLiteSpeed=$(obtenerVersionLTS 6 "$versiones")
 
             echo "Instalador de LiteSpeed"
             echo "1. Ultima version LTS $ultimaVersionLTSLiteSpeed"
