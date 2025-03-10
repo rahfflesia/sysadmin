@@ -56,7 +56,9 @@ while($true){
         "3"{
             $nginxDescargas = "https://nginx.org/en/download.html"
             $paginaNginx = (hacerPeticion -url $nginxDescargas).Content
-            $versiones = (encontrarValor -regex $versionRegex -pagina $paginaNginx).Values
+            $versiones = (encontrarValor -regex $versionRegex -pagina $paginaNginx)
+            $versionLTSNginx = $versiones[0]
+            $versionDevNginx = $versiones[6]
 
             echo $versiones
             echo "Instalador de Nginx"
