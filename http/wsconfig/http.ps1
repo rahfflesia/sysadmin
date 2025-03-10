@@ -68,7 +68,7 @@ while($true){
             switch($opcNginx){
                 "1"{
                     echo "Instalando version LTS $versionLTSNginx"
-                    Invoke-WebRequest "https://nginx.org/download/$versionLTSNginx.zip"
+                    Invoke-WebRequest "https://nginx.org/download/nginx-$versionLTSNginx.zip"
                 }
                 "2"{
                     echo "Instalando version de desarrollo"
