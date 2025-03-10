@@ -141,9 +141,21 @@ do
             echo "Selecciona una opcion: "
             read opcTomcat
 
+            rutaArchivoConfiguracion=""
+
             case "$opcTomcat" in
                 "1")
-                    echo "Instalando version LTS de tomcat..."
+                    echo "Ingresa el puerto en el que se instalara Tomcat: "
+                    read puerto
+
+                    if ! esPuertoValido "$puerto"; then
+                        echo "El puerto debe de estar dentro del rango 0-65535"
+                    elif ! esValorEntero "$puerto"; then
+                        echo "El puerto debe de ser un valor numerico entero"
+                    else
+                        instalarServicioHTTP "$ultimaVersionLTSTomcat" "https://dlcdn.apache.org/tomcat/tomcat-10/v$ultimaVersionLTSTomcat/bin/apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat" "tomcat"
+                        sudo bash /usr/local/tomcat/bin/version.sh
+                    fi
                 ;;
                 "2")
                     echo "Instalando version de desarrollo de tomcat..."
