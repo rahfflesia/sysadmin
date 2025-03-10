@@ -68,11 +68,6 @@ function instalarServicioHTTP(){
     sudo make install > /dev/null 2>&1
 }
 
-function desinstalarNginx(){
-    sudo /usr/local/nginx/sbin/nginx -s stop
-    sudo rm -r /usr/local/nginx
-}
-
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -132,6 +127,34 @@ do
             esac
         ;;
         "2")
+            tomcatDescargasLTS="https://tomcat.apache.org/download-10.cgi"
+            tomcatDescargasDev="https://tomcat.apache.org/download-11.cgi"
+            paginaTomcatLTS=$(hacerPeticion "$tomcatDescargasLTS")
+            paginaTomcatDev=$(hacerPeticion "$tomcatDescargasDev")
+            ultimaVersionLTSTomcat=$(encontrarValor "$versionRegex" "$paginaTomcatLTS")
+            ultimaVersionDevTomcat=$(encontrarValor "$versionRegex" "$paginaTomcatDev")
+
+            echo "Instalador de Tomcat"
+            echo "1. Ultima version LTS $ultimaVersionLTSTomcat"
+            echo "2. Version de desarrollo $ultimaVersionDevTomcat"
+            echo "3. Salir"
+            echo "Selecciona una opcion: "
+            read opcTomcat
+
+            case "$opcTomcat" in
+                "1")
+                    echo "Instalando version LTS de tomcat..."
+                ;;
+                "2")
+                    echo "Instalando version de desarrollo de tomcat..."
+                ;;
+                "3")
+                    echo "Saliendo del menu de tomcat..."
+                ;;
+                *)
+                    echo "Selecciona una opcion dentro del rango (1..3)"
+                ;;
+            esac
         ;;
         "3")
             nginxDescargas="https://nginx.org/en/download.html"
