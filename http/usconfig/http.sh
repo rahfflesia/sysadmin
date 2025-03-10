@@ -74,7 +74,7 @@ while :
 do
     echo "Elige el servicio a instalar"
     echo "1. Apache"
-    echo "2. Tomcat"
+    echo "2. LiteSpeed"
     echo "3. Nginx"
     echo "4. Salir"
     echo "Selecciona una opcion: "
@@ -127,25 +127,24 @@ do
             esac
         ;;
         "2")
-            tomcatDescargasLTS="https://tomcat.apache.org/download-10.cgi"
-            tomcatDescargasDev="https://tomcat.apache.org/download-11.cgi"
-            paginaTomcatLTS=$(hacerPeticion "$tomcatDescargasLTS")
-            paginaTomcatDev=$(hacerPeticion "$tomcatDescargasDev")
-            ultimaVersionLTSTomcat=$(encontrarValor "$versionRegex" "$paginaTomcatLTS")
-            ultimaVersionDevTomcat=$(encontrarValor "$versionRegex" "$paginaTomcatDev")
+            liteSpeedDescargas="https://www.litespeedtech.com/products/litespeed-web-server/download"
+            paginaLiteSpeed=$(hacerPeticion "$liteSpeedDescargas")
+            ultimaVersionDevLiteSpeed=$(encontrarValor "$versionRegex" "$paginaTomcatLTS")
+            versiones=$(echo "$paginaLiteSpeed" | grep -oE "$versionRegex")
+            ultimaVersionLTSLiteSpeed=$(obtenerVersionLTS 2 "$versiones")
 
-            echo "Instalador de Tomcat"
-            echo "1. Ultima version LTS $ultimaVersionLTSTomcat"
-            echo "2. Version de desarrollo $ultimaVersionDevTomcat"
+            echo "Instalador de LiteSpeed"
+            echo "1. Ultima version LTS $ultimaVersionLTSLiteSpeed"
+            echo "2. Version de desarrollo $ultimaVersionDevLiteSpeed"
             echo "3. Salir"
             echo "Selecciona una opcion: "
-            read opcTomcat
+            read opcLiteSpeed
 
             rutaArchivoConfiguracion=""
 
-            case "$opcTomcat" in
+            case "$opcLiteSpeed" in
                 "1")
-                    echo "Ingresa el puerto en el que se instalara Tomcat: "
+                    echo "Ingresa el puerto en el que se instalara LiteSpeed: "
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
@@ -153,15 +152,14 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
-                        instalarServicioHTTP "$ultimaVersionLTSTomcat" "https://dlcdn.apache.org/tomcat/tomcat-10/v$ultimaVersionLTSTomcat/bin/apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "apache-tomcat-$ultimaVersionLTSTomcat.tar.gz" "tomcat-$ultimaVersionLTSTomcat" "tomcat"
-                        sudo bash /usr/local/tomcat/bin/version.sh
+                        
                     fi
                 ;;
                 "2")
-                    echo "Instalando version de desarrollo de tomcat..."
+                    echo "Instalando version de desarrollo de litespeed..."
                 ;;
                 "3")
-                    echo "Saliendo del menu de tomcat..."
+                    echo "Saliendo del menu de litespeed..."
                 ;;
                 *)
                     echo "Selecciona una opcion dentro del rango (1..3)"
