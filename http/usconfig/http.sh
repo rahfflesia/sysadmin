@@ -21,7 +21,7 @@ function encontrarValor(){
 
 function esPuertoValido(){
     local puerto=$1
-    if [[ "$puerto" -lt 0 || "$puerto" -gt 65535 ]]; then
+    if [[ "$puerto" -lt 1024 || "$puerto" -gt 65535 ]]; then
         return 1
     else
         return 0
@@ -100,7 +100,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 0-65535"
+                        echo "El puerto debe de estar dentro del rango 1024-65535"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -117,7 +117,7 @@ do
                     fi
                 ;;
                 "2")
-                    echo "Instalando version de desarrollo"
+                    echo "Apache no cuenta con una version de desarrollo"
                 ;;
                 "3")
                     echo "Saliendo del menu de apache..."
@@ -149,7 +149,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 0-65535"
+                        echo "El puerto debe de estar dentro del rango 1024-65535"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -175,7 +175,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 0-65535"
+                        echo "El puerto debe de estar dentro del rango 1024-65535"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -226,7 +226,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 0-65535"
+                        echo "El puerto debe de estar dentro del rango 1024-65535"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -242,7 +242,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 0-65535"
+                        echo "El puerto debe de estar dentro del rango 1024-65535"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
