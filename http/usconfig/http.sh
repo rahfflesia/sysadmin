@@ -155,7 +155,7 @@ do
                         echo "Ultima version -> $ultimaVersionLTSLighttpd"
                         echo "Instalando version $ultimaVersionLTSLighttpd de Lightspeed"
                         echo "Por favor espere..."
-                        curl -s -O "home/jj/sysadmin/http/usconfig" "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                        curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
                         sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionLTSLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
@@ -163,6 +163,7 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
+                        cd ..
                     fi
                 ;;
                 "2")
@@ -185,6 +186,7 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
+                        cd ..
                     fi
                 ;;
                 "3")
