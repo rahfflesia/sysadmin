@@ -12,7 +12,7 @@ function hacerPeticion([string]$url){
 
 function encontrarValor([string]$regex, [string]$pagina){
     $coincidencias = [regex]::Matches($pagina, $regex)
-    return $coincidencias
+    return $coincidencias | ForEach-Object { $_.Value }
 }
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
@@ -56,7 +56,7 @@ while($true){
         "3"{
             $nginxDescargas = "https://nginx.org/en/download.html"
             $paginaNginx = (hacerPeticion -url $nginxDescargas).Content
-            $versiones = encontrarValor -regex $versionRegex -pagina $paginaNginx
+            $versiones = (encontrarValor -regex $versionRegex -pagina $paginaNginx).Values
 
             echo $versiones
             echo "Instalador de Nginx"
