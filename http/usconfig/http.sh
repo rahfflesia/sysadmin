@@ -129,9 +129,9 @@ do
         "2")
             cherokeeDescargas="https://cherokee-project.com/downloads.html"
             paginaCherokee=$(hacerPeticion "$cherokeeDescargas")
-            ultimaVersionDevCherokee=$(encontrarValor "$versionRegex" "$paginaCherokee")
             versiones=$(echo "$paginaCherokee" | grep -oE "$versionRegex")
             ultimaVersionLTSCherokee=$(obtenerVersionLTS 2 "$versiones")
+            ultimaVersionDevCherokee=$(obtenerVersionLTS 3 "$versiones")
 
             echo "Instalador de Cherokee"
             echo "1. Ultima version LTS $ultimaVersionLTSCherokee"
@@ -156,10 +156,10 @@ do
                     fi
                 ;;
                 "2")
-                    echo "Instalando version de desarrollo de litespeed..."
+                    echo "Instalando version de desarrollo..."
                 ;;
                 "3")
-                    echo "Saliendo del menu de litespeed..."
+                    echo "Saliendo del menu de cherokee..."
                 ;;
                 *)
                     echo "Selecciona una opcion dentro del rango (1..3)"
