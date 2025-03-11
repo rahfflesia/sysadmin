@@ -1,3 +1,5 @@
+$ProgressPreference = 'SilentlyContinue'
+
 function Es-PuertoValido([int]$puerto){
     return $puerto -gt -1023 -and $puerto -lt 65536
 }
@@ -67,11 +69,34 @@ while($true){
             $opcNginx = Read-Host "Selecciona una version"
             switch($opcNginx){
                 "1"{
-                    echo "Instalando version LTS $versionLTSNginx"
-                    Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                    try {
+                        echo "Instalando version LTS $versionLTSNginx"
+                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                        Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas
+                        cd nginx-$versionLTSNginx
+                        Start-Process nginx.exe
+                        Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                        cd ..
+                        echo "Instalacion completada"
+                    }
+                    catch {
+                        Echo $Error[0].ToString()
+                    }
                 }
                 "2"{
-                    echo "Instalando version de desarrollo"
+                    try {
+                        echo "Instalando version de desarrollo $versionDevNginx"
+                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                        Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas
+                        cd nginx-$versionDevNginx
+                        Start-Process nginx.exe
+                        Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                        cd ..
+                        echo "Instalacion completada"
+                    }
+                    catch {
+                        echo $Error[0].ToString()
+                    }
                 }
                 "3"{
                     echo "Saliendo del menu de Nginx..."
