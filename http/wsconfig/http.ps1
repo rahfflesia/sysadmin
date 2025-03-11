@@ -76,11 +76,11 @@ while($true){
                 "1"{
                     try {
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un puerto dentro del rango (1024-65535)"
-                        }
-                        elseif(-not(Es-Numerico -string $puerto)){
+                        if(-not(Es-Numerico -string $puerto)){
                             echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un puerto dentro del rango (1024-65535)"
                         }
                         else{
                             Stop-Process -Name nginx -ErrorAction SilentlyContinue
@@ -103,11 +103,11 @@ while($true){
                 "2"{
                     try {
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un puerto dentro del rango (1024-65535)"
-                        }
-                        elseif(-not(Es-Numerico -string $puerto)){
+                        if(-not(Es-Numerico -string $puerto)){
                             echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un puerto dentro del rango (1024-65535)"
                         }
                         else{
                             Stop-Process -Name nginx -ErrorAction SilentlyContinue
