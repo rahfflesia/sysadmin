@@ -1,3 +1,5 @@
+$ProgressPreference = 'SilentlyContinue'
+
 function Es-PuertoValido([int]$puerto){
     return $puerto -gt 1023 -and $puerto -lt 65536
 }
@@ -82,8 +84,8 @@ while($true){
                         Start-Process nginx.exe
                         Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                         cd ..
-                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
-                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -match "Listen       [0-9]{1,5}"
+                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto"
+                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -match "listen       $puerto"
                         echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                     }
                     catch {
@@ -101,8 +103,8 @@ while($true){
                         Start-Process nginx.exe
                         Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                         cd ..
-                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
-                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -match "Listen       [0-9]{1,5}"
+                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto"
+                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -match "listen       [0-9]{1,5}"
                         echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"
                     }
                     catch {
