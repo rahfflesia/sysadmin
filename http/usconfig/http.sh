@@ -127,7 +127,7 @@ do
         ;;
         "2")
             lightDescargas="https://www.lighttpd.net/releases/"
-            paginaLight=$(hacerPeticion "$lightDescargas" "$paginaLight")
+            paginaLight=$(hacerPeticion "$lightDescargas")
             ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex" "$paginaLight") 
             versiones=$(echo "$paginaLight" | grep -oE "$versionRegex")
             ultimaVersionLTSLighttpd=$(obtenerVersionLTS 2 "$versiones")
