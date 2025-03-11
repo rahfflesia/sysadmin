@@ -78,11 +78,11 @@ while($true){
                             echo "Ingresa un valor numerico entero"
                         }
                         else{
-                            Stop-Process -Name nginx
+                            Stop-Process -Name nginx -ErrorAction SilentlyContinue
                             echo "Instalando version LTS $versionLTSNginx"
                             Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
                             Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
-                            cd nginx-$versionLTSNginx
+                            cd C:\descargas\nginx-$versionLTSNginx
                             Start-Process nginx.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                             cd ..
@@ -102,12 +102,12 @@ while($true){
                             echo "Ingresa un valor numerico entero"
                         }
                         else{
-                            Stop-Process -Name nginx
+                            Stop-Process -Name nginx -ErrorAction SilentlyContinue
                             $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
                             echo "Instalando version de desarrollo $versionDevNginx"
                             Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
                             Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
-                            cd nginx-$versionDevNginx
+                            cd C:\descargas\nginx-$versionDevNginx
                             Start-Process nginx.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                             cd ..
