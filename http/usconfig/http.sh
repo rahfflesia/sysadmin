@@ -1,7 +1,5 @@
-# Ya funciona la instalacion de apache, en cualquier inconveniente puedo volver a este commit
+# Ambos scripts funcionales en caso de error puedo volver a este commit
 # $1 = URL, Retorna el html
-# Nginx funcional
-# Script de ubuntu 100% funcional, puedo volver a este commit en caso de error
 function hacerPeticion(){
     local url=$1
     local html=$(curl -s "$url")

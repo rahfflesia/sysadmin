@@ -1,4 +1,7 @@
+# Ambos scripts funcionales en caso de error puedo volver a este commit
 $ProgressPreference = 'SilentlyContinue'
+
+# Script de powershell funcional, quizás falta depurarlo un poco
 
 function Es-PuertoValido([int]$puerto){
     return $puerto -gt 1023 -and $puerto -lt 65536
@@ -99,7 +102,7 @@ while($true){
                             $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
                             echo $versionSinV
                             echo "Instalando version LTS $versionDesarrolloCaddy"
-                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/releases/download/$versionDesarrollo/caddy_${versionSinV}_windows_amd64.zip" -Outfile "C:\descargas\caddy-$versionDesarrollo.zip"
+                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/releases/download/$versionDesarrolloCaddy/caddy_${versionSinV}_windows_amd64.zip" -Outfile "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
                             Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
