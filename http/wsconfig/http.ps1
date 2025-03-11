@@ -82,8 +82,8 @@ while($true){
                         Start-Process nginx.exe
                         Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                         cd ..
-                        (Get-Content C:\descargas\nginx-$versionLTSNginx\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
-                        (Get-Content C:\descargas\nginx-$versionLTSNginx\nginx.conf) -match "Listen       [0-9]{1,5}"
+                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
+                        (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -match "Listen       [0-9]{1,5}"
                         echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                     }
                     catch {
@@ -101,8 +101,8 @@ while($true){
                         Start-Process nginx.exe
                         Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                         cd ..
-                        (Get-Content C:\descargas\nginx-$versionDevNginx\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
-                        (Get-Content C:\descargas\nginx-$versionDevNginx\nginx.conf) -match "Listen       [0-9]{1,5}"
+                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "Listen       [0-9]{1,5}", "Listen       $puerto"
+                        (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -match "Listen       [0-9]{1,5}"
                         echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"
                     }
                     catch {
@@ -117,4 +117,5 @@ while($true){
         }
         default {echo "Selecciona una opcion dentro del rango (1..4)"}
     }
+    echo `n
 }
