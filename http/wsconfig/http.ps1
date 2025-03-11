@@ -69,7 +69,7 @@ while($true){
                             echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
                         }
                         else{
-                            #Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                            Stop-Process -Name caddy -ErrorAction SilentlyContinue
                             $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                             echo $versionSinV
                             echo "Instalando version LTS $versionLTSCaddy"
@@ -77,10 +77,10 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Add-Content -Path "FilePath" -Value ":$puerto"
+                            Add-Content -Path "C:\descargas\Caddyfile" -Value ":$puerto"
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
-                            Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern ":$puerto"
+                            Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
                             echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                         }
                     }
@@ -89,7 +89,30 @@ while($true){
                     }
                 }
                 "2"{
-
+                    try{
+                        $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        }
+                        else{
+                            Stop-Process -Name caddy -ErrorAction SilentlyContinue
+                            $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
+                            echo $versionSinV
+                            echo "Instalando version LTS $versionDesarrolloCaddy"
+                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/releases/download/$versionDesarrollo/caddy_${versionSinV}_windows_amd64.zip" -Outfile "C:\descargas\caddy-$versionDesarrollo.zip"
+                            Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
+                            cd C:\descargas
+                            New-Item c:\descargas\Caddyfile -type file -Force
+                            Add-Content -Path "C:\descargas\Caddyfile" -Value ":$puerto"
+                            Start-Process caddy.exe
+                            Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                            Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                            echo "Se instalo la version de desarrollo $versionDesarrolloCaddy de Caddy"
+                        }
+                    }
+                    catch{
+                        echo $Error[0].ToString()
+                    }
                 }
                 "3"{
                     echo "Saliendo del menu de caddy..."
