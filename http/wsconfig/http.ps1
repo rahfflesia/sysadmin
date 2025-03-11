@@ -42,11 +42,15 @@ while($true){
             }
         }
         "2"{
-            $versionesCaddy = Invoke-WebRequest -UseBasicParsing -URI "https://api.github.com/repos/caddyserver/caddy/releases" -Method Get | ForEach-Object { $_.tag_name }
+            $objetosCaddy = Invoke-RestMethod "https://api.github.com/repos/caddyserver/caddy/releases"
+            $versionesCaddy = $objetosCaddy | Select-Object -ExpandProperty tag_name
+            $versionDesarrolloCaddy = $versionesCaddy[0]
+            $versionLTSCaddy = $versionesCaddy[6]
+
 
             echo "Instalador de Caddy"
-            echo "1. Version LTS ${versionesCaddy[0]}"
-            echo "2. Version de desarrollo ${versionesCaddy[6]}"
+            echo "1. Version LTS $versionesCaddy"
+            echo "2. Version de desarrollo $versionesCaddy"
             echo "3. Salir"
             $opcCaddy = Read-Host "Selecciona una version"
             switch($opcCaddy){
