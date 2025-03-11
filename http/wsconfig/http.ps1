@@ -17,6 +17,14 @@ function encontrarValor([string]$regex, [string]$pagina){
     return $coincidencias
 }
 
+function quitarPrimerCaracter([string]$string){
+    $stringSinPrimerCaracter = ""
+    for($i = 1; $i -lt $string.length; $i++){
+        $stringSinPrimerCaracter += $string[$i]
+    }
+    return $stringSinPrimerCaracter
+}
+
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 
 while($true){
@@ -62,10 +70,12 @@ while($true){
                         }
                         else{
                             #Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                            $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
+                            echo $versionSinV
                             echo "Instalando version LTS $versionLTSCaddy"
-                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/archive/refs/tags/$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
+                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/releases/download/$versionLTSCaddy/caddy_${versionSinV}_windows_amd64.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
-                            cd C:\descargas\nginx-$versionLTSCaddy
+                            cd C:\descargas\caddy-$versionSinV
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             cd ..
