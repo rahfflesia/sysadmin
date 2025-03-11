@@ -41,8 +41,8 @@ while($true){
             echo "1. Version LTS "
             echo "2. Version de desarrollo "
             echo "3. Salir"
-            $opcApache = Read-Host "Selecciona una version"
-            switch($opcApache){
+            $opcCaddy = Read-Host "Selecciona una version"
+            switch($opcCaddy){
                 "1"{
                     # Implementar
                 }
@@ -70,14 +70,23 @@ while($true){
             switch($opcNginx){
                 "1"{
                     try {
-                        echo "Instalando version LTS $versionLTSNginx"
-                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
-                        Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas
-                        cd nginx-$versionLTSNginx
-                        Start-Process nginx.exe
-                        Get-Process | Where-Object { $_.ProcessName -like *nginx* }
-                        cd ..
-                        echo "Instalacion completada"
+                        $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                        if(-not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un puerto valido dentro del rango (1023-6553)"
+                        }
+                        elseif(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        else{
+                            echo "Instalando version LTS $versionLTSNginx"
+                            Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                            Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas
+                            cd nginx-$versionLTSNginx
+                            Start-Process nginx.exe
+                            Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                            cd ..
+                            echo "Instalacion completada"
+                        }
                     }
                     catch {
                         Echo $Error[0].ToString()
@@ -85,14 +94,23 @@ while($true){
                 }
                 "2"{
                     try {
-                        echo "Instalando version de desarrollo $versionDevNginx"
-                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
-                        Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas
-                        cd nginx-$versionDevNginx
-                        Start-Process nginx.exe
-                        Get-Process | Where-Object { $_.ProcessName -like *nginx* }
-                        cd ..
-                        echo "Instalacion completada"
+                        if(-not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un puerto valido dentro del rango (1023-6553)"
+                        }
+                        elseif(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        else{
+                            $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                            echo "Instalando version de desarrollo $versionDevNginx"
+                            Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                            Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas
+                            cd nginx-$versionDevNginx
+                            Start-Process nginx.exe
+                            Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                            cd ..
+                            echo "Instalacion completada"
+                        }
                     }
                     catch {
                         echo $Error[0].ToString()
