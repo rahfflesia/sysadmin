@@ -27,6 +27,11 @@ while($true){
     echo "4. Salir"
     $opc = Read-Host "Selecciona una opcion"
 
+    if($opc -eq "4"){
+        echo "Saliendo..."
+        break
+    }
+
     switch($opc){
         "1"{
             if(-not(Get-WindowsFeature -Name Web-Server).Installed){
@@ -71,23 +76,15 @@ while($true){
                 "1"{
                     try {
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un puerto valido dentro del rango (1023-6553)"
-                        }
-                        elseif(-not(Es-Numerico -string $puerto)){
-                            echo "Ingresa un valor numerico entero"
-                        }
-                        else{
-                            Stop-Process -Name nginx -ErrorAction SilentlyContinue
-                            echo "Instalando version LTS $versionLTSNginx"
-                            Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
-                            Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
-                            cd C:\descargas\nginx-$versionLTSNginx
-                            Start-Process nginx.exe
-                            Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
-                            cd ..
-                            echo "Instalacion completada"
-                        }
+                        Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                        echo "Instalando version LTS $versionLTSNginx"
+                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                        Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
+                        cd C:\descargas\nginx-$versionLTSNginx
+                        Start-Process nginx.exe
+                        Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
+                        cd ..
+                        echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                     }
                     catch {
                         Echo $Error[0].ToString()
@@ -95,24 +92,16 @@ while($true){
                 }
                 "2"{
                     try {
-                        if(-not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un puerto valido dentro del rango (1023-6553)"
-                        }
-                        elseif(-not(Es-Numerico -string $puerto)){
-                            echo "Ingresa un valor numerico entero"
-                        }
-                        else{
-                            Stop-Process -Name nginx -ErrorAction SilentlyContinue
-                            $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                            echo "Instalando version de desarrollo $versionDevNginx"
-                            Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
-                            Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
-                            cd C:\descargas\nginx-$versionDevNginx
-                            Start-Process nginx.exe
-                            Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
-                            cd ..
-                            echo "Instalacion completada"
-                        }
+                        Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                        $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                        echo "Instalando version de desarrollo $versionDevNginx"
+                        Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                        Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
+                        cd C:\descargas\nginx-$versionDevNginx
+                        Start-Process nginx.exe
+                        Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
+                        cd ..
+                        echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"
                     }
                     catch {
                         echo $Error[0].ToString()
@@ -123,10 +112,6 @@ while($true){
                 }
                 default {"Selecciona una opcion dentro del rango (1..3)"}
             }
-        }
-        "4"{
-            echo "Saliendo..."
-            break
         }
         default {echo "Selecciona una opcion dentro del rango (1..4)"}
     }
