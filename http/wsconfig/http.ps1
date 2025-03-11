@@ -75,10 +75,12 @@ while($true){
                             echo "Instalando version LTS $versionLTSCaddy"
                             Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/releases/download/$versionLTSCaddy/caddy_${versionSinV}_windows_amd64.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
-                            cd C:\descargas\caddy-$versionSinV
+                            cd C:\descargas
+                            New-Item c:\descargas\Caddyfile -type file -Force
+                            Add-Content -Path "FilePath" -Value ":$puerto"
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
-                            cd ..
+                            Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern ":$puerto"
                             echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                         }
                     }
