@@ -83,7 +83,7 @@ while($true){
                             Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas
                             cd nginx-$versionLTSNginx
                             Start-Process nginx.exe
-                            Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                            Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                             cd ..
                             echo "Instalacion completada"
                         }
@@ -107,7 +107,7 @@ while($true){
                             Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas
                             cd nginx-$versionDevNginx
                             Start-Process nginx.exe
-                            Get-Process | Where-Object { $_.ProcessName -like *nginx* }
+                            Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                             cd ..
                             echo "Instalacion completada"
                         }
