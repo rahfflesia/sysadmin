@@ -49,13 +49,32 @@ while($true){
 
 
             echo "Instalador de Caddy"
-            echo "1. Version LTS $versionesLTSCaddy"
+            echo "1. Version LTS $versionLTSCaddy"
             echo "2. Version de desarrollo $versionDesarrolloCaddy"
             echo "3. Salir"
             $opcCaddy = Read-Host "Selecciona una version"
             switch($opcCaddy){
                 "1"{
-                    
+                    try{
+                        $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
+                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        }
+                        else{
+                            #Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                            echo "Instalando version LTS $versionLTSCaddy"
+                            Invoke-WebRequest -UseBasicParsing "https://github.com/caddyserver/caddy/archive/refs/tags/$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
+                            Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
+                            cd C:\descargas\nginx-$versionLTSCaddy
+                            Start-Process caddy.exe
+                            Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                            cd ..
+                            echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
+                        }
+                    }
+                    catch{
+                        echo $Error[0].ToString()
+                    }
                 }
                 "2"{
 
