@@ -154,6 +154,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
+                        sudo pkill lighttpd
                         echo "Ultima version -> $ultimaVersionLTSLighttpd"
                         echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
                         echo "Por favor espere..."
@@ -186,6 +187,7 @@ do
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
+                        sudo pkill lighttpd
                         echo "Ultima version -> $ultimaVersionDevLighttpd"
                         echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
                         echo "Por favor espere..."
@@ -193,13 +195,18 @@ do
                         sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionDevLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
-                        ./configure --prefix=/usr/local/lighttpd --sysconfdir=/etc > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                        sudo sed -i -E "s/#server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "$rutaArchivoConfiguracion"
-                        sudo grep -i "server.port" "$rutaArchivoConfiguracion"
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.anottated.conf
+                        sudo install -Dp "$rutaArchivoConfiguracion" /etc/lighttpd/lighttpd.conf
+                        sudo cp -R "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/" /etc/lighttpd/
+                        sudo cp "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/mod.template" /etc/lighttpd/modules.conf
+                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "/etc/lighttpd/lighttpd.conf"
+                        sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                        sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                        sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
                         ps aux | grep lighttpd
                         cd ..
                     fi
