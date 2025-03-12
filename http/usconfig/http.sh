@@ -70,10 +70,10 @@ function esValorEntero(){
 
 function puertoEnUso(){
     local puerto=$1
-    if [[ sudo nc -z -w 1 localhost "&$puerto"]]; then
-        return 1
-    else
+    if sudo nc -z -w 1 localhost "&$puerto"; then
         return 0
+    else
+        return 1
     fi
 }
 
@@ -253,7 +253,7 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.annotated.conf
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.conf
                         sudo install -Dp "$rutaArchivoConfiguracion" /etc/lighttpd/lighttpd.conf
                         sudo cp -R "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/" /etc/lighttpd/
                         sudo cp "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/mod.template" /etc/lighttpd/modules.conf
