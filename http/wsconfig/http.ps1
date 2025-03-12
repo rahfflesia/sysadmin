@@ -4,7 +4,9 @@ $ProgressPreference = 'SilentlyContinue'
 # Script de powershell funcional, quizás falta depurarlo un poco
 
 function Es-PuertoValido([int]$puerto){
-    return $puerto -gt 1023 -and $puerto -lt 65536
+    $array = @(20 21 22 23 25 53 67 68 80 110 119 123 143 161 162 389 443)
+    $arrayDesc = @()
+    
 }
 
 function Es-Numerico([string]$string){

@@ -49,6 +49,15 @@ function esPuertoValido() {
     return 0
 }
 
+function esRangoValido(){
+    local puerto=$1
+    if [[ "$puerto" -lt 0 || "$puerto" -gt 65535 ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 
 function esValorEntero(){
     local valor=$1
@@ -56,6 +65,15 @@ function esValorEntero(){
         return 0
     else
         return 1
+    fi
+}
+
+function puertoEnUso(){
+    local puerto=$1
+    if [[ sudo nc -z -w 1 localhost "&$puerto"]]; then
+        return 1
+    else
+        return 0
     fi
 }
 
@@ -125,6 +143,10 @@ do
                         echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
+                    elif ! esRangoValido "$puerto"; then
+                        echo "Ingresa un numero dentro del rango (0-65535)"
+                    elif puertoEnUso "$puerto"; then
+                        echo "El puerto se encuentra en uso"
                     else
                         instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
                         # Verificar la instalación
@@ -177,6 +199,10 @@ do
                         echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
+                    elif ! esRangoValido "$puerto"; then
+                        echo "Ingresa un numero dentro del rango (0-65535)"
+                    elif puertoEnUso "$puerto"; then
+                        echo "El puerto se encuentra en uso"
                     else
                         sudo pkill lighttpd
                         echo "Ultima version -> $ultimaVersionLTSLighttpd"
@@ -210,6 +236,10 @@ do
                         echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
+                    elif ! esRangoValido "$puerto"; then
+                        echo "Ingresa un numero dentro del rango (0-65535)"
+                    elif puertoEnUso "$puerto"; then
+                        echo "El puerto esta en uso"
                     else
                         sudo pkill lighttpd
                         echo "Ultima version -> $ultimaVersionDevLighttpd"
@@ -268,6 +298,10 @@ do
                         echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
+                    elif ! esRangoValido "$puerto"; then
+                        echo "Ingresa un numero dentro del rango (0-65535)"
+                    elif puertoEnUso "$puerto"; then
+                        echo "El puerto esta en uso"
                     else
                         instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
                         /usr/local/nginx/sbin/nginx -v
@@ -287,6 +321,10 @@ do
                         echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
+                    elif ! esRangoValido "$puerto"; then
+                        echo "Ingresa un numero dentro del rango (0-65535)"
+                    elif puertoEnUso "$puerto"; then
+                        echo "El puerto esta en uso"
                     else
                         instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
                         /usr/local/nginx/sbin/nginx -v
