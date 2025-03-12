@@ -161,13 +161,15 @@ do
                         sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
                         cd "lighttpd-$ultimaVersionLTSLighttpd"
                         sudo bash autogen.sh > /dev/null 2>&1
-                        ./configure --prefix=/usr/local/lighttpd --sysconfdir=/etc > /dev/null 2>&1
+                        ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "$rutaArchivoConfiguracion"
-                        sudo grep -i "server.port" "$rutaArchivoConfiguracion"
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/lighttpd.conf
+                        mkdir -p /usr/local/etc/lighttpd
+                        cp "$rutaArchivoConfiguracion" /usr/local/etc/lighttpd/lighttpd.conf
+                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "/usr/local/etc/lighttpd/lighttpd.conf"
+                        sudo grep -i "server.port" "/usr/local/etc/lighttpd/lighttpd.conf"
                         ps aux | grep lighttpd
                         cd ..
                     fi
