@@ -236,7 +236,9 @@ do
 
                         sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
                         sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/nginx/sbin/nginx restart
+                        sudo /usr/local/nginx/sbin/nginx
+                        sudo /usr/local/nginx/sbin/nginx -s reload
+                        ps aux | grep nginx
                     fi
                 ;;
                 "2")
@@ -252,7 +254,9 @@ do
                         /usr/local/nginx/sbin/nginx -v
                         sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
                         sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/nginx/sbin/nginx restart
+                        sudo /usr/local/nginx/sbin/nginx
+                        sudo /usr/local/nginx/sbin/nginx -s reload
+                        ps aux | grep nginx
                     fi
                 ;;
                 "3")
