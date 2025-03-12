@@ -103,6 +103,7 @@ while($true){
                 else{
                     Install-WindowsFeature -Name Web-Server
                     Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
+                    netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
                     iisreset
                     echo "IIS Se ha instalado correctamente"
                 }
@@ -148,7 +149,12 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Set-Content -Path "C:\descargas\Caddyfile" -Value @" :$puerto { root * C:\descargas\web file_server}"@
+                            Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+                            :$puerto{
+                                root * "C:\MiSitio"
+                                file_server
+                            }
+"@
                             Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
@@ -184,7 +190,12 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Set-Content -Path "C:\descargas\Caddyfile" -Value @" :$puerto { root * C:\descargas\web file_server}"@
+                            Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+                            :$puerto{
+                                root * "C:\MiSitio"
+                                file_server
+                            }
+"@
                             Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
