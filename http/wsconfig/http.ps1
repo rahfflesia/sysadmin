@@ -3,11 +3,50 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Script de powershell funcional, quizás falta depurarlo un poco
 
-function Es-PuertoValido([int]$puerto){
-    $array = @(20 21 22 23 25 53 67 68 80 110 119 123 143 161 162 389 443)
-    $arrayDesc = @()
+function Es-PuertoValido([int]$puerto) {
+    $puertosReservados = @{
+        20 = "FTP"
+        21 = "FTP"
+        22 = "SSH"
+        23 = "Telnet"
+        25 = "SMTP"
+        53 = "DNS"
+        67 = "DHCP"
+        68 = "DHCP"
+        80 = "HTTP"
+        110 = "POP3"
+        119 = "NNTP"
+        123 = "NTP"
+        143 = "IMAP"
+        161 = "SNMP"
+        162 = "SNMP"
+        389 = "LDAP"
+        443 = "HTTPS"
+    }
+
+    if ($puertosReservados.ContainsKey($puerto)) {
+        echo "No se puede utilizar ese puerto porque está reservado para el servicio $($puertosReservados[$puerto])"
+        return $false
+    }
     
+    return $true
 }
+
+function Es-RangoValido([int]$puerto){
+    if($puerto -lt 0 -or $puerto -gt 65535){
+        return $false
+    }
+    else{
+        return $true
+    }
+}
+
+function Es-PuertoEnUso([int]$puerto){
+    $enUso = Get-NetTCPConnection -LocalPort $puerto -ErrorAction SilentlyContinue
+    if($enUso){return $true}
+    return $false
+}
+
 
 function Es-Numerico([string]$string){
     return $string -match "^[0-9]+$"
@@ -48,7 +87,25 @@ while($true){
     switch($opc){
         "1"{
             if(-not(Get-WindowsFeature -Name Web-Server).Installed){
-                Install-WindowsFeature -Name Web-Server
+                $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                if(-not(Es-Numerico -string $puerto)){
+                    echo "Ingresa un valor numerico entero"
+                }
+                elseif(-not(Es-RangoValido $puerto)){
+                    echo "Ingresa un puerto dentro del rango (0-65535)"
+                }
+                elseif(Es-PuertoEnUso $puerto){
+                    echo "El puerto se encuentra en uso"
+                }
+                elseif(-not(Es-PuertoValido $puerto)){
+                    echo "Error"
+                }
+                else{
+                    Install-WindowsFeature -Name Web-Server
+                    Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value "*:$puerto:"
+                    iisreset
+                    echo "IIS Se ha instalado correctamente"
+                }
             }
             else{
                 echo "IIS ya se encuentra instalado"
@@ -70,8 +127,17 @@ while($true){
                 "1"{
                     try{
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        if(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-RangoValido $puerto)){
+                            echo "Ingresa un puerto dentro del rango (0-65535)"
+                        }
+                        elseif(Es-PuertoEnUso $puerto){
+                            echo "El puerto se encuentra en uso"
+                        }
+                        elseif(-not(Es-PuertoValido $puerto)){
+                            echo "Error"
                         }
                         else{
                             Stop-Process -Name caddy -ErrorAction SilentlyContinue
@@ -86,6 +152,7 @@ while($true){
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                            netsh advfirewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                         }
                     }
@@ -96,8 +163,17 @@ while($true){
                 "2"{
                     try{
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        if(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-RangoValido $puerto)){
+                            echo "Ingresa un puerto dentro del rango (0-65535)"
+                        }
+                        elseif(Es-PuertoEnUso $puerto){
+                            echo "El puerto se encuentra en uso"
+                        }
+                        elseif(-not(Es-PuertoValido $puerto)){
+                            echo "Error"
                         }
                         else{
                             Stop-Process -Name caddy -ErrorAction SilentlyContinue
@@ -112,6 +188,7 @@ while($true){
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                            netsh advfirewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version de desarrollo $versionDesarrolloCaddy de Caddy"
                         }
                     }
@@ -141,8 +218,17 @@ while($true){
                 "1"{
                     try {
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        if(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-RangoValido $puerto)){
+                            echo "Ingresa un puerto dentro del rango (0-65535)"
+                        }
+                        elseif(Es-PuertoEnUso $puerto){
+                            echo "El puerto se encuentra en uso"
+                        }
+                        elseif(-not(Es-PuertoValido $puerto)){
+                            echo "Error"
                         }
                         else{
                             Stop-Process -Name nginx -ErrorAction SilentlyContinue
@@ -155,6 +241,7 @@ while($true){
                             cd ..
                             (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf
                             Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
+                            netsh advfirewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                         }
                     }
@@ -165,8 +252,17 @@ while($true){
                 "2"{
                     try {
                         $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-Numerico -string $puerto) -or -not(Es-PuertoValido -puerto $puerto)){
-                            echo "Ingresa un valor numerico entero o un puerto dentro del rango (1024-65535)"
+                        if(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-RangoValido $puerto)){
+                            echo "Ingresa un puerto dentro del rango (0-65535)"
+                        }
+                        elseif(Es-PuertoEnUso $puerto){
+                            echo "El puerto se encuentra en uso"
+                        }
+                        elseif(-not(Es-PuertoValido $puerto)){
+                            echo "Error"
                         }
                         else{
                             Stop-Process -Name nginx -ErrorAction SilentlyContinue
@@ -179,6 +275,7 @@ while($true){
                             cd ..
                             (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf
                             Select-String -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
+                            netsh advfirewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"   
                         }
                     }
