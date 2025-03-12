@@ -150,7 +150,7 @@ while($true){
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
                             Set-Content -Path "C:\descargas\Caddyfile" -Value @"
-                            :$puerto{
+                            :$puerto {
                                 root * "C:\MiSitio"
                                 file_server
                             }
@@ -191,7 +191,7 @@ while($true){
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
                             Set-Content -Path "C:\descargas\Caddyfile" -Value @"
-                            :$puerto{
+                            :$puerto {
                                 root * "C:\MiSitio"
                                 file_server
                             }
