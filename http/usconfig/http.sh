@@ -165,10 +165,10 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/tests/lighttpd.conf
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/lighttpd.conf
                         sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "$rutaArchivoConfiguracion"
                         sudo grep -i "server.port" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/lighttpd/sbin/lighttpd -f "$rutaArchivoConfiguracion"
+                        sudo /usr/local/lighttpd/sbin/lighttpd start
                         ps aux | grep lighttpd
                         cd ..
                     fi
@@ -196,7 +196,7 @@ do
                         rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.annotated.conf
                         sudo sed -i -E "s/#server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "$rutaArchivoConfiguracion"
                         sudo grep -i "server.port" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/lighttpd/sbin/lighttpd -f "$rutaArchivoConfiguracion"
+                        sudo /usr/local/lighttpd/sbin/lighttpd start
                         ps aux | grep lighttpd
                         cd ..
                     fi
