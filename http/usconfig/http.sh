@@ -104,8 +104,8 @@ do
                     else
                         instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
                         # Verificar la instalación
-                        /usr/local/apache2/bin/httpd -v
-                        rutaArchivoConfiguracion="/usr/local/apache2/conf/httpd.conf"
+                        /usr/local/apache/bin/httpd -v
+                        rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
                         # Remuevo el puerto en uso
                         sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
                         # Añado el puerto proporcionado por el usuario
