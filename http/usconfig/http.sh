@@ -110,8 +110,11 @@ do
                         sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
                         # Añado el puerto proporcionado por el usuario
                         sudo printf "Listen $puerto" >> $rutaArchivoConfiguracion
+                        echo "Escuchando en el puerto $puerto"
                         # Compruebo que realmente esté escuchando en ese puerto
                         sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
+                        sudo /usr/local/apache/bin/apachectl restart
+                        ps aux | grep httpd
                     fi
                 ;;
                 "2")
