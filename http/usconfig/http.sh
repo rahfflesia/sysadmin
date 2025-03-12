@@ -166,10 +166,13 @@ do
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
                         rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/lighttpd.conf
-                        mkdir -p /usr/local/etc/lighttpd
-                        cp "$rutaArchivoConfiguracion" /usr/local/etc/lighttpd/lighttpd.conf
-                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "/usr/local/etc/lighttpd/lighttpd.conf"
-                        sudo grep -i "server.port" "/usr/local/etc/lighttpd/lighttpd.conf"
+                        sudo install -Dp "$rutaArchivoConfiguracion" /etc/lighttpd/lighttpd.conf
+                        sudo cp -R "home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/conf.d/" /etc/lighttpd/
+                        sudo cp "home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/conf.d/mod.template" /etc/lighttpd/modules.conf
+                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "/etc/lighttpd/lighttpd.conf"
+                        sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                        sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                        sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
                         ps aux | grep lighttpd
                         cd ..
                     fi
