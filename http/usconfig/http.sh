@@ -17,14 +17,38 @@ function encontrarValor(){
     fi
 }
 
-function esPuertoValido(){
+function esPuertoValido() {
+    local array=(20 21 22 23 25 53 67 68 80 110 119 123 143 161 162 389 443)
+    declare -A arrayDesc
+
+    arrayDesc[20]="FTP"
+    arrayDesc[21]="FTP"
+    arrayDesc[22]="SSH"
+    arrayDesc[23]="Telnet"
+    arrayDesc[25]="SMTP"
+    arrayDesc[53]="DNS"
+    arrayDesc[67]="DHCP"
+    arrayDesc[68]="DHCP"
+    arrayDesc[80]="HTTP"
+    arrayDesc[110]="POP3"
+    arrayDesc[119]="NNTP"
+    arrayDesc[123]="NTP"
+    arrayDesc[143]="IMAP"
+    arrayDesc[161]="SNMP"
+    arrayDesc[162]="SNMP"
+    arrayDesc[389]="LDAP"
+    arrayDesc[443]="HTTPS"
+
     local puerto=$1
-    if [[ "$puerto" -lt 1024 || "$puerto" -gt 65535 ]]; then
-        return 1
-    else
-        return 0
-    fi
+    for numero in "${array[@]}"; do
+        if [[ "$numero" -eq "$puerto" ]]; then
+            echo "No se puede utilizar ese puerto porque está reservado para el servicio ${arrayDesc[$numero]}"
+            return 1
+        fi
+    done
+    return 0
 }
+
 
 function esValorEntero(){
     local valor=$1
@@ -98,7 +122,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 1024-65535"
+                        echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -150,7 +174,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 1024-65535"
+                        echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -183,7 +207,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 1024-65535"
+                        echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -199,7 +223,7 @@ do
                         make -j$(nproc) > /dev/null 2>&1
                         sudo make install > /dev/null 2>&1
                         /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.anottated.conf
+                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/lighttpd.annotated.conf
                         sudo install -Dp "$rutaArchivoConfiguracion" /etc/lighttpd/lighttpd.conf
                         sudo cp -R "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/" /etc/lighttpd/
                         sudo cp "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionDevLighttpd/doc/config/conf.d/mod.template" /etc/lighttpd/modules.conf
@@ -241,7 +265,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 1024-65535"
+                        echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
@@ -260,7 +284,7 @@ do
                     read puerto
 
                     if ! esPuertoValido "$puerto"; then
-                        echo "El puerto debe de estar dentro del rango 1024-65535"
+                        echo "Error"
                     elif ! esValorEntero "$puerto"; then
                         echo "El puerto debe de ser un valor numerico entero"
                     else
