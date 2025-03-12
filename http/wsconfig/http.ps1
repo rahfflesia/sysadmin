@@ -152,7 +152,7 @@ while($true){
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
-                            netsh advfirewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                            netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                         }
                     }
@@ -188,7 +188,7 @@ while($true){
                             Start-Process caddy.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
-                            netsh advfirewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                            netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version de desarrollo $versionDesarrolloCaddy de Caddy"
                         }
                     }
@@ -241,7 +241,7 @@ while($true){
                             cd ..
                             (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf
                             Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
-                            netsh advfirewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+                            netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                         }
                     }
@@ -275,7 +275,7 @@ while($true){
                             cd ..
                             (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf
                             Select-String -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
-                            netsh advfirewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+                            netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"   
                         }
                     }
