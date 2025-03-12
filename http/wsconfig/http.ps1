@@ -148,8 +148,8 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Add-Content -Path "C:\descargas\Caddyfile" -Value ":$puerto"
-                            Start-Process caddy.exe
+                            Set-Content -Path "C:\descargas\Caddyfile" -Value @" :$puerto { root * C:\descargas\web file_server}"@
+                            Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
                             netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
@@ -184,8 +184,8 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Add-Content -Path "C:\descargas\Caddyfile" -Value ":$puerto"
-                            Start-Process caddy.exe
+                            Set-Content -Path "C:\descargas\Caddyfile" -Value @" :$puerto { root * C:\descargas\web file_server}"@
+                            Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
                             netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
