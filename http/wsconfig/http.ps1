@@ -102,7 +102,7 @@ while($true){
                 }
                 else{
                     Install-WindowsFeature -Name Web-Server
-                    Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value "*:$puerto:"
+                    Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
                     iisreset
                     echo "IIS Se ha instalado correctamente"
                 }
