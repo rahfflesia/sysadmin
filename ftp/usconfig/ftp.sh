@@ -2,6 +2,9 @@
 # Ambos scripts funcionan, cualquier caso puedo volver a este commit
 # Script de bash con validaciones 100% funcional
 #!/bin/bash
+
+# SSL funcionando
+
 function habilitarSSL(){
     local ruta="/etc/vsftpd.conf"
     if sudo grep -qiE "ssl_|rsa_|_ssl" "$ruta"; then
