@@ -4,7 +4,7 @@
 #!/bin/bash
 function habilitarSSL(){
     local ruta="/etc/vsftpd.conf"
-    if sudo grep -qiE "ssl|rsa" "$ruta"; then
+    if sudo grep -qiE "ssl_|rsa_|_ssl" "$ruta"; then
         echo "El archivo ya cuenta con la configuracion, se va a omitir este paso"
     else
         echo "Configurando SSL..."
