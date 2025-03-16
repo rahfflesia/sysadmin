@@ -22,6 +22,14 @@ function habilitarSSL(){
     sudo systemctl restart vsftpd
 }
 
+function deshabilitarSSL(){
+    local ruta="/etc/vsftpd.conf"
+    local regex='ssl|rsa'
+
+    sudo sed -i -E "$regex" "$ruta"
+    sudo systemctl restart vsftpd
+}
+
 sudo apt-get upgrade
 sudo apt install vsftpd
 
@@ -49,6 +57,7 @@ if [ "$opcSsl" = "si" ]; then
     habilitarSSL
 elif [ "$opcSsl" = "no" ]; then
     echo "SSL no se habilitara"
+    deshabilitarSSL
 else
     echo "Selecciona una opcion valida (si/no)"
 fi
