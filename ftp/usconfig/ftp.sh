@@ -4,29 +4,31 @@
 #!/bin/bash
 function habilitarSSL(){
     local ruta="/etc/vsftpd.conf"
-    local rutaCertificado="/etc/ssl/certs/vsftpd.crt"
-    local rutaClavePrivada="/etc/ssl/private/vsftpd.key"
+    if ! sudo grep -i -E "ssl|rsa" "$ruta"; then
+        local rutaCertificado="/etc/ssl/certs/vsftpd.crt"
+        local rutaClavePrivada="/etc/ssl/private/vsftpd.key"
 
-    sudo printf "ssl_enable=YES\n" >> $ruta
-    sudo printf "allow_anon_ssl=YES\n" >> $ruta
-    sudo printf "force_local_data_ssl=YES\n" >> $ruta
-    sudo printf "force_local_logins_ssl=YES\n" >> $ruta
-    sudo printf "ssl_tlsv1=YES\n" >> $ruta
-    sudo printf "ssl_sslv2=NO\n" >> $ruta
-    sudo printf "ssl_sslv3=NO\n" >> $ruta
-    sudo printf "require_ssl_reuse=NO\n" >> $ruta
-    sudo printf "ssl_ciphers=HIGH\n" >> $ruta
-    sudo printf "rsa_cert_file=$rutaCertificado\n" >> $ruta
-    sudo printf "rsa_private_key_file=$rutaClavePrivada\n" >> $ruta
+        sudo printf "ssl_enable=YES\n" >> $ruta
+        sudo printf "allow_anon_ssl=YES\n" >> $ruta
+        sudo printf "force_local_data_ssl=YES\n" >> $ruta
+        sudo printf "force_local_logins_ssl=YES\n" >> $ruta
+        sudo printf "ssl_tlsv1=YES\n" >> $ruta
+        sudo printf "ssl_sslv2=NO\n" >> $ruta
+        sudo printf "ssl_sslv3=NO\n" >> $ruta
+        sudo printf "require_ssl_reuse=NO\n" >> $ruta
+        sudo printf "ssl_ciphers=HIGH\n" >> $ruta
+        sudo printf "rsa_cert_file=$rutaCertificado\n" >> $ruta
+        sudo printf "rsa_private_key_file=$rutaClavePrivada\n" >> $ruta
 
-    sudo systemctl restart vsftpd
+        sudo systemctl restart vsftpd
+    fi
 }
 
 function deshabilitarSSL(){
     local ruta="/etc/vsftpd.conf"
     local regex='ssl|rsa'
 
-    sudo sed -i -E "$regex" "$ruta"
+    sudo sed -i -E "/$regex/d" "$ruta"
     sudo systemctl restart vsftpd
 }
 
