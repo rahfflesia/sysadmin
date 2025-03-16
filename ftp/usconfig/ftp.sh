@@ -2,6 +2,26 @@
 # Ambos scripts funcionan, cualquier caso puedo volver a este commit
 # Script de bash con validaciones 100% funcional
 #!/bin/bash
+function habilitarSSL(){
+    local ruta="/etc/vsftpd.conf"
+    local rutaCertificado="/etc/ssl/certs/vsftpd.crt"
+    local rutaClavePrivada="/etc/ssl/private/vsftpd.key"
+
+    sudo printf "ssl_enable=YES" >> $ruta
+    sudo printf "allow_anon_ssl=YES" >> $ruta
+    sudo printf "force_local_data_ssl=YES" >> $ruta
+    sudo printf "force_local_logins_ssl=YES" >> $ruta
+    sudo printf "ssl_tlsv1=YES" >> $ruta
+    sudo printf "ssl_sslv2=NO" >> $ruta
+    sudo printf "ssl_sslv3=NO" >> $ruta
+    sudo printf "require_ssl_reuse=NO" >> $ruta
+    sudo printf "ssl_ciphers=HIGH" >> $ruta
+    sudo printf "rsa_cert_file=$rutaCertificado" >> $ruta
+    sudo printf "rsa_private_key_file=$rutaClavePrivada" >> $ruta
+
+    sudo systemctl restart vsftpd
+}
+
 sudo apt-get upgrade
 sudo apt install vsftpd
 
@@ -17,6 +37,21 @@ sudo chown :reprobados /home/jj/ftp/reprobados
 sudo chown :recursadores /home/jj/ftp/recursadores
 sudo chmod 775 /home/jj/ftp/reprobados
 sudo chmod 775 /home/jj/ftp/recursadores
+
+echo "Deseas activar SSL? (si/no): "
+read opcSsl
+
+declare -l opcSSl
+opcSsl=$opcSsl
+
+if [ "$opcSsl" = "si" ]; then
+    echo "Habilitando SSL..."
+    habilitarSSL
+elif [ "$opcSsl" = "no" ]; then
+    echo "SSL no se habilitara"
+else
+    echo "Selecciona una opcion valida (si/no)"
+fi
 
 while :
 do
