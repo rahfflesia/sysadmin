@@ -7,17 +7,17 @@ function habilitarSSL(){
     local rutaCertificado="/etc/ssl/certs/vsftpd.crt"
     local rutaClavePrivada="/etc/ssl/private/vsftpd.key"
 
-    sudo printf "ssl_enable=YES" >> $ruta
-    sudo printf "allow_anon_ssl=YES" >> $ruta
-    sudo printf "force_local_data_ssl=YES" >> $ruta
-    sudo printf "force_local_logins_ssl=YES" >> $ruta
-    sudo printf "ssl_tlsv1=YES" >> $ruta
-    sudo printf "ssl_sslv2=NO" >> $ruta
-    sudo printf "ssl_sslv3=NO" >> $ruta
-    sudo printf "require_ssl_reuse=NO" >> $ruta
-    sudo printf "ssl_ciphers=HIGH" >> $ruta
-    sudo printf "rsa_cert_file=$rutaCertificado" >> $ruta
-    sudo printf "rsa_private_key_file=$rutaClavePrivada" >> $ruta
+    sudo printf "ssl_enable=YES\n" >> $ruta
+    sudo printf "allow_anon_ssl=YES\n" >> $ruta
+    sudo printf "force_local_data_ssl=YES\n" >> $ruta
+    sudo printf "force_local_logins_ssl=YES\n" >> $ruta
+    sudo printf "ssl_tlsv1=YES\n" >> $ruta
+    sudo printf "ssl_sslv2=NO\n" >> $ruta
+    sudo printf "ssl_sslv3=NO\n" >> $ruta
+    sudo printf "require_ssl_reuse=NO\n" >> $ruta
+    sudo printf "ssl_ciphers=HIGH\n" >> $ruta
+    sudo printf "rsa_cert_file=$rutaCertificado\n" >> $ruta
+    sudo printf "rsa_private_key_file=$rutaClavePrivada\n" >> $ruta
 
     sudo systemctl restart vsftpd
 }
