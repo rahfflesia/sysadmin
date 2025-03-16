@@ -77,13 +77,13 @@ do
             usuario=$usuario
             echo "$usuario"
 
-            if [[ ${#grupo} -gt 20]]; then
+            if [[ ${#grupo} -gt 20 ]]; then
                 echo "El grupo es demasiado largo"
-            elif [[ ${#usuario} -gt 20]]; then
+            elif [[ ${#usuario} -gt 20 ]]; then
                 echo "El usuario es demasiado largo"
-            elif [[ ${#usuario} -lt 4]]; then
+            elif [[ ${#usuario} -lt 4 ]]; then
                 echo "El usuario es demasiado corto"
-            elif [[ ${#grupo} -lt 4]]; then
+            elif [[ ${#grupo} -lt 4 ]]; then
                 echo "El grupo es demasiado corto"
             else
                 if [[ ("$grupo" != "reprobados" && "$grupo" != "recursadores") || -z "$grupo" || -z "$usuario" ]]; then
@@ -140,13 +140,13 @@ do
             if [ $? -eq 0 ]; then
                 echo "El directorio está en uso"
             else
-                if [[ ${#usuario} -gt 20]]; then
+                if [[ ${#usuario} -gt 20 ]]; then
                     echo "El usuario es demasiado largo"
-                elif [[ ${#usuario} -lt 4]]; then
+                elif [[ ${#usuario} -lt 4 ]]; then
                     echo "El usuario es demasiado corto"
-                elif [[ ${#grupo} -gt 20]]; then
+                elif [[ ${#grupo} -gt 20 ]]; then
                     echo "El grupo es demasiado largo"
-                elif [[ ${#grupo} -lt 4]]; then
+                elif [[ ${#grupo} -lt 4 ]]; then
                     echo "El grupo es demasiado corto"
                 else
                     if id "$usuario" &>/dev/null; then
