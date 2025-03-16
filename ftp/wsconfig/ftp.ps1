@@ -114,9 +114,18 @@ function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$carpe
     Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP/$carpetaSitio"
 }
 
-function Habilitar-SSL(){
+function Deshabilitar-SSL(){
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
     Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+}
+
+function Habilitar-SSL(){
+    $numeroCert = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslAllow"
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslAllow"
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.serverCertHash -Value $numeroCert
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslRequire"
+    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslRequire"
 }
 
 function Reiniciar-Sitio(){
@@ -146,10 +155,25 @@ if(!(Get-LocalGroup -Name "recursadores")){
 
 # Habilitar autenticacion básica
 Habilitar-Autenticacion
-Habilitar-SSL
 Habilitar-AccesoAnonimo
 
 icacls "C:\FTP\LocalUser\Public\General" /grant "IIS_IUSRS:(R)"
+
+$opcSsl = Read-Host "Desea activar SSL?"
+
+if($opcSsl.ToLower() -eq "si"){
+    echo "Habilitando SSL..."
+    Habilitar-SSL
+    Reiniciar-Sitio
+}
+elseif($opcSsl.ToLower() -eq "no"){
+    echo "SSL no se habilitara"
+    Deshabilitar-SSL
+    Reiniciar-Sitio
+}
+else{
+    echo "Selecciona una opcion valida (si/no)"
+}
 
 while($true){
     echo "Menu"
