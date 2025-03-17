@@ -107,43 +107,43 @@ function Agregar-UsuarioAGrupo([String]$nombreUsuario, [String]$nombreGrupo){
 }
 
 function Habilitar-Autenticacion(){
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.Security.authentication.basicAuthentication.enabled -Value $true
 }
 
 function Agregar-Permisos([String]$nombreGrupo, [Int]$numero = 3, [String]$carpetaSitio){
-    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP/$carpetaSitio"
+    Add-WebConfiguration "/system.ftpServer/security/authorization" -value @{accessType="Allow";roles="$nombreGrupo";permissions=$numero} -PSPath IIS:\ -location "FTP2/$carpetaSitio"
 }
 
 function Deshabilitar-SSL(){
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.controlChannelPolicy -Value 0
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.dataChannelPolicy -Value 0
 }
 
 function Habilitar-SSL(){
     $numeroCert = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslAllow"
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslAllow"
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.serverCertHash -Value $numeroCert
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslRequire"
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslRequire"
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslAllow"
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslAllow"
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.serverCertHash -Value $numeroCert
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.controlChannelPolicy -Value "SslRequire"
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.ssl.dataChannelPolicy -Value "SslRequire"
 }
 
 function Reiniciar-Sitio(){
-    Restart-WebItem "IIS:\Sites\FTP"
+    Restart-WebItem "IIS:\Sites\FTP2"
 }
 
 function Habilitar-AccesoAnonimo(){
-    Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
+    Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.security.authentication.anonymousAuthentication.enabled -Value $true
 }
 
 # Primera versión funcional del script, si ocurre cualquier error puedo volver a este commit
 $rutaRaiz = "C:\FTP"
-$rutaFisica = "C:\FTP\"
+$rutaFisica = "C:\FTP"
 
 Crear-Ruta $rutaRaiz
-Crear-SitioFTP -nombreSitio "FTP" -puerto 21 -rutaFisica $rutaFisica
+Crear-SitioFTP -nombreSitio "FTP2" -puerto 21 -rutaFisica $rutaFisica
 
-Set-ItemProperty "IIS:\Sites\FTP" -Name ftpServer.userIsolation.mode -Value 3
+Set-ItemProperty "IIS:\Sites\FTP2" -Name ftpServer.userIsolation.mode -Value 3
 
 if(!(Get-LocalGroup -Name "reprobados")){
    Crear-Grupo -nombreGrupo "reprobados" -descripcion "Grupo FTP de reprobados"
@@ -157,7 +157,6 @@ if(!(Get-LocalGroup -Name "recursadores")){
 Habilitar-Autenticacion
 Habilitar-AccesoAnonimo
 
-Add-WebConfiguration "/system.ftpServer/security/authorization" -PSPath "IIS:\Sites\FTP" -Value @{accessType="Allow"; users="*"; permissions="Read, Write"}
 icacls "C:\FTP\LocalUser\Public\General" /grant "IIS_IUSRS:(R)"
 
 $opcSsl = Read-Host "Desea activar SSL?"
