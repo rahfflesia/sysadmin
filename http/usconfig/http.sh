@@ -111,13 +111,13 @@ function instalarServicioHTTP(){
 
 function habilitarSSLApache(){
     rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
-    if sudo grep -qiE "LoadModule ssl_module modules\/mod_ssl.so"; then
+    if sudo grep -qiE "LoadModule ssl_module modules\/mod_ssl.so" "$rutaArchivoConfiguracion"; then
         echo "El modulo de SSL ya se encuentra cargado, este paso sera omitido"
     else
         sudo printf "LoadModule ssl_module modules/mod_ssl.so\n" >> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo grep -qiE "<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>"; then
+    if sudo grep -qiE "<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>" "$rutaArchivoConfiguracion"; then
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
         sudo printf "<VirtualHost _default_:443>\n">> "$rutaArchivoConfiguracion"
@@ -134,7 +134,7 @@ function habilitarSSLApache(){
         sudo printf "</VirtualHost>\n">> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo grep -qiE "Listen 443"; then
+    if sudo grep -qiE "Listen 443" "$rutaArchivoConfiguracion"; then
         echo "El puerto 443 ya se encuentra configurado, se omitira este paso"
     else
         sudo printf "Listen 443\n" >> "$rutaArchivoConfiguracion"
