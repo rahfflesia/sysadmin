@@ -121,17 +121,17 @@ function habilitarSSLApache(){
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
         sudo printf "<VirtualHost _default_:443>">> "$rutaArchivoConfiguracion"
-        sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" " >> "$rutaArchivoConfiguracion"
-        sudo printf "    ubuntu-server-jj" >> "$rutaArchivoConfiguracion"
-        sudo printf "    SSLEngine on" >> "$rutaArchivoConfiguracion"
-        sudo printf "    SSLCertificateFile /etc/ssl/certs/vsftpd.crt" >> "$rutaArchivoConfiguracion"
-        sudo printf "    SSLCertificateKeyFile /etc/ssl/private/vsftpd.key" >> "$rutaArchivoConfiguracion"
-        sudo printf "    <Directory \"/usr/local/apache/htdocs\">" >> "$rutaArchivoConfiguracion"
-        sudo printf "       Options Indexes FollowSymLinks" >> "$rutaArchivoConfiguracion"
-        sudo printf "       AllowOverride All" >> "$rutaArchivoConfiguracion"
-        sudo printf "       Require all granted" >> "$rutaArchivoConfiguracion"
-        sudo printf "    </Directory>" >> "$rutaArchivoConfiguracion"
-        sudo printf "</VirtualHost>">> "$rutaArchivoConfiguracion"
+        sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" \n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    ubuntu-server-jj\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLEngine on\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLCertificateFile /etc/ssl/certs/vsftpd.crt\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLCertificateKeyFile /etc/ssl/private/vsftpd.key\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    <Directory \"/usr/local/apache/htdocs\">\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "       Options Indexes FollowSymLinks\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "       AllowOverride All\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "       Require all granted\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    </Directory>\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "</VirtualHost>\n">> "$rutaArchivoConfiguracion"
     fi
 
     if sudo grep -qiE "Listen 443"; then
