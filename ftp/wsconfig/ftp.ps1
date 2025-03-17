@@ -157,26 +157,9 @@ if(!(Get-LocalGroup -Name "recursadores")){
 Habilitar-Autenticacion
 Habilitar-AccesoAnonimo
 
-$param =@{
-    Filter = "/system.ftpServer/security/authorization"
-    Value = @{
-        accessType = "Allow"
-        roles = $FTPUserGroupName1
-        permision = 1
-    }
-    PSPath = 'IIS:\'
-    Location = "FTP2"
-}
-$param2 =@{
-    Filter = "/system.ftpServer/security/authorization"
-    Value = @{
-        accessType = "Allow"
-        roles = $FTPUserGroupName2
-        permision = 1
-    }
-    PSPath = 'IIS:\'
-    Location = "FTP2"
-}
+
+# No funcionaba, agregué esta línea y funciona, ni idea de porqué
+
 $param3 =@{
     Filter = "/system.ftpServer/security/authorization"
     Value = @{
@@ -189,8 +172,6 @@ $param3 =@{
 }
 
 Add-WebConfiguration @param
-Add-WebConfiguration @param2
-Add-WebConfiguration @param3
 
 Add-WebConfiguration "/system.ftpServer/security/authorization" ` -PSPath "IIS:\Sites\FTP2"  -Value @{accesType="Allow";users="*"; permissions="Read, Write"}
 icacls "C:\FTP\LocalUser\Public\General" /grant "IIS_IUSRS:(R)"
