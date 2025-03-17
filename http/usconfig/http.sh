@@ -104,10 +104,49 @@ function instalarServicioHTTP(){
     cd "$nombreArchivoDescomprimido"
     # Compilar
     ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
-    ./configure --enable-ssl --enable-so > dev/null 2>&1
     # Instalación
     make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
+}
+
+function habilitarSSLApache(){
+    rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
+    if sudo grep -qiE "LoadModule ssl_module modules\/mod_ssl.so"; then
+        echo "El modulo de SSL ya se encuentra cargado, este paso sera omitido"
+    else
+        sudo printf "LoadModule ssl_module modules/mod_ssl.so\n" >> "$rutaArchivoConfiguracion"
+    fi
+
+    if sudo grep -qiE "<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>"; then
+        echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
+    else
+        sudo printf "<VirtualHost _default_:443>">> "$rutaArchivoConfiguracion"
+        sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" " >> "$rutaArchivoConfiguracion"
+        sudo printf "    ubuntu-server-jj" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLEngine on" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLCertificateFile /etc/ssl/certs/vsftpd.crt" >> "$rutaArchivoConfiguracion"
+        sudo printf "    SSLCertificateKeyFile /etc/ssl/private/vsftpd.key" >> "$rutaArchivoConfiguracion"
+        sudo printf "    <Directory \"/usr/local/apache/htdocs\">" >> "$rutaArchivoConfiguracion"
+        sudo printf "       Options Indexes FollowSymLinks" >> "$rutaArchivoConfiguracion"
+        sudo printf "       AllowOverride All" >> "$rutaArchivoConfiguracion"
+        sudo printf "       Require all granted" >> "$rutaArchivoConfiguracion"
+        sudo printf "    </Directory>" >> "$rutaArchivoConfiguracion"
+        sudo printf "</VirtualHost>">> "$rutaArchivoConfiguracion"
+    fi
+
+    if sudo grep -qiE "Listen 443"; then
+        echo "El puerto 443 ya se encuentra configurado, se omitira este paso"
+    else
+        sudo printf "Listen 443\n" >> "$rutaArchivoConfiguracion"
+    fi
+    sudo /usr/local/apache/bin/apachectl restart
+}
+
+function deshabilitarSSLApache(){
+    rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
+    sudo sed -i -E "/<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>/d" "$rutaArchivoConfiguracion"
+    sudo sed -i -E "/^Listen 443/d" "$rutaArchivoConfiguracion"
+    sudo /usr/local/apache/bin/apachectl restart
 }
 
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
@@ -149,6 +188,12 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto se encuentra en uso"
                     else
+                        echo "Desea activar SSL? (si/no)"
+                        read opcSsl
+
+                        declare -l opcSsl
+                        opcSsl=$opcSsl
+
                         instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
                         # Verificar la instalación
                         /usr/local/apache/bin/httpd -v
@@ -162,6 +207,16 @@ do
                         sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
                         sudo /usr/local/apache/bin/apachectl restart
                         ps aux | grep httpd
+
+                        if [ "$opcSsl" = "si" ]; then
+                            echo "Habilitando SSL..."
+                            habilitarSSLApache
+                        elif [ "$opcSsl" = "no" ]; then
+                            echo "SSL no se habilitara"
+                            deshabilitarSSLApache
+                        else
+                            echo "Selecciona una opcion valida (si/no)"
+                        fi
                     fi
                 ;;
                 "2")
