@@ -104,6 +104,29 @@ function instalarServicioHTTP(){
     cd "$nombreArchivoDescomprimido"
     # Compilar
     ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+    ./configure --prefix=/usr/local/nginx --with-http_ssl_module
+    # Instalación
+    make > /dev/null 2>&1
+    sudo make install > /dev/null 2>&1
+}
+
+function instalarNginx(){
+    local versionAMostrar=$1
+    local linkDescarga=$2
+    local nombreArchivo=$3
+    local nombreArchivoDescomprimido=$4
+    local nombreServicio=$5
+
+    echo "Ultima version -> $versionAMostrar"
+    echo "Instalando version $versionAMostrar de $nombreServicio"
+    echo "Por favor espere..."
+    curl -s -O "$linkDescarga"
+    # Descomprimir archivo
+    sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
+    # Entrar a la carpeta
+    cd "$nombreArchivoDescomprimido"
+    # Compilar
+    ./configure --prefix=/usr/local/nginx --with-http_ssl_module > /dev/null 2>&1
     # Instalación
     make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
@@ -359,7 +382,7 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto esta en uso"
                     else
-                        instalarServicioHTTP "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
+                        instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
                         /usr/local/nginx/sbin/nginx -v
 
                         sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
@@ -382,7 +405,7 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto esta en uso"
                     else
-                        instalarServicioHTTP "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
+                        instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
                         /usr/local/nginx/sbin/nginx -v
                         sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
                         sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
