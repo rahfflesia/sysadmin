@@ -173,7 +173,6 @@ $param3 =@{
 
 Add-WebConfiguration @param
 
-Add-WebConfiguration "/system.ftpServer/security/authorization" ` -PSPath "IIS:\Sites\FTP2"  -Value @{accesType="Allow";users="*"; permissions="Read, Write"}
 icacls "C:\FTP\LocalUser\Public\General" /grant "IIS_IUSRS:(R)"
 
 $opcSsl = Read-Host "Desea activar SSL?"
