@@ -117,7 +117,7 @@ function habilitarSSLApache(){
         sudo printf "LoadModule ssl_module modules/mod_ssl.so\n" >> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo grep -qiE "<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>" "$rutaArchivoConfiguracion"; then
+    if sudo awk "/<VirtualHost _default_:443>/,/<\/VirtualHost>/" "$rutaArchivoConfiguracion"; then
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
         sudo printf "<VirtualHost _default_:443>\n">> "$rutaArchivoConfiguracion"
