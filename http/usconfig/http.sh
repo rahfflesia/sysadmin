@@ -126,7 +126,7 @@ function instalarNginx(){
     # Entrar a la carpeta
     cd "$nombreArchivoDescomprimido"
     # Compilar
-    ./configure --prefix=/usr/local/nginx --with-http_ssl_module > /dev/null 2>&1
+    ./configure --prefix=/usr/local/nginx > /dev/null 2>&1
     # Instalación
     make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
