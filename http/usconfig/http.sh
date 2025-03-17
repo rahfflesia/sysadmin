@@ -120,9 +120,9 @@ function habilitarSSLApache(){
     if sudo grep -qiE "<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>"; then
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
-        sudo printf "<VirtualHost _default_:443>">> "$rutaArchivoConfiguracion"
+        sudo printf "<VirtualHost _default_:443>\n">> "$rutaArchivoConfiguracion"
         sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" \n" >> "$rutaArchivoConfiguracion"
-        sudo printf "    ubuntu-server-jj\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "    ServerName ubuntu-server-jj\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    SSLEngine on\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    SSLCertificateFile /etc/ssl/certs/vsftpd.crt\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    SSLCertificateKeyFile /etc/ssl/private/vsftpd.key\n" >> "$rutaArchivoConfiguracion"
@@ -201,7 +201,7 @@ do
                         # Remuevo el puerto en uso
                         sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
                         # Añado el puerto proporcionado por el usuario
-                        sudo printf "Listen $puerto" >> $rutaArchivoConfiguracion
+                        sudo printf "Listen $puerto\n" >> $rutaArchivoConfiguracion
                         echo "Escuchando en el puerto $puerto"
                         # Compruebo que realmente esté escuchando en ese puerto
                         sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
