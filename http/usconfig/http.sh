@@ -70,7 +70,7 @@ function esValorEntero(){
 
 function puertoEnUso(){
     local puerto=$1
-    if sudo nc -z -w 1 localhost "&$puerto"; then
+    if sudo nc -z -w 1 localhost "$puerto"; then
         return 0
     else
         return 1
@@ -104,6 +104,7 @@ function instalarServicioHTTP(){
     cd "$nombreArchivoDescomprimido"
     # Compilar
     ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+    ./configure --enable-ssl --enable-so > dev/null 2>&1
     # Instalación
     make > /dev/null 2>&1
     sudo make install > /dev/null 2>&1
