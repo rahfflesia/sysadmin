@@ -101,14 +101,16 @@ while($true){
                     echo "Error el puerto no es valido"
                 }
                 else{
-                    Install-WindowsFeature -Name Web-Server
+                    Install-WindowsFeature -Name Web-Server -IncludeManagementTools
                     $opc = Read-Host "Quieres habilitar SSL? (si/no)"
                     if($opc.ToLower() -eq "si"){
+                        Import-Module WebAdministration
                         $cert = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
-                        New-WebBinding -Name "Default Web Site" -IP "*" -Port $puerto -Protocol https
+                        Set-WebBinding -Name "Default Web Site" -IP "*" -Port $puerto -Protocol https
                         Push-Location IIS:\SslBindings
                         Get-Item "0.0.0.0!$puerto" | New-Item -Value $cert
                         Pop-Location
+                        netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
                     }
                     elseif($opc.ToLower() -eq "no"){
                         Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
