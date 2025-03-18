@@ -167,6 +167,7 @@ while($true){
                             :$puerto {
                                 root * "C:\MiSitio"
                                 file_server
+                                tls_internal
                             }
 "@
                             Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
