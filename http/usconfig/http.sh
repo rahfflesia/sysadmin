@@ -141,10 +141,10 @@ function habilitarSSLApache(){
         sudo printf "LoadModule ssl_module modules/mod_ssl.so\n" >> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo awk "/<VirtualHost _default_:$puerto>/,/<\/VirtualHost>/" "$rutaArchivoConfiguracion"; then
+    if sudo grep -q "<VirtualHost _default_:$puerto>" "$rutaArchivoConfiguracion"; then
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
-        sudo printf "<VirtualHost _default_:$puerto>\n">> "$rutaArchivoConfiguracion"
+        sudo printf "<VirtualHost _default_:$puerto>\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" \n" >> "$rutaArchivoConfiguracion"
         sudo printf "    ServerName ubuntu-server-jj\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    SSLEngine on\n" >> "$rutaArchivoConfiguracion"
@@ -235,10 +235,10 @@ do
 
                         if [ "$opcSsl" = "si" ]; then
                             echo "Habilitando SSL..."
-                            habilitarSSLApache
+                            habilitarSSLApache "$puerto"
                         elif [ "$opcSsl" = "no" ]; then
                             echo "SSL no se habilitara"
-                            deshabilitarSSLApache
+                            deshabilitarSSLApache "$puerto"
                         else
                             echo "Selecciona una opcion valida (si/no)"
                         fi
