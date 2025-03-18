@@ -110,6 +110,7 @@ while($true){
                         New-WebBinding -Name "Default Web Site" -IP "*" -Port $puerto -Protocol https
                         $cert | New-Item -path IIS:\SslBindings\0.0.0.0!$puerto
                         netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
+                        echo "IIS Se ha instalado correctamente"
                     }
                     elseif($opc.ToLower() -eq "no"){
                         Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
@@ -155,6 +156,7 @@ while($true){
                             echo "Error"
                         }
                         else{
+                            $opcCaddy = Read-Host "Quieres activar SSL? (si/no)"
                             Stop-Process -Name caddy -ErrorAction SilentlyContinue
                             $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                             echo $versionSinV
@@ -163,13 +165,35 @@ while($true){
                             Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                             cd C:\descargas
                             New-Item c:\descargas\Caddyfile -type file -Force
-                            Set-Content -Path "C:\descargas\Caddyfile" -Value @"
-                            :$puerto {
-                                root * "C:\MiSitio"
-                                file_server
-                                tls_internal
-                            }
+                            if($opcCaddy.ToLower() -eq "si"){
+                                echo "Habilitando SSL..."
+                                Clear-Content -Path "C:\descargas\Caddyfile"
+                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+{
+    auto__https disable_redirects
+    debug
+}
+
+https://192.168.100.38:$puerto {
+    root * "C:\MiSitio"
+    file_server
+    tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
+}
 "@
+                            }
+                            elseif($opcCaddy.ToLower() -eq "no"){
+                                Clear-Content -Path "C:\descargas\Caddyfile"
+                                echo "SSL no sera habilitado..."
+                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+:$puerto {
+    root * "C:\MiSitio"
+    file_server
+}
+"@
+                            }
+                            else{
+                                echo "Selecciona una opcion valida (si/no)"
+                            }
                             Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                             Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                             Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
