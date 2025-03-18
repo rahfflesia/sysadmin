@@ -166,14 +166,6 @@ function habilitarSSLApache(){
     sudo /usr/local/apache/bin/apachectl restart
 }
 
-function deshabilitarSSLApache(){
-    local puerto=$1
-    rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
-    sudo sed -i -E "/<VirtualHost \*:$puerto>[\s\S]*?<\/VirtualHost>/d" "$rutaArchivoConfiguracion"
-    sudo sed -i -E "/^Listen $puerto/d" "$rutaArchivoConfiguracion"
-    sudo /usr/local/apache/bin/apachectl restart
-}
-
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -238,7 +230,6 @@ do
                             habilitarSSLApache "$puerto"
                         elif [ "$opcSsl" = "no" ]; then
                             echo "SSL no se habilitara"
-                            deshabilitarSSLApache "$puerto"
                         else
                             echo "Selecciona una opcion valida (si/no)"
                         fi
