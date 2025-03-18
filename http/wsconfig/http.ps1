@@ -98,14 +98,27 @@ while($true){
                     echo "El puerto se encuentra en uso"
                 }
                 elseif(-not(Es-PuertoValido $puerto)){
-                    echo "Error"
+                    echo "Error el puerto no es valido"
                 }
                 else{
                     Install-WindowsFeature -Name Web-Server
-                    Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
-                    netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
-                    iisreset
-                    echo "IIS Se ha instalado correctamente"
+                    $opc = Read-Host "Quieres habilitar SSL? (si/no)"
+                    if($opc.ToLower() -eq "si"){
+                        $cert = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
+                        New-WebBinding -Name "Default Web Site" -IP "*" -Port $puerto -Protocol https
+                        Push-Location IIS:\SslBindings
+                        Get-Item "0.0.0.0!$puerto" | New-Item -Value $cert
+                        Pop-Location
+                    }
+                    elseif($opc.ToLower() -eq "no"){
+                        Set-WebBinding -Name "Default Web Site" -BindingInformation "*:80:" -PropertyName "bindingInformation" -Value ("*:" + $puerto + ":")
+                        netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
+                        iisreset
+                        echo "IIS Se ha instalado correctamente"
+                    }
+                    else{
+                        echo "Selecciona una opcion valida (si/no)"
+                    }
                 }
             }
             else{
