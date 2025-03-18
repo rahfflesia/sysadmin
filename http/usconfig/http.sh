@@ -131,7 +131,9 @@ function instalarNginx(){
     sudo make install > /dev/null 2>&1
 }
 
+
 function habilitarSSLApache(){
+    local puerto=$1
     rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
     if sudo grep -qiE "LoadModule ssl_module modules\/mod_ssl.so" "$rutaArchivoConfiguracion"; then
         echo "El modulo de SSL ya se encuentra cargado, este paso sera omitido"
@@ -139,10 +141,10 @@ function habilitarSSLApache(){
         sudo printf "LoadModule ssl_module modules/mod_ssl.so\n" >> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo awk "/<VirtualHost _default_:443>/,/<\/VirtualHost>/" "$rutaArchivoConfiguracion"; then
+    if sudo awk "/<VirtualHost _default_:$puerto>/,/<\/VirtualHost>/" "$rutaArchivoConfiguracion"; then
         echo "La configuracion SSL ya se encuentra establecida, se omitira este paso"
     else
-        sudo printf "<VirtualHost _default_:443>\n">> "$rutaArchivoConfiguracion"
+        sudo printf "<VirtualHost _default_:$puerto>\n">> "$rutaArchivoConfiguracion"
         sudo printf "    DocumentRoot \"/usr/local/apache/htdocs\" \n" >> "$rutaArchivoConfiguracion"
         sudo printf "    ServerName ubuntu-server-jj\n" >> "$rutaArchivoConfiguracion"
         sudo printf "    SSLEngine on\n" >> "$rutaArchivoConfiguracion"
@@ -156,18 +158,19 @@ function habilitarSSLApache(){
         sudo printf "</VirtualHost>\n">> "$rutaArchivoConfiguracion"
     fi
 
-    if sudo grep -qiE "Listen 443" "$rutaArchivoConfiguracion"; then
-        echo "El puerto 443 ya se encuentra configurado, se omitira este paso"
+    if sudo grep -qiE "Listen $puerto" "$rutaArchivoConfiguracion"; then
+        echo "El puerto $puerto ya se encuentra configurado, se omitira este paso"
     else
-        sudo printf "Listen 443\n" >> "$rutaArchivoConfiguracion"
+        sudo printf "Listen $puerto\n" >> "$rutaArchivoConfiguracion"
     fi
     sudo /usr/local/apache/bin/apachectl restart
 }
 
 function deshabilitarSSLApache(){
+    local puerto=$1
     rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
-    sudo sed -i -E "/<VirtualHost \*:443>[\s\S]*?<\/VirtualHost>/d" "$rutaArchivoConfiguracion"
-    sudo sed -i -E "/^Listen 443/d" "$rutaArchivoConfiguracion"
+    sudo sed -i -E "/<VirtualHost \*:$puerto>[\s\S]*?<\/VirtualHost>/d" "$rutaArchivoConfiguracion"
+    sudo sed -i -E "/^Listen $puerto/d" "$rutaArchivoConfiguracion"
     sudo /usr/local/apache/bin/apachectl restart
 }
 
