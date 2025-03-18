@@ -170,7 +170,7 @@ while($true){
                                 Clear-Content -Path "C:\descargas\Caddyfile"
                                 Set-Content -Path "C:\descargas\Caddyfile" -Value @"
 {
-    auto__https disable_redirects
+    auto_https disable_redirects
     debug
 }
 
@@ -180,6 +180,11 @@ https://192.168.100.38:$puerto {
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
 }
 "@
+                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                             }
                             elseif($opcCaddy.ToLower() -eq "no"){
                                 Clear-Content -Path "C:\descargas\Caddyfile"
@@ -190,15 +195,15 @@ https://192.168.100.38:$puerto {
     file_server
 }
 "@
+                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                             }
                             else{
                                 echo "Selecciona una opcion valida (si/no)"
                             }
-                            Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
-                            Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
-                            Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
-                            netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
-                            echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
                         }
                     }
                     catch{
