@@ -105,7 +105,8 @@ while($true){
                     $opc = Read-Host "Quieres habilitar SSL? (si/no)"
                     if($opc.ToLower() -eq "si"){
                         Import-Module WebAdministration
-                        $cert = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
+                        $thumbprint = "96D9BFD93676F3BC2E9F54D9138C4C92801EB6DD"
+                        $cert = Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq $thumbprint }
                         New-WebBinding -Name "Default Web Site" -IP "*" -Port $puerto -Protocol https
                         $cert | New-Item -path IIS:\SslBindings\0.0.0.0!$puerto
                         netsh advfirewall firewall add rule name="IIS" dir=in action=allow protocol=TCP localport=$puerto
