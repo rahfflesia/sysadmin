@@ -171,7 +171,7 @@ function habilitarSSLNginx(){
     local puerto=$2
 
     > $ruta
-    cat << EOF | sudo "$ruta" > /dev/null
+    sudo bash -c "cat > $ruta" << EOF
 worker_processes  1;
 
 events {
@@ -223,7 +223,7 @@ function deshabilitarSSLNginx(){
     local puerto=$2
 
     > $ruta
-    cat << EOF | sudo "$ruta" > dev/null
+    sudo bash -c "cat > $ruta" << EOF
 worker_processes  1;
 
 events {
