@@ -451,18 +451,115 @@ http {
                             echo "Error"
                         }
                         else{
-                            Stop-Process -Name nginx -ErrorAction SilentlyContinue
-                            echo "Instalando version LTS $versionDevNginx"
-                            Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
-                            Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
-                            cd C:\descargas\nginx-$versionDevNginx
-                            Start-Process nginx.exe
-                            Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
-                            cd ..
-                            (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf
-                            Select-String -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
-                            netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
-                            echo "Se instalo la version LTS $versionDevNginx de Nginx"
+                            $opcSsl = Read-Host "Quieres activar SSL? (si/no)"
+                            if($opcSsl.ToLower() -eq "si"){
+                                echo "Habilitando SSL..."
+                                Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                                echo "Instalando version LTS $versionDevNginx"
+                                Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                                Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
+                                cd C:\descargas\nginx-$versionDevNginx
+                                Clear-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
+                                Start-Process nginx.exe
+                                Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
+                                cd ..
+                                $contenido = @"
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # Configuración del servidor HTTP (redirige a HTTPS)
+    server {
+        listen 81;
+        server_name localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+
+    # Configuración del servidor HTTPS
+    server {
+        listen $puerto ssl;
+        server_name localhost;
+
+        ssl_certificate c:\descargas\certificate.crt;
+        ssl_certificate_key c:\descargas\private.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+"@
+                                Set-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Value $contenido
+                                netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionDevNginx de Nginx"
+
+                            }
+                            elseif($opcSsl.ToLower() -eq "no"){
+                                echo "SSL no se habilitara"
+                                Stop-Process -Name nginx -ErrorAction SilentlyContinue
+                                echo "Instalando version LTS $versionDevNginx"
+                                Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                                Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
+                                cd C:\descargas\nginx-$versionDevNginx
+                                Clear-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
+                                Start-Process nginx.exe
+                                Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
+                                cd ..
+                                $contenido = @"
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # Configuración del servidor HTTP (redirige a HTTPS)
+    server {
+        listen $puerto;
+        server_name localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+}
+"@
+                                Set-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Value $contenido
+                                netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionDevNginx de Nginx"
+                            }
+                            else{
+                                echo "Selecciona una opcion valida (si/no)"
+                            }
                         }
                     }
                     catch {
