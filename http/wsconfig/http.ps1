@@ -358,7 +358,6 @@ https://192.168.168.83:$puerto {
                             $opcNginx = Read-Host "Quieres habilitar SSL? (si/no)"
                             if($opcNginx.ToLower() -eq "si"){
                                 echo "Habilitando SSL..."
-                                echo "SSL no se habilitara"
                                 Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                 echo "Instalando version de desarrollo $versionDevNginx"
                                 Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
@@ -367,10 +366,14 @@ https://192.168.168.83:$puerto {
                                 Start-Process nginx.exe
                                 Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                                 cd ..
-                                (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "
-                                #listen       [0-9]{1,5} ssl", "listen      $puerto ssl" | Set-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf
+                                (Get-Content $rutaConfig) | Where-Object {$_ -notmatch "^\s*#"} | Set-Content $rutaConfig
+
+                                (Get-Content $rutaConfig) -replace "listen\s+\d{1,5}\s+ssl;", "listen      $puerto ssl;" | Set-Content $rutaConfig
+
                                 netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
-                                echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"
+
+                                echo "Se instaló la versión de desarrollo $versionDevNginx de Nginx"
+
                             }
                             elseif($opcNginx.ToLower() -eq "no" ){
                                 echo "SSL no se habilitara"
