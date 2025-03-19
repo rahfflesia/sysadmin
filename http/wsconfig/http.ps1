@@ -174,12 +174,13 @@ while($true){
     debug
 }
 
-https://192.168.168.83:$puerto {
+https://192.168.100.38:$puerto {
     root * "C:\MiSitio"
     file_server
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
 }
 "@
+                                # Se ocupa cambiar la ip para que coincida con la de la vm
                                 Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
                                 Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
                                 Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
