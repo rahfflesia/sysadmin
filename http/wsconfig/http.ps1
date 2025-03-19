@@ -363,8 +363,8 @@ http {
         listen $puerto ssl;
         server_name localhost;
 
-        ssl_certificate c:\descargas\certificate.crt
-        ssl_certificate_key c:\descargas\private.key
+        ssl_certificate c:\descargas\certificate.crt;
+        ssl_certificate_key c:\descargas\private.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
@@ -381,6 +381,7 @@ http {
     }
 }
 "@
+                                Set-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Value $contenido
                                 netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                                 echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                             }
