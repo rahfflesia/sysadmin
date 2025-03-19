@@ -299,7 +299,7 @@ include conf_dir + "/conf.d/mime.conf"
 
 include conf_dir + "/conf.d/dirlisting.conf"
 
-\$SERVER["socket"] == ":$puerto" {
+\$SERVER["socket"] == "192.168.100.34:$puerto" {
     ssl.engine = "enable"
     ssl.pemfile = "/etc/ssl/pem/certificate.pem"
 }
@@ -470,7 +470,7 @@ do
                         declare -l opcSsl
                         opcSsl=$opcSsl
 
-                        if [ "$opcSsl" -eq "si" ]; then
+                        if [ "$opcSsl" = "si" ]; then
                             echo "Habilitando SSL..."
                             sudo pkill lighttpd
                             echo "Ultima version -> $ultimaVersionLTSLighttpd"
@@ -490,7 +490,7 @@ do
                             sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
                             sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
                             ps aux | grep lighttpd
-                        elif [ "$opcSsl" -eq "no" ]; then
+                        elif [ "$opcSsl" = "no" ]; then
                             echo "SSL no se habilitara"
                             sudo pkill lighttpd
                             echo "Ultima version -> $ultimaVersionLTSLighttpd"
