@@ -329,61 +329,8 @@ https://192.168.168.83:$puerto {
                             Start-Process nginx.exe
                             Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                             cd ..
-                            Clear-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf"
-                            $contenido = @"
-worker_processes  1;
-
-events {
-    worker_connections  1024;
-}
-
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
-
-    sendfile        on;
-    keepalive_timeout  65;
-
-    # Configuración del servidor HTTP (redirige a HTTPS)
-    server {
-        listen $puerto;
-        server_name localhost;
-
-        location / {
-            root html;
-            index.html index-htm;
-        }
-
-        error_page 500 502 503 504  /50x.html
-        location = /50x.html {
-            
-        }
-    }
-
-    # Configuración del servidor HTTPS
-    #server {
-        #listen 443 ssl;
-        #server_name localhost;
-
-        #ssl_certificate $ruta/ssl/nginx-selfsigned.crt;
-        #ssl_certificate_key $ruta/ssl/nginx-selfsigned.key;
-
-        #ssl_protocols TLSv1.2 TLSv1.3;
-        #ssl_ciphers HIGH:!aNULL:!MD5;
-
-        #location / {
-         #   root   html;
-          #  index  index.html index.htm;
-        #}
-
-        #error_page   500 502 503 504  /50x.html;
-        #location = /50x.html {
-            #root   html;
-        #}
-    #}
-}
-"@
-                            $contenido | Set-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf"
+                            (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf
+                            Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
                             netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                             echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                         }
