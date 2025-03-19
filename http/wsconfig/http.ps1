@@ -357,7 +357,6 @@ https://192.168.168.83:$puerto {
                         else{
                             $opcNginx = Read-Host "Quieres habilitar SSL? (si/no)"
                             if($opcNginx.ToLower() -eq "si"){
-                                echo "Habilitando SSL..."
                                 Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                 echo "Instalando version de desarrollo $versionDevNginx"
                                 Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
@@ -366,30 +365,11 @@ https://192.168.168.83:$puerto {
                                 Start-Process nginx.exe
                                 Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                                 cd ..
-                                $nginxConfig = "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
-                                $config = Get-Content -Raw $rutaConfig
-                                $newHttpsConfig = @"
-    server {
-        listen $puerto ssl;
-        server_name localhost;
-
-        ssl_certificate C:\\descargas\certificate.crt;
-        ssl_certificate_key C:\\descargas\private.key;
-
-        ssl_session_cache shared:SSL:1m;
-        ssl_session_timeout 5m;
-
-        ssl_ciphers HIGH:!aNULL:!MD5;
-        ssl_prefer_server_ciphers on;
-
-        location / {
-            root html;
-            index index.html index.htm;
-        }
-    }
-"@
-                                $config = $config -replace '(?s)# HTTPS server.*?}', "# HTTPS server`r`n$newHttpsConfig"
-                                $config | Set-Content -Path $nginxconfig
+                                (Get-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf) -replace "
+                                listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionDevNginx\conf\nginx.conf
+                                Select-String -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
+                                netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la Version de desarrollo $versionDevNginx de Nginx"
 
                             }
                             elseif($opcNginx.ToLower() -eq "no" ){
