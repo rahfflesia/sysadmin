@@ -1,4 +1,5 @@
 # Ambos scripts funcionales en caso de error puedo volver a este commit
+# Nginx funcional, falta lighttpd, cualquier cosa puedo volver a este commit
 # $1 = URL, Retorna el html
 function hacerPeticion(){
     local url=$1
