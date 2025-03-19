@@ -253,6 +253,107 @@ http {
 EOF
 }
 
+function habilitarSslLighttpd(){
+    local ruta=$1
+    local puerto=$2
+
+    > $ruta
+    sudo bash -c "cat > $ruta" << EOF
+var.log_root = "var/log/lighttpd"
+var.server_root = "/srv/www"
+var.state_dir = "/run"
+var.home_dir = "/var/lib/lighttpd"
+var.conf_dir = "/etc/lighttpd"
+
+var.vhosts_dir = server_root + "/vhosts"
+var.cache_dir = "/var/cache/lighttpd"
+var.socket_dir = home_dir + "/sockets"
+
+include conf_dir + "/modules.conf"
+
+server.port = 80
+
+server.username = "lighttpd"
+server.groupname = "lighttpd"
+
+server.document-root = server_root + "/htdocs"
+
+server.pid-file = state_dir + "lighttpd.pid"
+
+server.errorlog = log_root + "/error.log"
+
+include conf_dir + "/conf.d/access_log.conf"
+include conf_dir + "/conf.d/debug.conf"
+
+server.max-fds = 16384
+
+index-file.names += (
+    "index.xhtml", "index.html", "index.htm", "default.htm", "index.php"
+)
+
+url.access-deny = ( "~", ".inc" )
+
+static-file.exclude-extensions = ( ".php", ".p1", ".fcgi", ".scgi" )
+
+include conf_dir + "/conf.d/mime.conf"
+
+include conf_dir + "/conf.d/dirlisting.conf"
+
+\$SERVER["socket"] == ":$puerto" {
+    ssl.engine = "enable"
+    ssl.pemfile = "/etc/ssl/pem/certificate.pem"
+}
+EOF
+}
+
+function deshabilitarSslLighttpd(){
+    local ruta=$1
+    local puerto=$2
+
+    > $ruta
+    sudo bash -c "cat > $ruta" << EOF
+var.log_root = "var/log/lighttpd"
+var.server_root = "/srv/www"
+var.state_dir = "/run"
+var.home_dir = "/var/lib/lighttpd"
+var.conf_dir = "/etc/lighttpd"
+
+var.vhosts_dir = server_root + "/vhosts"
+var.cache_dir = "/var/cache/lighttpd"
+var.socket_dir = home_dir + "/sockets"
+
+include conf_dir + "/modules.conf"
+
+server.port = $puerto
+
+server.username = "lighttpd"
+server.groupname = "lighttpd"
+
+server.document-root = server_root + "/htdocs"
+
+server.pid-file = state_dir + "lighttpd.pid"
+
+server.errorlog = log_root + "/error.log"
+
+include conf_dir + "/conf.d/access_log.conf"
+include conf_dir + "/conf.d/debug.conf"
+
+server.max-fds = 16384
+
+index-file.names += (
+    "index.xhtml", "index.html", "index.htm", "default.htm", "index.php"
+)
+
+url.access-deny = ( "~", ".inc" )
+
+static-file.exclude-extensions = ( ".php", ".p1", ".fcgi", ".scgi" )
+
+include conf_dir + "/conf.d/mime.conf"
+
+include conf_dir + "/conf.d/dirlisting.conf"
+EOF
+}
+
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -363,28 +464,55 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto se encuentra en uso"
                     else
-                        sudo pkill lighttpd
-                        echo "Ultima version -> $ultimaVersionLTSLighttpd"
-                        echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
-                        echo "Por favor espere..."
-                        curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
-                        sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
-                        cd "lighttpd-$ultimaVersionLTSLighttpd"
-                        sudo bash autogen.sh > /dev/null 2>&1
-                        ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
-                        make -j$(nproc) > /dev/null 2>&1
-                        sudo make install > /dev/null 2>&1
-                        /usr/local/lighttpd/sbin/lighttpd -v
-                        rutaArchivoConfiguracion=/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/lighttpd.conf
-                        sudo install -Dp "$rutaArchivoConfiguracion" /etc/lighttpd/lighttpd.conf
-                        sudo cp -R "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/conf.d/" /etc/lighttpd/
-                        sudo cp "/home/jj/sysadmin/http/usconfig/lighttpd-$ultimaVersionLTSLighttpd/doc/config/conf.d/mod.template" /etc/lighttpd/modules.conf
-                        sudo sed -i -E "s/server.port[[:space:]]=[[:space:]][0-9]{1,5}/server.port = $puerto/" "/etc/lighttpd/lighttpd.conf"
-                        sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
-                        sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
-                        sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
-                        ps aux | grep lighttpd
-                        cd ..
+                        echo "Quieres habilirar SSL? (si/no):"
+                        read opcSsl
+
+                        declare -l opcSsl
+                        opcSsl=$opcSsl
+
+                        if [ "$opcSsl" -eq "si" ]; then
+                            echo "Habilitando SSL..."
+                            sudo pkill lighttpd
+                            echo "Ultima version -> $ultimaVersionLTSLighttpd"
+                            echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
+                            echo "Por favor espere..."
+                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                            sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
+                            cd "lighttpd-$ultimaVersionLTSLighttpd"
+                            sudo bash autogen.sh > /dev/null 2>&1
+                            ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
+                            make -j$(nproc) > /dev/null 2>&1
+                            sudo make install > /dev/null 2>&1
+                            /usr/local/lighttpd/sbin/lighttpd -v
+                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                            habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                            ps aux | grep lighttpd
+                        elif [ "$opcSsl" -eq "no" ]; then
+                            echo "SSL no se habilitara"
+                            sudo pkill lighttpd
+                            echo "Ultima version -> $ultimaVersionLTSLighttpd"
+                            echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
+                            echo "Por favor espere..."
+                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                            sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
+                            cd "lighttpd-$ultimaVersionLTSLighttpd"
+                            sudo bash autogen.sh > /dev/null 2>&1
+                            ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
+                            make -j$(nproc) > /dev/null 2>&1
+                            sudo make install > /dev/null 2>&1
+                            /usr/local/lighttpd/sbin/lighttpd -v
+                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                            deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                            ps aux | grep lighttpd
+                        else
+                            echo "Selecciona una opcion valida (si/no)"
+                        fi
                     fi
                 ;;
                 "2")
