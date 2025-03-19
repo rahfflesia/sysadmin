@@ -392,11 +392,37 @@ http {
                                 Invoke-WebRequest -UseBasicParsing "https://nginx.org/download/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
                                 Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
                                 cd C:\descargas\nginx-$versionLTSNginx
+                                Clear-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf"
                                 Start-Process nginx.exe
                                 Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                                 cd ..
-                                (Get-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf) -replace "listen       [0-9]{1,5}", "listen       $puerto" | Set-Content C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf
-                                Select-String -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Pattern "listen       [0-9]{1,5}"
+                                $contenido = @"
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # Configuración del servidor HTTP (redirige a HTTPS)
+    server {
+        listen $puerto;
+        server_name localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+}
+"@
+                                Set-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf" -Value $contenido
                                 netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
                                 echo "Se instalo la version LTS $versionLTSNginx de Nginx"
                             }
