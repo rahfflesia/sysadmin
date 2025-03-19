@@ -461,6 +461,8 @@ do
                         echo "El puerto esta en uso"
                     else
                         echo "Quieres habilitar SSL? (si/no): "
+                        read opcSsl
+
                         declare -l opcSsl
                         opcSsl=$opcSsl
 
@@ -475,7 +477,6 @@ do
                             ps aux | grep nginx
                         elif [ "$opcSsl" = "no" ]; then
                             echo "SSL no se habilitara"
-                            echo "Habilitando SSL..."
                             instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
                             /usr/local/nginx/sbin/nginx -v
                             deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
@@ -501,6 +502,7 @@ do
                         echo "El puerto esta en uso"
                     else
                         echo "Quieres habilitar SSL? (si/no): "
+                        read opcSsl
 
                         declare -l opcSsl
                         opcSsl=$opcSsl
@@ -516,7 +518,6 @@ do
                             ps aux | grep nginx
                         elif [ "$opcSsl" = "no" ]; then
                             echo "SSL no se habilitara"
-                            echo "Habilitando SSL..."
                             instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
                             /usr/local/nginx/sbin/nginx -v
                             deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
