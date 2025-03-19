@@ -366,13 +366,30 @@ https://192.168.168.83:$puerto {
                                 Start-Process nginx.exe
                                 Get-Process | Where-Object { $_.ProcessName -like "*nginx*" }
                                 cd ..
-                                (Get-Content $rutaConfig) | Where-Object {$_ -notmatch "^\s*#"} | Set-Content $rutaConfig
+                                $nginxConfig = "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
+                                $config = Get-Content -Raw $rutaConfig
+                                $newHttpsConfig = @"
+    server {
+        listen $puerto ssl;
+        server_name localhost;
 
-                                (Get-Content $rutaConfig) -replace "listen\s+\d{1,5}\s+ssl;", "listen      $puerto ssl;" | Set-Content $rutaConfig
+        ssl_certificate C:\\descargas\certificate.crt;
+        ssl_certificate_key C:\\descargas\private.key;
 
-                                netsh advfirewall firewall add rule name="Nginx" dir=in action=allow protocol=TCP localport=$puerto
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout 5m;
 
-                                echo "Se instaló la versión de desarrollo $versionDevNginx de Nginx"
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        location / {
+            root html;
+            index index.html index.htm;
+        }
+    }
+"@
+                                $config = $config -replace '(?s)# HTTPS server.*?}', "# HTTPS server`r`n$newHttpsConfig"
+                                $config | Set-Content -Path $nginxconfig
 
                             }
                             elseif($opcNginx.ToLower() -eq "no" ){
