@@ -215,6 +215,7 @@ http {
             root   html;
         }
     }
+}
 EOF
 }
 
