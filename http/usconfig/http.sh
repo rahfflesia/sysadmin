@@ -166,6 +166,91 @@ function habilitarSSLApache(){
     sudo /usr/local/apache/bin/apachectl restart
 }
 
+function habilitarSSLNginx(){
+    local ruta=$1
+    local puerto=$2
+
+    > $ruta
+    cat << EOF | sudo "$ruta" > /dev/null
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server {
+        listen 81;
+        server_name localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+
+    server {
+        listen $puerto ssl;
+        server_name localhost;
+
+        ssl_certificate /etc/ssl/certs/vsftpd.crt;
+        ssl_certificate_key /etc/ssl/private/vsftpd.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+EOF
+}
+
+function deshabilitarSSLNginx(){
+    local ruta=$1
+    local puerto=$2
+
+    > $ruta
+    cat << EOF | sudo "$ruta" > dev/null
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # Configuración del servidor HTTP (redirige a HTTPS)
+    server {
+        listen $puerto;
+        server_name localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+    }
+}
+EOF
+}
+
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
 while :
@@ -375,14 +460,31 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto esta en uso"
                     else
-                        instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
-                        /usr/local/nginx/sbin/nginx -v
+                        echo "Quieres habilitar SSL? (si/no): "
+                        declare -l opcSsl
+                        opcSsl=$opcSsl
 
-                        sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
-                        sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/nginx/sbin/nginx
-                        sudo /usr/local/nginx/sbin/nginx -s reload
-                        ps aux | grep nginx
+                        if [ "$opcSsl" = "si" ]; then
+                            echo "Habilitando SSL..."
+                            instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
+                            /usr/local/nginx/sbin/nginx -v
+                            habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                            sudo /usr/local/nginx/sbin/nginx
+                            sudo /usr/local/nginx/sbin/nginx -s reload
+                            ps aux | grep nginx
+                        elif [ "$opcSsl" = "no" ]; then
+                            echo "SSL no se habilitara"
+                            echo "Habilitando SSL..."
+                            instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
+                            /usr/local/nginx/sbin/nginx -v
+                            deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                            sudo /usr/local/nginx/sbin/nginx
+                            sudo /usr/local/nginx/sbin/nginx -s reload
+                        else
+                            echo "Selecciona una opcion valida (si/no)"
+                        fi
                     fi
                 ;;
                 "2")
@@ -398,13 +500,32 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto esta en uso"
                     else
-                        instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
-                        /usr/local/nginx/sbin/nginx -v
-                        sed -i -E "s/listen[[:space:]]{7}[0-9]{1,5}/listen       $puerto/" "$rutaArchivoConfiguracion"
-                        sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                        sudo /usr/local/nginx/sbin/nginx
-                        sudo /usr/local/nginx/sbin/nginx -s reload
-                        ps aux | grep nginx
+                        echo "Quieres habilitar SSL? (si/no): "
+
+                        declare -l opcSsl
+                        opcSsl=$opcSsl
+
+                        if [ "$opcSsl" = "si" ]; then
+                            echo "Habilitando SSL..."
+                            instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
+                            /usr/local/nginx/sbin/nginx -v
+                            habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                            sudo /usr/local/nginx/sbin/nginx
+                            sudo /usr/local/nginx/sbin/nginx -s reload
+                            ps aux | grep nginx
+                        elif [ "$opcSsl" = "no" ]; then
+                            echo "SSL no se habilitara"
+                            echo "Habilitando SSL..."
+                            instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
+                            /usr/local/nginx/sbin/nginx -v
+                            deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                            sudo /usr/local/nginx/sbin/nginx
+                            sudo /usr/local/nginx/sbin/nginx -s reload
+                        else
+                            echo "Selecciona una opcion valida (si/no)"
+                        fi
                     fi
                 ;;
                 "3")
