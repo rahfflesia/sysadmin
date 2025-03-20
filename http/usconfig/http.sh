@@ -605,6 +605,70 @@ if [ "$opcInstall" = "ftp" ]; then
                 esac
             ;;
             "3")
+                curl $ftpUrl/ubuntu/nginx/
+                nginxDescargas="https://nginx.org/en/download.html"
+                paginaNginx=$(hacerPeticion "$nginxDescargas")
+                ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
+                versiones=$(echo "$paginaNginx" | grep -oE "$versionRegex")
+                nginxVersionLTS=$(obtenerVersionLTS 8 "$versiones")
+
+                rutaArchivoConfiguracion="/usr/local/nginx/conf/nginx.conf"
+
+                echo "Instalador de Nginx"
+                echo "1. Ultima version LTS $nginxVersionLTS"
+                echo "2. Version de desarrollo $ultimaVersionNginxDev"
+                echo "3. Salir"
+                echo "Selecciona una opcion: "
+                read opcNginx
+
+                case "$opcNginx" in
+                    "1")
+                        echo "Ingresa el puerto en el que se instalará Nginx: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto esta en uso"
+                        else
+                            echo "Quieres habilitar SSL? (si/no): "
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                curl "$ftpUrl/ubuntu/nginx/nginx-$nginxVersionLTS.tar.gz" -O
+                                /usr/local/nginx/sbin/nginx -v
+                                habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                                ps aux | grep nginx
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                curl "$ftpUrl/ubuntu/nginx/nginx-$nginxVersionLTS.tar.gz" -O
+                                /usr/local/nginx/sbin/nginx -v
+                                deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
+                        fi
+                    ;;
+                    "2")
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de nginx"
+                    ;;
+                esac
             ;;
             "4")
                 echo "Saliendo..."
