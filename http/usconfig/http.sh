@@ -412,7 +412,7 @@ if [ "$opcInstall" = "ftp" ]; then
 
                             curl "$ftpUrl/ubuntu/apache/httpd-$ultimaVersionLTSApache.tar.gz" -O
                             # Descomprimir archivo
-                            sudo tar -xvzf $ultimaVersionLTSApache.tar.gz > /dev/null 2>&1
+                            sudo tar -xvzf httpd-$ultimaVersionLTSApache.tar.gz > /dev/null 2>&1
                             # Entrar a la carpeta
                             cd "httpd-$ultimaVersionLTSApache"
                             # Compilar
