@@ -664,6 +664,45 @@ if [ "$opcInstall" = "ftp" ]; then
                         fi
                     ;;
                     "2")
+                        echo "Ingresa el puerto en el que se instalará Nginx: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto esta en uso"
+                        else
+                            echo "Quieres habilitar SSL? (si/no): "
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                curl "$ftpUrl/ubuntu/nginx/nginx-$ultimaVersionNginxDev.tar.gz" -O
+                                /usr/local/nginx/sbin/nginx -v
+                                habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                                ps aux | grep nginx
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                curl "$ftpUrl/ubuntu/nginx/nginx-$ultimaVersionNginxDev.tar.gz" -O
+                                /usr/local/nginx/sbin/nginx -v
+                                deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
+                        fi
                     ;;
                     "3")
                         echo "Saliendo del menu de nginx"
