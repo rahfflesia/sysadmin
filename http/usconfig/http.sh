@@ -1,7 +1,7 @@
 # Ambos scripts funcionales en caso de error puedo volver a este commit
 # Nginx funcional, falta lighttpd, cualquier cosa puedo volver a este commit
 # $1 = URL, Retorna el html
-$ftpUrl="ftp://localhost"
+ftpUrl="ftp://localhost"
 
 echo "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
 read opcInstall
@@ -377,7 +377,7 @@ if [ "$opcInstall" = "ftp" ]; then
 
         case "$opcion" in
             "1")
-                curl $ftp/ubuntu/apache/
+                curl $ftpUrl/ubuntu/apache/
                 apacheDescargas="https://httpd.apache.org/download.cgi"
                 paginaApache=$(hacerPeticion "$apacheDescargas")
                 ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
@@ -410,7 +410,7 @@ if [ "$opcInstall" = "ftp" ]; then
                             opcSsl=$opcSsl
 
 
-                            curl -s -O "$ftpUrl/ubuntu/apache/$ultimaVersionLTSApache.tar.gz"
+                            curl "$ftpUrl/ubuntu/apache/httpd-$ultimaVersionLTSApache.tar.gz" -O
                             # Descomprimir archivo
                             sudo tar -xvzf $ultimaVersionLTSApache.tar.gz > /dev/null 2>&1
                             # Entrar a la carpeta
