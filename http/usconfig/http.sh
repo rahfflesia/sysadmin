@@ -1,7 +1,10 @@
 # Ambos scripts funcionales en caso de error puedo volver a este commit
 # Nginx funcional, falta lighttpd, cualquier cosa puedo volver a este commit
 # $1 = URL, Retorna el html
-$ftpUrl = "ftp://localhost"
+$ftpUrl="ftp://localhost"
+
+echo "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
+read opcInstall
 
 function hacerPeticion(){
     local url=$1
@@ -358,374 +361,468 @@ EOF
 
 versionRegex='[0-9]+\.[0-9]+\.[0-9]+'
 
-while :
-do
-    echo "Elige el servicio a instalar"
-    echo "1. Apache"
-    echo "2. Lighttpd"
-    echo "3. Nginx"
-    echo "4. Salir"
-    echo "Selecciona una opcion: "
-    read opcion
+if [ "$opcInstall" = "ftp" ]; then
+    while :
+    do
+        echo "Menu de instalacion FTP"
+        echo "Servicios disponibles"
+        curl $ftpUrl/ubuntu/
+        echo "Elige el servicio a instalar"
+        echo "1. Apache"
+        echo "2. Lighttpd"
+        echo "3. Nginx"
+        echo "4. Salir"
+        echo "Selecciona una opcion: "
+        read opcion
 
-    case "$opcion" in
-        "1")
-            apacheDescargas="https://httpd.apache.org/download.cgi"
-            paginaApache=$(hacerPeticion "$apacheDescargas")
-            ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
+        case "$opcion" in
+            "1")
+                curl $ftp/ubuntu/apache/
+                apacheDescargas="https://httpd.apache.org/download.cgi"
+                paginaApache=$(hacerPeticion "$apacheDescargas")
+                ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
 
-            echo "Instalador de Apache"
-            echo "1. Ultima version LTS $ultimaVersionLTSApache"
-            echo "2. Version de desarrollo"
-            echo "3. Salir"
-            echo "Selecciona una opcion: "
-            read opcApache
+                echo "Instalador de Apache"
+                echo "1. Ultima version LTS $ultimaVersionLTSApache"
+                echo "2. Version de desarrollo"
+                echo "3. Salir"
+                echo "Selecciona una opcion: "
+                read opcApache
 
-            case "$opcApache" in
-                "1")
-                    echo "Ingresa el puerto en el que se instalara Apache: "
-                    read puerto
+                case "$opcApache" in
+                    "1")
+                        echo "Ingresa el puerto en el que se instalara Apache: "
+                        read puerto
 
-                    if ! esPuertoValido "$puerto"; then
-                        echo "Error"
-                    elif ! esValorEntero "$puerto"; then
-                        echo "El puerto debe de ser un valor numerico entero"
-                    elif ! esRangoValido "$puerto"; then
-                        echo "Ingresa un numero dentro del rango (0-65535)"
-                    elif puertoEnUso "$puerto"; then
-                        echo "El puerto se encuentra en uso"
-                    else
-                        echo "Deseas realizar la instalacion desde la web o desde ftp? (web/ftp): "
-                        read opcDescarga
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto se encuentra en uso"
+                        else
+                            echo "Desea activar SSL? (si/no)"
+                            read opcSsl
 
-                        declare -l opcDescarga
-                        opcDescarga=$opcDescarga
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
 
-                        echo "Desea activar SSL? (si/no)"
-                        read opcSsl
 
-                        declare -l opcSsl
-                        opcSsl=$opcSsl
-
-                        if [ "$opcDescarga" = "ftp" ]; then
-                            echo "Instalando desde ftp..."
-                            curl $ftpUrl/ubuntu/apache/httpd-$ultimaVersionLTSApache.tar.gz
-                            sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
+                            curl -s -O "$ftpUrl/ubuntu/apache/$ultimaVersionLTSApache.tar.gz"
+                            # Descomprimir archivo
+                            sudo tar -xvzf $ultimaVersionLTSApache.tar.gz > /dev/null 2>&1
                             # Entrar a la carpeta
-                            cd "$nombreArchivoDescomprimido"
+                            cd "httpd-$ultimaVersionLTSApache"
                             # Compilar
-                            ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+                            ./configure --prefix=/usr/local/apache > /dev/null 2>&1
                             # Instalación
                             make > /dev/null 2>&1
+
                             sudo make install > /dev/null 2>&1
-                        elif [ "$opcDescarga" = "web" ]; then
-                            echo "Instalando desde web..."
+                            # Verificar la instalación
+                            /usr/local/apache/bin/httpd -v
+                            rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
+                            # Remuevo el puerto en uso
+                            sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
+                            # Añado el puerto proporcionado por el usuario
+                            sudo printf "Listen $puerto\n" >> $rutaArchivoConfiguracion
+                            echo "Escuchando en el puerto $puerto"
+                            # Compruebo que realmente esté escuchando en ese puerto
+                            sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
+                            sudo /usr/local/apache/bin/apachectl restart
+                            ps aux | grep httpd
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                habilitarSSLApache "$puerto"
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
+                        fi
+                    ;;
+                    "2")
+                        echo "Apache no cuenta con una version de desarrollo"
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de apache..."
+                    ;;
+                    *)
+                        echo "Selecciona una opcion valida (1..3)"
+                    ;;
+                esac
+            ;;
+            "2")
+            ;;
+            "3")
+            ;;
+            "4")
+                echo "Saliendo..."
+                break
+            ;;
+        esac
+
+    done
+elif [ "$opcInstall" = "web" ]; then
+    while :
+    do
+        echo "Menu de instalacion web"
+        echo "Elige el servicio a instalar"
+        echo "1. Apache"
+        echo "2. Lighttpd"
+        echo "3. Nginx"
+        echo "4. Salir"
+        echo "Selecciona una opcion: "
+        read opcion
+
+        case "$opcion" in
+            "1")
+                apacheDescargas="https://httpd.apache.org/download.cgi"
+                paginaApache=$(hacerPeticion "$apacheDescargas")
+                ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
+
+                echo "Instalador de Apache"
+                echo "1. Ultima version LTS $ultimaVersionLTSApache"
+                echo "2. Version de desarrollo"
+                echo "3. Salir"
+                echo "Selecciona una opcion: "
+                read opcApache
+
+                case "$opcApache" in
+                    "1")
+                        echo "Ingresa el puerto en el que se instalara Apache: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto se encuentra en uso"
+                        else
+                            echo "Deseas realizar la instalacion desde la web o desde ftp? (web/ftp): "
+                            read opcDescarga
+
+                            declare -l opcDescarga
+                            opcDescarga=$opcDescarga
+
+                            echo "Desea activar SSL? (si/no)"
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
                             instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
-                        else
-                            echo "Ingresa una opcion valida (web/ftp)"
+
+                            # Verificar la instalación
+                            /usr/local/apache/bin/httpd -v
+                            rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
+                            # Remuevo el puerto en uso
+                            sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
+                            # Añado el puerto proporcionado por el usuario
+                            sudo printf "Listen $puerto\n" >> $rutaArchivoConfiguracion
+                            echo "Escuchando en el puerto $puerto"
+                            # Compruebo que realmente esté escuchando en ese puerto
+                            sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
+                            sudo /usr/local/apache/bin/apachectl restart
+                            ps aux | grep httpd
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                habilitarSSLApache "$puerto"
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
                         fi
+                    ;;
+                    "2")
+                        echo "Apache no cuenta con una version de desarrollo"
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de apache..."
+                    ;;
+                    *)
+                        echo "Selecciona una opcion valida (1..3)"
+                    ;;
+                esac
+            ;;
+            "2")
+                lightDescargas="https://www.lighttpd.net/releases/"
+                paginaLight=$(hacerPeticion "$lightDescargas")
+                ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex" "$paginaLight") 
+                versiones=$(echo "$paginaLight" | grep -oE "$versionRegex")
+                ultimaVersionLTSLighttpd=$(obtenerVersionLTS 2 "$versiones")
 
-                        # Verificar la instalación
-                        /usr/local/apache/bin/httpd -v
-                        rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
-                        # Remuevo el puerto en uso
-                        sudo sed -i '/^Listen/d' $rutaArchivoConfiguracion
-                        # Añado el puerto proporcionado por el usuario
-                        sudo printf "Listen $puerto\n" >> $rutaArchivoConfiguracion
-                        echo "Escuchando en el puerto $puerto"
-                        # Compruebo que realmente esté escuchando en ese puerto
-                        sudo grep -i "Listen $puerto" $rutaArchivoConfiguracion
-                        sudo /usr/local/apache/bin/apachectl restart
-                        ps aux | grep httpd
+                echo "Instalador de Lighttpd"
+                echo "1. Ultima version LTS $ultimaVersionLTSLighttpd"
+                echo "2. Version de desarrollo $ultimaVersionDevLighttpd"
+                echo "3. Salir"
+                echo "Selecciona una opcion: "
+                read opcLighttpd
 
-                        if [ "$opcSsl" = "si" ]; then
-                            echo "Habilitando SSL..."
-                            habilitarSSLApache "$puerto"
-                        elif [ "$opcSsl" = "no" ]; then
-                            echo "SSL no se habilitara"
+                rutaArchivoConfiguracion=""
+
+                case "$opcLighttpd" in
+                    "1")
+                        echo "Ingresa el puerto en el que se instalara Lighttpd: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto se encuentra en uso"
                         else
-                            echo "Selecciona una opcion valida (si/no)"
+                            echo "Quieres habilitar SSL? (si/no):"
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionLTSLighttpd"
+                                echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                                sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionLTSLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionLTSLighttpd"
+                                echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
+                                sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionLTSLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
                         fi
-                    fi
-                ;;
-                "2")
-                    echo "Apache no cuenta con una version de desarrollo"
-                ;;
-                "3")
-                    echo "Saliendo del menu de apache..."
-                ;;
-                *)
-                    echo "Selecciona una opcion valida (1..3)"
-                ;;
-            esac
-        ;;
-        "2")
-            lightDescargas="https://www.lighttpd.net/releases/"
-            paginaLight=$(hacerPeticion "$lightDescargas")
-            ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex" "$paginaLight") 
-            versiones=$(echo "$paginaLight" | grep -oE "$versionRegex")
-            ultimaVersionLTSLighttpd=$(obtenerVersionLTS 2 "$versiones")
+                    ;;
+                    "2")
+                        echo "Ingresa el puerto en el que se instalara Lighttpd: "
+                        read puerto
 
-            echo "Instalador de Lighttpd"
-            echo "1. Ultima version LTS $ultimaVersionLTSLighttpd"
-            echo "2. Version de desarrollo $ultimaVersionDevLighttpd"
-            echo "3. Salir"
-            echo "Selecciona una opcion: "
-            read opcLighttpd
-
-            rutaArchivoConfiguracion=""
-
-            case "$opcLighttpd" in
-                "1")
-                    echo "Ingresa el puerto en el que se instalara Lighttpd: "
-                    read puerto
-
-                    if ! esPuertoValido "$puerto"; then
-                        echo "Error"
-                    elif ! esValorEntero "$puerto"; then
-                        echo "El puerto debe de ser un valor numerico entero"
-                    elif ! esRangoValido "$puerto"; then
-                        echo "Ingresa un numero dentro del rango (0-65535)"
-                    elif puertoEnUso "$puerto"; then
-                        echo "El puerto se encuentra en uso"
-                    else
-                        echo "Quieres habilirar SSL? (si/no):"
-                        read opcSsl
-
-                        declare -l opcSsl
-                        opcSsl=$opcSsl
-
-                        if [ "$opcSsl" = "si" ]; then
-                            echo "Habilitando SSL..."
-                            sudo pkill lighttpd
-                            echo "Ultima version -> $ultimaVersionLTSLighttpd"
-                            echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
-                            echo "Por favor espere..."
-                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
-                            sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
-                            cd "lighttpd-$ultimaVersionLTSLighttpd"
-                            sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
-                            make -j$(nproc) > /dev/null 2>&1
-                            sudo make install > /dev/null 2>&1
-                            /usr/local/lighttpd/sbin/lighttpd -v
-                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                            habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
-                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
-                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
-                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
-                            ps aux | grep lighttpd
-                        elif [ "$opcSsl" = "no" ]; then
-                            echo "SSL no se habilitara"
-                            sudo pkill lighttpd
-                            echo "Ultima version -> $ultimaVersionLTSLighttpd"
-                            echo "Instalando version $ultimaVersionLTSLighttpd de Lighttpd"
-                            echo "Por favor espere..."
-                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionLTSLighttpd.tar.gz"
-                            sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
-                            cd "lighttpd-$ultimaVersionLTSLighttpd"
-                            sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
-                            make -j$(nproc) > /dev/null 2>&1
-                            sudo make install > /dev/null 2>&1
-                            /usr/local/lighttpd/sbin/lighttpd -v
-                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                            deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
-                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
-                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
-                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
-                            ps aux | grep lighttpd
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto esta en uso"
                         else
-                            echo "Selecciona una opcion valida (si/no)"
+                            echo "Quieres habilitar SSL? (si/no):"
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionDevLighttpd"
+                                echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
+                                sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionDevLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionDevLighttpd"
+                                echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
+                                sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionDevLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
                         fi
-                    fi
-                ;;
-                "2")
-                    echo "Ingresa el puerto en el que se instalara Lighttpd: "
-                    read puerto
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de Lighttpd..."
+                    ;;
+                    *)
+                        echo "Selecciona una opcion dentro del rango (1..3)"
+                    ;;
+                esac
+            ;;
+            "3")
+                nginxDescargas="https://nginx.org/en/download.html"
+                paginaNginx=$(hacerPeticion "$nginxDescargas")
+                ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
+                versiones=$(echo "$paginaNginx" | grep -oE "$versionRegex")
+                nginxVersionLTS=$(obtenerVersionLTS 8 "$versiones")
 
-                    if ! esPuertoValido "$puerto"; then
-                        echo "Error"
-                    elif ! esValorEntero "$puerto"; then
-                        echo "El puerto debe de ser un valor numerico entero"
-                    elif ! esRangoValido "$puerto"; then
-                        echo "Ingresa un numero dentro del rango (0-65535)"
-                    elif puertoEnUso "$puerto"; then
-                        echo "El puerto esta en uso"
-                    else
-                        echo "Quieres habilirar SSL? (si/no):"
-                        read opcSsl
+                rutaArchivoConfiguracion="/usr/local/nginx/conf/nginx.conf"
 
-                        declare -l opcSsl
-                        opcSsl=$opcSsl
+                echo "Instalador de Nginx"
+                echo "1. Ultima version LTS $nginxVersionLTS"
+                echo "2. Version de desarrollo $ultimaVersionNginxDev"
+                echo "3. Salir"
+                echo "Selecciona una opcion: "
+                read opcNginx
 
-                        if [ "$opcSsl" = "si" ]; then
-                            echo "Habilitando SSL..."
-                            sudo pkill lighttpd
-                            echo "Ultima version -> $ultimaVersionDevLighttpd"
-                            echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
-                            echo "Por favor espere..."
-                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
-                            sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
-                            cd "lighttpd-$ultimaVersionDevLighttpd"
-                            sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
-                            make -j$(nproc) > /dev/null 2>&1
-                            sudo make install > /dev/null 2>&1
-                            /usr/local/lighttpd/sbin/lighttpd -v
-                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                            habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
-                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
-                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
-                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
-                            ps aux | grep lighttpd
-                        elif [ "$opcSsl" = "no" ]; then
-                            echo "SSL no se habilitara"
-                            sudo pkill lighttpd
-                            echo "Ultima version -> $ultimaVersionDevLighttpd"
-                            echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
-                            echo "Por favor espere..."
-                            curl -s -O "https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-$ultimaVersionDevLighttpd.tar.gz"
-                            sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
-                            cd "lighttpd-$ultimaVersionDevLighttpd"
-                            sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
-                            make -j$(nproc) > /dev/null 2>&1
-                            sudo make install > /dev/null 2>&1
-                            /usr/local/lighttpd/sbin/lighttpd -v
-                            rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
-                            deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
-                            sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
-                            sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
-                            sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
-                            ps aux | grep lighttpd
+                case "$opcNginx" in
+                    "1")
+                        echo "Ingresa el puerto en el que se instalará Nginx: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto esta en uso"
                         else
-                            echo "Selecciona una opcion valida (si/no)"
+                            echo "Quieres habilitar SSL? (si/no): "
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
+                                /usr/local/nginx/sbin/nginx -v
+                                habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                                ps aux | grep nginx
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
+                                /usr/local/nginx/sbin/nginx -v
+                                deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
                         fi
-                    fi
-                ;;
-                "3")
-                    echo "Saliendo del menu de Lighttpd..."
-                ;;
-                *)
-                    echo "Selecciona una opcion dentro del rango (1..3)"
-                ;;
-            esac
-        ;;
-        "3")
-            nginxDescargas="https://nginx.org/en/download.html"
-            paginaNginx=$(hacerPeticion "$nginxDescargas")
-            ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
-            versiones=$(echo "$paginaNginx" | grep -oE "$versionRegex")
-            nginxVersionLTS=$(obtenerVersionLTS 8 "$versiones")
+                    ;;
+                    "2")
+                        echo "Ingresa el puerto en el que se instalará Nginx: "
+                        read puerto
 
-            rutaArchivoConfiguracion="/usr/local/nginx/conf/nginx.conf"
-
-            echo "Instalador de Nginx"
-            echo "1. Ultima version LTS $nginxVersionLTS"
-            echo "2. Version de desarrollo $ultimaVersionNginxDev"
-            echo "3. Salir"
-            echo "Selecciona una opcion: "
-            read opcNginx
-
-            case "$opcNginx" in
-                "1")
-                    echo "Ingresa el puerto en el que se instalará Nginx: "
-                    read puerto
-
-                    if ! esPuertoValido "$puerto"; then
-                        echo "Error"
-                    elif ! esValorEntero "$puerto"; then
-                        echo "El puerto debe de ser un valor numerico entero"
-                    elif ! esRangoValido "$puerto"; then
-                        echo "Ingresa un numero dentro del rango (0-65535)"
-                    elif puertoEnUso "$puerto"; then
-                        echo "El puerto esta en uso"
-                    else
-                        echo "Quieres habilitar SSL? (si/no): "
-                        read opcSsl
-
-                        declare -l opcSsl
-                        opcSsl=$opcSsl
-
-                        if [ "$opcSsl" = "si" ]; then
-                            echo "Habilitando SSL..."
-                            instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
-                            /usr/local/nginx/sbin/nginx -v
-                            habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
-                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                            sudo /usr/local/nginx/sbin/nginx
-                            sudo /usr/local/nginx/sbin/nginx -s reload
-                            ps aux | grep nginx
-                        elif [ "$opcSsl" = "no" ]; then
-                            echo "SSL no se habilitara"
-                            instalarNginx "$nginxVersionLTS" "https://nginx.org/download/nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS.tar.gz" "nginx-$nginxVersionLTS" "nginx"
-                            /usr/local/nginx/sbin/nginx -v
-                            deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
-                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                            sudo /usr/local/nginx/sbin/nginx
-                            sudo /usr/local/nginx/sbin/nginx -s reload
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto esta en uso"
                         else
-                            echo "Selecciona una opcion valida (si/no)"
+                            echo "Quieres habilitar SSL? (si/no): "
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
+                                /usr/local/nginx/sbin/nginx -v
+                                habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                                ps aux | grep nginx
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
+                                /usr/local/nginx/sbin/nginx -v
+                                deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
+                                sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
+                                sudo /usr/local/nginx/sbin/nginx
+                                sudo /usr/local/nginx/sbin/nginx -s reload
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
                         fi
-                    fi
-                ;;
-                "2")
-                    echo "Ingresa el puerto en el que se instalará Nginx: "
-                    read puerto
-
-                    if ! esPuertoValido "$puerto"; then
-                        echo "Error"
-                    elif ! esValorEntero "$puerto"; then
-                        echo "El puerto debe de ser un valor numerico entero"
-                    elif ! esRangoValido "$puerto"; then
-                        echo "Ingresa un numero dentro del rango (0-65535)"
-                    elif puertoEnUso "$puerto"; then
-                        echo "El puerto esta en uso"
-                    else
-                        echo "Quieres habilitar SSL? (si/no): "
-                        read opcSsl
-
-                        declare -l opcSsl
-                        opcSsl=$opcSsl
-
-                        if [ "$opcSsl" = "si" ]; then
-                            echo "Habilitando SSL..."
-                            instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
-                            /usr/local/nginx/sbin/nginx -v
-                            habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
-                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                            sudo /usr/local/nginx/sbin/nginx
-                            sudo /usr/local/nginx/sbin/nginx -s reload
-                            ps aux | grep nginx
-                        elif [ "$opcSsl" = "no" ]; then
-                            echo "SSL no se habilitara"
-                            instalarNginx "$ultimaVersionNginxDev" "https://nginx.org/download/nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev.tar.gz" "nginx-$ultimaVersionNginxDev" "nginx"
-                            /usr/local/nginx/sbin/nginx -v
-                            deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
-                            sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
-                            sudo /usr/local/nginx/sbin/nginx
-                            sudo /usr/local/nginx/sbin/nginx -s reload
-                        else
-                            echo "Selecciona una opcion valida (si/no)"
-                        fi
-                    fi
-                ;;
-                "3")
-                    echo "Saliendo del menu de Nginx..."
-                ;;
-                *)
-                    echo "Selecciona una opcion valida (1..3)"
-                ;;
-            esac
-        ;;
-        "4")
-            echo "Saliendo..."
-            break
-        ;;
-        *)
-            echo "Selecciona una opcion dentro del rango (1..4)"
-        ;;
-    esac
-    echo ""
-done
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de Nginx..."
+                    ;;
+                    *)
+                        echo "Selecciona una opcion valida (1..3)"
+                    ;;
+                esac
+            ;;
+            "4")
+                echo "Saliendo..."
+                break
+            ;;
+            *)
+                echo "Selecciona una opcion dentro del rango (1..4)"
+            ;;
+        esac
+        echo ""
+    done
+else
+    echo "Selecciona una opcion valida (web/ftp)"
+fi
