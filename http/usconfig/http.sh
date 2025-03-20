@@ -534,11 +534,73 @@ if [ "$opcInstall" = "ftp" ]; then
                                 echo "Selecciona una opcion valida (si/no)"
                             fi
                         fi
-                            ;;
-                            "2")
-                            ;;
-                            "3")
-                                echo "Saliendo del menu de lighttpd"
+                    ;;
+                    "2")
+                        echo "Ingresa el puerto en el que se instalara Lighttpd: "
+                        read puerto
+
+                        if ! esPuertoValido "$puerto"; then
+                            echo "Error"
+                        elif ! esValorEntero "$puerto"; then
+                            echo "El puerto debe de ser un valor numerico entero"
+                        elif ! esRangoValido "$puerto"; then
+                            echo "Ingresa un numero dentro del rango (0-65535)"
+                        elif puertoEnUso "$puerto"; then
+                            echo "El puerto se encuentra en uso"
+                        else
+                            echo "Quieres habilitar SSL? (si/no):"
+                            read opcSsl
+
+                            declare -l opcSsl
+                            opcSsl=$opcSsl
+
+                            if [ "$opcSsl" = "si" ]; then
+                                echo "Habilitando SSL..."
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionDevLighttpd"
+                                echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl "$ftpUrl/ubuntu/lighttpd/lighttpd-$ultimaVersionDevLighttpd.tar.gz" -O
+                                sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionDevLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                habilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            elif [ "$opcSsl" = "no" ]; then
+                                echo "SSL no se habilitara"
+                                sudo pkill lighttpd
+                                echo "Ultima version -> $ultimaVersionDevLighttpd"
+                                echo "Instalando version $ultimaVersionDevLighttpd de Lighttpd"
+                                echo "Por favor espere..."
+                                curl "$ftpUrl/ubuntu/lighttpd/lighttpd-$ultimaVersionDevLighttpd.tar.gz" -O
+                                sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
+                                cd "lighttpd-$ultimaVersionDevLighttpd"
+                                sudo bash autogen.sh > /dev/null 2>&1
+                                ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
+                                make -j$(nproc) > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
+                                /usr/local/lighttpd/sbin/lighttpd -v
+                                rutaArchivoConfiguracion=/etc/lighttpd/lighttpd.conf
+                                deshabilitarSslLighttpd "$rutaArchivoConfiguracion" "$puerto"
+                                sudo sed -i '/mod_Foo/d' /etc/lighttpd/modules.conf
+                                sudo grep -i "server.port" "/etc/lighttpd/lighttpd.conf"
+                                sudo /usr/local/lighttpd/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+                                ps aux | grep lighttpd
+                            else
+                                echo "Selecciona una opcion valida (si/no)"
+                            fi
+                        fi
+                    ;;
+                    "3")
+                        echo "Saliendo del menu de lighttpd"
                     ;;
                 esac
             ;;
