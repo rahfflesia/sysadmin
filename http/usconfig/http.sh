@@ -1,6 +1,8 @@
 # Ambos scripts funcionales en caso de error puedo volver a este commit
 # Nginx funcional, falta lighttpd, cualquier cosa puedo volver a este commit
 # $1 = URL, Retorna el html
+$ftpUrl = "ftp://localhost"
+
 function hacerPeticion(){
     local url=$1
     local html=$(curl -s "$url")
@@ -187,7 +189,7 @@ http {
     keepalive_timeout  65;
 
     server {
-        listen 81;
+        listen 10017;
         server_name localhost;
 
         location / {
@@ -393,13 +395,36 @@ do
                     elif puertoEnUso "$puerto"; then
                         echo "El puerto se encuentra en uso"
                     else
+                        echo "Deseas realizar la instalacion desde la web o desde ftp? (web/ftp): "
+                        read opcDescarga
+
+                        declare -l opcDescarga
+                        opcDescarga=$opcDescarga
+
                         echo "Desea activar SSL? (si/no)"
                         read opcSsl
 
                         declare -l opcSsl
                         opcSsl=$opcSsl
 
-                        instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
+                        if [ "$opcDescarga" = "ftp" ]; then
+                            echo "Instalando desde ftp..."
+                            curl $ftpUrl/ubuntu/apache/httpd-$ultimaVersionLTSApache.tar.gz
+                            sudo tar -xvzf $nombreArchivo > /dev/null 2>&1
+                            # Entrar a la carpeta
+                            cd "$nombreArchivoDescomprimido"
+                            # Compilar
+                            ./configure --prefix=/usr/local/"$nombreServicio" > /dev/null 2>&1
+                            # Instalación
+                            make > /dev/null 2>&1
+                            sudo make install > /dev/null 2>&1
+                        elif [ "$opcDescarga" = "web" ]; then
+                            echo "Instalando desde web..."
+                            instalarServicioHTTP "$ultimaVersionLTSApache" "https://dlcdn.apache.org/httpd/httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache.tar.gz" "httpd-$ultimaVersionLTSApache" "apache"
+                        else
+                            echo "Ingresa una opcion valida (web/ftp)"
+                        fi
+
                         # Verificar la instalación
                         /usr/local/apache/bin/httpd -v
                         rutaArchivoConfiguracion="/usr/local/apache/conf/httpd.conf"
@@ -500,7 +525,7 @@ do
                             sudo tar -xvzf "lighttpd-$ultimaVersionLTSLighttpd.tar.gz" > /dev/null 2>&1
                             cd "lighttpd-$ultimaVersionLTSLighttpd"
                             sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
+                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
                             make -j$(nproc) > /dev/null 2>&1
                             sudo make install > /dev/null 2>&1
                             /usr/local/lighttpd/sbin/lighttpd -v
@@ -564,7 +589,7 @@ do
                             sudo tar -xvzf "lighttpd-$ultimaVersionDevLighttpd.tar.gz" > /dev/null 2>&1
                             cd "lighttpd-$ultimaVersionDevLighttpd"
                             sudo bash autogen.sh > /dev/null 2>&1
-                            ./configure --prefix=/usr/local/lighttpd > /dev/null 2>&1
+                            ./configure --prefix=/usr/local/lighttpd --with-openssl > /dev/null 2>&1
                             make -j$(nproc) > /dev/null 2>&1
                             sudo make install > /dev/null 2>&1
                             /usr/local/lighttpd/sbin/lighttpd -v
