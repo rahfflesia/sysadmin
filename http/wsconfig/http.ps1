@@ -281,7 +281,6 @@ https://192.168.100.38:$puerto {
         }
         
     }
-}
 elseif($opcDescarga.ToLower() -eq "web"){
     while($true){
     echo "Menu de instalacion Web"
