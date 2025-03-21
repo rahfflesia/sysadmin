@@ -77,7 +77,11 @@ function listarDirectoriosFtp(){
     $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
     $peticion.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
 
+    $peticion.EnableSsl = $true
+
     $peticion.Credentials = New-Object System.Net.NetworkCredential("anonymous", "")
+
+    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
     $respuesta = $peticion.GetResponse()
     $respuestaStream = $respuesta.GetResponseStream()
@@ -97,6 +101,7 @@ $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 
 if($opcDescarga.ToLower() -eq "ftp"){
     while($true){
+        listarDirectoriosFtp
         echo "Menu de instalacion FTP"
         echo "Elige el servicio a instalar"
         echo "1. Caddy"
@@ -112,13 +117,22 @@ if($opcDescarga.ToLower() -eq "ftp"){
 
         switch($opc){
             "1"{
-                listarDirectoriosFtp
+                $objetosCaddy = Invoke-RestMethod "https://api.github.com/repos/caddyserver/caddy/releases"
+                $versionesCaddy = $objetosCaddy
+                $versionDesarrolloCaddy = $versionesCaddy[0].tag_name
+                $versionLTSCaddy = $versionesCaddy[6].tag_name
+
+
+                echo "Instalador de Caddy"
+                echo "1. Version LTS $versionLTSCaddy"
+                echo "2. Version de desarrollo $versionDesarrolloCaddy"
+                echo "3. Salir"
             }
             "2"{
-                listarDirectoriosFtp
+                
             }
             "3"{
-                listarDirectoriosFtp
+                
             }
             default { echo "Selecciona una opcion dentro del rango (1..4)" }
         }
