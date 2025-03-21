@@ -212,7 +212,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
                                 $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                                 echo $versionSinV
                                 echo "Instalando version LTS $versionLTSCaddy"
-                                descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy.zip" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
                                 Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                                 cd C:\descargas
                                 New-Item c:\descargas\Caddyfile -type file -Force
