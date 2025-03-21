@@ -5,6 +5,8 @@ $ProgressPreference = 'SilentlyContinue'
 
 $opcDescarga = Read-Host "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
 
+$servidorFtp = "ftp://localhost/"
+
 function Es-PuertoValido([int]$puerto) {
     $puertosReservados = @{
         20 = "FTP"
@@ -71,30 +73,49 @@ function quitarPrimerCaracter([string]$string){
     return $stringSinPrimerCaracter
 }
 
-function listarDirectoriosFtp(){
-    $servidorFtp = "ftp://localhost/"
+function listarDirectoriosFtp() {
+    $usuario = "anonymous"
+    $contrasena = ""
 
-    $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
-    $peticion.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+    $exito = $false
 
-    $peticion.EnableSsl = $true
+    foreach ($usarSsl in $false, $true) {
+        try {
+            $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
+            $peticion.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+            $peticion.Credentials = New-Object System.Net.NetworkCredential($usuario, $contrasena)
+            $peticion.EnableSsl = $usarSsl
 
-    $peticion.Credentials = New-Object System.Net.NetworkCredential("anonymous", "")
+            if ($usarSsl) {
+                [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+            }
 
-    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+            $respuesta = $peticion.GetResponse()
+            $respuestaStream = $respuesta.GetResponseStream()
+            $lector = New-Object System.IO.StreamReader($respuestaStream)
 
-    $respuesta = $peticion.GetResponse()
-    $respuestaStream = $respuesta.GetResponseStream()
-    $lector = New-Object System.IO.StreamReader($respuestaStream)
+            Write-Host "Conexión exitosa usando SSL = $usarSsl"
 
-    while (-not $lector.EndOfStream) {
-        $linea = $lector.ReadLine()
-        Write-Output $linea
+            while (-not $lector.EndOfStream) {
+                $linea = $lector.ReadLine()
+                Write-Output $linea
+            }
+
+            $lector.Close()
+            $respuestaStream.Close()
+            $respuesta.Close()
+
+            $exito = $true
+            break
+        }
+        catch {
+            Write-Host "Fallo con SSL = $usarSsl, reintentando..."
+        }
     }
 
-    $lector.Close()
-    $respuestaStream.Close()
-    $respuesta.Close()
+    if (-not $exito) {
+        Write-Host "No se pudo conectar al FTP con o sin SSL."
+    }
 }
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
