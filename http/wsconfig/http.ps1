@@ -73,7 +73,11 @@ function quitarPrimerCaracter([string]$string){
     return $stringSinPrimerCaracter
 }
 
-function listarDirectoriosFtp() {
+function listarDirectoriosFtp {
+    param (
+        [string]$servidorFtp
+    )
+
     $usuario = "anonymous"
     $contrasena = ""
 
@@ -94,7 +98,7 @@ function listarDirectoriosFtp() {
             $respuestaStream = $respuesta.GetResponseStream()
             $lector = New-Object System.IO.StreamReader($respuestaStream)
 
-            Write-Host "Conexion exitosa usando SSL = $usarSsl"
+            Write-Host "Conexión exitosa usando SSL = $usarSsl"
 
             while (-not $lector.EndOfStream) {
                 $linea = $lector.ReadLine()
@@ -118,52 +122,12 @@ function listarDirectoriosFtp() {
     }
 }
 
-function descargarArchivoFtp($rutaFtp, $rutaLocal) {
-    $usuario = "anonymous"
-    $contrasena = ""
-
-    $exito = $false
-
-    foreach ($usarSsl in $false, $true) {
-        try {
-            $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
-            $peticion.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
-            $peticion.Credentials = New-Object System.Net.NetworkCredential($usuario, $contrasena)
-            $peticion.EnableSsl = $usarSsl
-
-            if ($usarSsl) {
-                [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
-            }
-
-            $respuesta = $peticion.GetResponse()
-            $respuestaStream = $respuesta.GetResponseStream()
-
-            $fs = [System.IO.File]::Create($rutaLocal)
-            $respuestaStream.CopyTo($fs)
-
-            $fs.Close()
-            $respuestaStream.Close()
-            $respuesta.Close()
-
-            Write-Host "Archivo descargado correctamente usando SSL = $usarSsl"
-            $exito = $true
-            break
-        }
-        catch {
-            Write-Host "Fallo al descargar con SSL = $usarSsl, reintentando..."
-        }
-    }
-
-    if (-not $exito) {
-        Write-Host "No se pudo descargar el archivo con o sin SSL."
-    }
-}
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 
 if($opcDescarga.ToLower() -eq "ftp"){
     while($true){
-        listarDirectoriosFtp
+        listarDirectoriosFtp -servidorFtp $servidorFtp
         echo "Menu de instalacion FTP"
         echo "Elige el servicio a instalar"
         echo "1. Caddy"
@@ -179,6 +143,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
 
         switch($opc){
             "1"{
+                listarDirectoriosFtp -servidorFtp "$servidorFtp/Caddy"
                 $objetosCaddy = Invoke-RestMethod "https://api.github.com/repos/caddyserver/caddy/releases"
                 $versionesCaddy = $objetosCaddy
                 $versionDesarrolloCaddy = $versionesCaddy[0].tag_name
@@ -212,7 +177,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
                                 $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                                 echo $versionSinV
                                 echo "Instalando version LTS $versionLTSCaddy"
-                                #descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy.zip" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
                                 Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                                 cd C:\descargas
                                 New-Item c:\descargas\Caddyfile -type file -Force
