@@ -5,7 +5,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 $opcDescarga = Read-Host "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
 
-$servidorFtp = "ftp://localhost/"
+$servidorFtp = "ftp://localhost"
 
 function Es-PuertoValido([int]$puerto) {
     $puertosReservados = @{
@@ -177,7 +177,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
                                 $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                                 echo $versionSinV
                                 echo "Instalando version LTS $versionLTSCaddy"
-                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/caddy-v$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
                                 Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                                 cd C:\descargas
                                 New-Item c:\descargas\Caddyfile -type file -Force
