@@ -177,7 +177,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
                                 $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                                 echo $versionSinV
                                 echo "Instalando version LTS $versionLTSCaddy"
-                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/caddy-v$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/caddy-$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
                                 Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                                 cd C:\descargas
                                 New-Item c:\descargas\Caddyfile -type file -Force
@@ -228,7 +228,80 @@ https://192.168.100.38:$puerto {
                         }
                     }
                     "2"{
-                        
+                        try{
+                            $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                            if(-not(Es-Numerico -string $puerto)){
+                                echo "Ingresa un valor numerico entero"
+                            }
+                            elseif(-not(Es-RangoValido $puerto)){
+                                echo "Ingresa un puerto dentro del rango (0-65535)"
+                            }
+                            elseif(Es-PuertoEnUso $puerto){
+                                echo "El puerto se encuentra en uso"
+                            }
+                            elseif(-not(Es-PuertoValido $puerto)){
+                                echo "Error"
+                            }
+                            else{
+                                $opcSsl = Read-Host "Quieres activar SSL (si/no)"
+                                if($opcSsl.ToLower() -eq "si"){
+                                    echo "Habilitando SSL..." 
+                                    Stop-Process -Name caddy -ErrorAction SilentlyContinue
+                                    $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
+                                    echo $versionSinV
+                                    echo "Instalando version LTS $versionDesarrolloCaddy"
+                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" -Outfile "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
+                                    Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
+                                    cd C:\descargas
+                                    New-Item c:\descargas\Caddyfile -type file -Force
+                                    Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+{
+    auto_https disable_redirects
+    debug
+}
+
+https://192.168.168.83:$puerto {
+    root * "C:\MiSitio"
+    file_server
+    tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
+}
+"@
+                                    Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                    Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                    Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                    netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                    echo "Se instalo la version de desarrollo $versionDesarrolloCaddy de Caddy"
+                                }
+                            elseif($opcSsl.ToLower() -eq "no"){
+                                    echo "SSl no se habilitara..." 
+                                    Stop-Process -Name caddy -ErrorAction SilentlyContinue
+                                    $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
+                                    echo $versionSinV
+                                    echo "Instalando version LTS $versionDesarrolloCaddy"
+                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" -Outfile "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
+                                    Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
+                                    cd C:\descargas
+                                    New-Item c:\descargas\Caddyfile -type file -Force
+                                    Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+:$puerto {
+    root * "C:\MiSitio"
+    file_server
+}
+"@
+                                    Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                    Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                    Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                    netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                    echo "Se instalo la version de desarrollo $versionDesarrolloCaddy de Caddy"
+                                }
+                                else{
+                                    echo "Selecciona una opcion valida (si/no)" 
+                                }
+                            }
+                        }
+                        catch{
+                            echo $Error[0].ToString()
+                        }
                     }
                     "3"{
                         echo "Saliendo del menu de Caddy..."
