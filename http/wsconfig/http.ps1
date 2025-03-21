@@ -182,7 +182,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
                                 $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
                                 echo $versionSinV
                                 echo "Instalando version LTS $versionLTSCaddy"
-                                Invoke-WebRequest -Uri "$servidorFtp/Caddy/caddy-$versionLTSCaddy.zip" -Outfile "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                curl.exe "$servidorFtp/Caddy/caddy-$versionLTSCaddy.zip" --ftp-ssl -k -o "C:\descargas\caddy-$versionLTSCaddy.zip"
                                 Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
                                 cd C:\descargas
                                 New-Item c:\descargas\Caddyfile -type file -Force
@@ -255,7 +255,7 @@ https://192.168.100.38:$puerto {
                                     $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
                                     echo $versionSinV
                                     echo "Instalando version LTS $versionDesarrolloCaddy"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" -Outfile "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
+                                    curl.exe "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" --ftp-ssl -k -o "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
                                     Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
                                     cd C:\descargas
                                     New-Item c:\descargas\Caddyfile -type file -Force
@@ -283,7 +283,7 @@ https://192.168.100.38:$puerto {
                                     $versionSinV = quitarPrimerCaracter -string $versionDesarrolloCaddy
                                     echo $versionSinV
                                     echo "Instalando version LTS $versionDesarrolloCaddy"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" -Outfile "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
+                                    curl.exe "$servidorFtp/Caddy/caddy-$versionDesarrolloCaddy.zip" --ftp-ssl -k -o "C:\descargas\caddy-$versionDesarrolloCaddy.zip"
                                     Expand-Archive C:\descargas\caddy-$versionDesarrolloCaddy.zip C:\descargas -Force
                                     cd C:\descargas
                                     New-Item c:\descargas\Caddyfile -type file -Force
@@ -348,7 +348,7 @@ https://192.168.100.38:$puerto {
                                     echo "Habilitando SSL..."
                                     Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                     echo "Instalando version LTS $versionLTSNginx"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Nginx/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                                    curl.exe "$servidorFtp/Nginx/nginx-$versionLTSNginx.zip" --ftp-ssl -k -o "C:\descargas\nginx-$versionLTSNginx.zip"
                                     Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
                                     cd C:\descargas\nginx-$versionLTSNginx
                                     Clear-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf"
@@ -411,7 +411,7 @@ http {
                                     echo "SSL no se habilitara"
                                     Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                     echo "Instalando version LTS $versionLTSNginx"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Nginx/nginx-$versionLTSNginx.zip" -Outfile "C:\descargas\nginx-$versionLTSNginx.zip"
+                                    curl.exe "$servidorFtp/Nginx/nginx-$versionLTSNginx.zip" --ftp-ssl -k -o "C:\descargas\nginx-$versionLTSNginx.zip"
                                     Expand-Archive C:\descargas\nginx-$versionLTSNginx.zip C:\descargas -Force
                                     cd C:\descargas\nginx-$versionLTSNginx
                                     Clear-Content -Path "C:\descargas\nginx-$versionLTSNginx\conf\nginx.conf"
@@ -478,7 +478,7 @@ http {
                                     echo "Habilitando SSL..."
                                     Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                     echo "Instalando version LTS $versionDevNginx"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Nginx/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                                    curl.exe "$servidorFtp/Nginx/nginx-$versionDevNginx.zip" --ftp-ssl -k -o "C:\descargas\nginx-$versionDevNginx.zip"
                                     Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
                                     cd C:\descargas\nginx-$versionDevNginx
                                     Clear-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
@@ -542,7 +542,7 @@ http {
                                     echo "SSL no se habilitara"
                                     Stop-Process -Name nginx -ErrorAction SilentlyContinue
                                     echo "Instalando version LTS $versionDevNginx"
-                                    Invoke-WebRequest -UseBasicParsing "$servidorFtp/Nginx/nginx-$versionDevNginx.zip" -Outfile "C:\descargas\nginx-$versionDevNginx.zip"
+                                    curl.exe "$servidorFtp/Nginx/nginx-$versionDevNginx.zip" --ftp-ssl -k -o "C:\descargas\nginx-$versionDevNginx.zip"
                                     Expand-Archive C:\descargas\nginx-$versionDevNginx.zip C:\descargas -Force
                                     cd C:\descargas\nginx-$versionDevNginx
                                     Clear-Content -Path "C:\descargas\nginx-$versionDevNginx\conf\nginx.conf"
