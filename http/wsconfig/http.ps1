@@ -94,7 +94,7 @@ function listarDirectoriosFtp() {
             $respuestaStream = $respuesta.GetResponseStream()
             $lector = New-Object System.IO.StreamReader($respuestaStream)
 
-            Write-Host "Conexión exitosa usando SSL = $usarSsl"
+            Write-Host "Conexion exitosa usando SSL = $usarSsl"
 
             while (-not $lector.EndOfStream) {
                 $linea = $lector.ReadLine()
@@ -115,6 +115,47 @@ function listarDirectoriosFtp() {
 
     if (-not $exito) {
         Write-Host "No se pudo conectar al FTP con o sin SSL."
+    }
+}
+
+function descargarArchivoFtp($rutaFtp, $rutaLocal) {
+    $usuario = "anonymous"
+    $contrasena = ""
+
+    $exito = $false
+
+    foreach ($usarSsl in $false, $true) {
+        try {
+            $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
+            $peticion.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
+            $peticion.Credentials = New-Object System.Net.NetworkCredential($usuario, $contrasena)
+            $peticion.EnableSsl = $usarSsl
+
+            if ($usarSsl) {
+                [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+            }
+
+            $respuesta = $peticion.GetResponse()
+            $respuestaStream = $respuesta.GetResponseStream()
+
+            $fs = [System.IO.File]::Create($rutaLocal)
+            $respuestaStream.CopyTo($fs)
+
+            $fs.Close()
+            $respuestaStream.Close()
+            $respuesta.Close()
+
+            Write-Host "Archivo descargado correctamente usando SSL = $usarSsl"
+            $exito = $true
+            break
+        }
+        catch {
+            Write-Host "Fallo al descargar con SSL = $usarSsl, reintentando..."
+        }
+    }
+
+    if (-not $exito) {
+        Write-Host "No se pudo descargar el archivo con o sin SSL."
     }
 }
 
@@ -148,6 +189,87 @@ if($opcDescarga.ToLower() -eq "ftp"){
                 echo "1. Version LTS $versionLTSCaddy"
                 echo "2. Version de desarrollo $versionDesarrolloCaddy"
                 echo "3. Salir"
+                $opcCaddy = Read-Host "Selecciona una version"
+                switch($opcCaddy){
+                    "1"{
+                        try{
+                            $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
+                        if(-not(Es-Numerico -string $puerto)){
+                            echo "Ingresa un valor numerico entero"
+                        }
+                        elseif(-not(Es-RangoValido $puerto)){
+                            echo "Ingresa un puerto dentro del rango (0-65535)"
+                        }
+                        elseif(Es-PuertoEnUso $puerto){
+                            echo "El puerto se encuentra en uso"
+                        }
+                        elseif(-not(Es-PuertoValido $puerto)){
+                            echo "Error"
+                        }
+                        else{
+                            $opcCaddy = Read-Host "Quieres activar SSL? (si/no)"
+                            Stop-Process -Name caddy -ErrorAction SilentlyContinue
+                            $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
+                            echo $versionSinV
+                            echo "Instalando version LTS $versionLTSCaddy"
+                            descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
+                            Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
+                            cd C:\descargas
+                            New-Item c:\descargas\Caddyfile -type file -Force
+                            if($opcCaddy.ToLower() -eq "si"){
+                                echo "Habilitando SSL..."
+                                Clear-Content -Path "C:\descargas\Caddyfile"
+                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+{
+    auto_https disable_redirects
+    debug
+}
+
+https://192.168.100.38:$puerto {
+    root * "C:\MiSitio"
+    file_server
+    tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
+}
+"@
+                                # Se ocupa cambiar la ip para que coincida con la de la vm
+                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
+                            }
+                            elseif($opcCaddy.ToLower() -eq "no"){
+                                Clear-Content -Path "C:\descargas\Caddyfile"
+                                echo "SSL no sera habilitado..."
+                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+:$puerto {
+    root * "C:\MiSitio"
+    file_server
+}
+"@
+                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
+                            }
+                            else{
+                                echo "Selecciona una opcion valida (si/no)"
+                            }
+                        }
+                    }
+                        }
+                        catch{
+                            echo $Error[0].ToString()
+                        }
+                    }
+                    "2"{
+
+                    }
+                    "3"{
+                        echo "Saliendo del menu de Caddy..."
+                    }
+                }
             }
             "2"{
                 
