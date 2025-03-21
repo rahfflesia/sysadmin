@@ -368,11 +368,18 @@ if [ "$opcInstall" = "ftp" ]; then
         echo "Servicios disponibles"
         curl $ftpUrl/ubuntu/
         echo "Elige el servicio a instalar"
+        echo "1. Apache"
+        echo "2. Lighttpd"
+        echo "3. Nginx"
+        echo "4. Otros"
+        echo "5. Herman"
+        echo "6. Salir"
+        echo "Selecciona una opcion: "
         read opcion
 
         case "$opcion" in
             "1")
-                curl $ftpUrl/ubuntu/$opcion/
+                curl $ftpUrl/ubuntu/apache/
                 apacheDescargas="https://httpd.apache.org/download.cgi"
                 paginaApache=$(hacerPeticion "$apacheDescargas")
                 ultimaVersionLTSApache=$(encontrarValor "$versionRegex" "$paginaApache")
@@ -451,7 +458,7 @@ if [ "$opcInstall" = "ftp" ]; then
                 esac
             ;;
             "2")
-                curl $ftpUrl/ubuntu/$opcion/
+                curl $ftpUrl/ubuntu/lighttpd/
                 lightDescargas="https://www.lighttpd.net/releases/"
                 paginaLight=$(hacerPeticion "$lightDescargas")
                 ultimaVersionDevLighttpd=$(encontrarValor "$versionRegex" "$paginaLight") 
@@ -600,7 +607,7 @@ if [ "$opcInstall" = "ftp" ]; then
                 esac
             ;;
             "3")
-                curl $ftpUrl/ubuntu/$opcion/
+                curl $ftpUrl/ubuntu/nginx/
                 nginxDescargas="https://nginx.org/en/download.html"
                 paginaNginx=$(hacerPeticion "$nginxDescargas")
                 ultimaVersionNginxDev=$(encontrarValor "$versionRegex" "$paginaNginx")
@@ -707,7 +714,7 @@ if [ "$opcInstall" = "ftp" ]; then
             "4")
                 echo "Otros"
                 echo "Archivos disponibles para descarga"
-                curl $ftpUrl/ubuntu/$opcion/
+                curl $ftpUrl/ubuntu/otros/
                 echo "Ingresa el nombre del archivo a descargar, incluye tambien su extension: "
                 read archivo
                 if [ ! -f /home/jj/ftp/http/ubuntu/otros/$archivo ]; then
@@ -718,8 +725,20 @@ if [ "$opcInstall" = "ftp" ]; then
                 fi
             ;;
             "5")
+                echo "Otros"
+                echo "Archivos disponibles para descarga"
+                curl $ftpUrl/ubuntu/herman/
+                echo "Ingresa el nombre del archivo a descargar, incluye tambien su extension: "
+                read archivo
+                if [ ! -f /home/jj/ftp/http/ubuntu/otros/$archivo ]; then
+                    echo "El archivo no fue encontrado"
+                else
+                    echo "Descargando archivo..."
+                    curl $ftpUrl/ubuntu/otros/$archivo -O
+                fi
+            ;;
+            "6")
                 echo "Saliendo..."
-                break
             ;;
         esac
 
