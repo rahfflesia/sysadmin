@@ -1,8 +1,8 @@
 # Ambos scripts funcionales en caso de error puedo volver a este commit
 $ProgressPreference = 'SilentlyContinue'
-
-# Script de powershell funcional, quizás falta depurarlo un poco
-
+# Script de windows server 100% funcional
+# Cualquier cosa puedo volver a este commit
+# Cuando cambie de red tengo que editar la ip que ingreso en el Caddyfile <- importante
 $opcDescarga = Read-Host "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
 
 $servidorFtp = "ftp://localhost"
