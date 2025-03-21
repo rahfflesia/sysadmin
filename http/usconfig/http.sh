@@ -716,7 +716,7 @@ if [ "$opcInstall" = "ftp" ]; then
                 curl $ftpUrl/ubuntu/otros/
                 echo "Ingresa el nombre del archivo a descargar, incluye tambien su extension: "
                 read archivo
-                if [ ! -f /home/jj/ftp/http/ubuntu/otros ]; then
+                if [ ! -f /home/jj/ftp/http/ubuntu/otros/$archivo ]; then
                     echo "El archivo no fue encontrado"
                 else
                     echo "Descargando archivo..."
@@ -725,6 +725,7 @@ if [ "$opcInstall" = "ftp" ]; then
             ;;
             "5")
                 echo "Saliendo..."
+                break
             ;;
         esac
 
