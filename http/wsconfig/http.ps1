@@ -83,6 +83,8 @@ function listarDirectoriosFtp {
 
     $exito = $false
 
+    $validacionOriginalCallback = [System.Net.ServicePointManager]::ServerCertificateValidationCallback
+
     foreach ($usarSsl in $false, $true) {
         try {
             $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
@@ -120,7 +122,10 @@ function listarDirectoriosFtp {
     if (-not $exito) {
         Write-Host "No se pudo conectar al FTP con o sin SSL."
     }
+
+    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = $validacionOriginalCallback
 }
+
 
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
