@@ -184,42 +184,43 @@ if($opcDescarga.ToLower() -eq "ftp"){
                 $versionDesarrolloCaddy = $versionesCaddy[0].tag_name
                 $versionLTSCaddy = $versionesCaddy[6].tag_name
 
-
                 echo "Instalador de Caddy"
                 echo "1. Version LTS $versionLTSCaddy"
                 echo "2. Version de desarrollo $versionDesarrolloCaddy"
                 echo "3. Salir"
                 $opcCaddy = Read-Host "Selecciona una version"
+                
                 switch($opcCaddy){
                     "1"{
-                        try{
+                        try {
                             $puerto = Read-Host "Ingresa el puerto donde se realizara la instalacion"
-                        if(-not(Es-Numerico -string $puerto)){
-                            echo "Ingresa un valor numerico entero"
-                        }
-                        elseif(-not(Es-RangoValido $puerto)){
-                            echo "Ingresa un puerto dentro del rango (0-65535)"
-                        }
-                        elseif(Es-PuertoEnUso $puerto){
-                            echo "El puerto se encuentra en uso"
-                        }
-                        elseif(-not(Es-PuertoValido $puerto)){
-                            echo "Error"
-                        }
-                        else{
-                            $opcCaddy = Read-Host "Quieres activar SSL? (si/no)"
-                            Stop-Process -Name caddy -ErrorAction SilentlyContinue
-                            $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
-                            echo $versionSinV
-                            echo "Instalando version LTS $versionLTSCaddy"
-                            descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
-                            Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
-                            cd C:\descargas
-                            New-Item c:\descargas\Caddyfile -type file -Force
-                            if($opcCaddy.ToLower() -eq "si"){
-                                echo "Habilitando SSL..."
-                                Clear-Content -Path "C:\descargas\Caddyfile"
-                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+                            if(-not(Es-Numerico -string $puerto)){
+                                echo "Ingresa un valor numerico entero"
+                            }
+                            elseif(-not(Es-RangoValido $puerto)){
+                                echo "Ingresa un puerto dentro del rango (0-65535)"
+                            }
+                            elseif(Es-PuertoEnUso $puerto){
+                                echo "El puerto se encuentra en uso"
+                            }
+                            elseif(-not(Es-PuertoValido $puerto)){
+                                echo "Error"
+                            }
+                            else {
+                                $opcCaddySsl = Read-Host "Quieres activar SSL? (si/no)"
+                                Stop-Process -Name caddy -ErrorAction SilentlyContinue
+                                $versionSinV = quitarPrimerCaracter -string $versionLTSCaddy
+                                echo $versionSinV
+                                echo "Instalando version LTS $versionLTSCaddy"
+                                descargarArchivoFtp -rutaFtp "$servidorFtp/Caddy/$versionLTSCaddy" -rutaLocal "C:\descargas\caddy-$versionLTSCaddy.zip"
+                                Expand-Archive C:\descargas\caddy-$versionLTSCaddy.zip C:\descargas -Force
+                                cd C:\descargas
+                                New-Item c:\descargas\Caddyfile -type file -Force
+
+                                if($opcCaddySsl.ToLower() -eq "si"){
+                                    echo "Habilitando SSL..."
+                                    Clear-Content -Path "C:\descargas\Caddyfile"
+                                    Set-Content -Path "C:\descargas\Caddyfile" -Value @"
 {
     auto_https disable_redirects
     debug
@@ -231,40 +232,38 @@ https://192.168.100.38:$puerto {
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
 }
 "@
-                                # Se ocupa cambiar la ip para que coincida con la de la vm
-                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
-                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
-                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
-                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
-                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
-                            }
-                            elseif($opcCaddy.ToLower() -eq "no"){
-                                Clear-Content -Path "C:\descargas\Caddyfile"
-                                echo "SSL no sera habilitado..."
-                                Set-Content -Path "C:\descargas\Caddyfile" -Value @"
+                                    Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                    Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                    Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                    netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                    echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
+                                }
+                                elseif($opcCaddySsl.ToLower() -eq "no"){
+                                    Clear-Content -Path "C:\descargas\Caddyfile"
+                                    echo "SSL no sera habilitado..."
+                                    Set-Content -Path "C:\descargas\Caddyfile" -Value @"
 :$puerto {
     root * "C:\MiSitio"
     file_server
 }
 "@
-                                Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
-                                Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
-                                Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
-                                netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
-                                echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
-                            }
-                            else{
-                                echo "Selecciona una opcion valida (si/no)"
+                                    Start-Process -NoNewWindow -FilePath "C:\descargas\caddy.exe" -ArgumentList "run --config C:\descargas\Caddyfile"
+                                    Get-Process | Where-Object { $_.ProcessName -like "*caddy*" }
+                                    Select-String -Path "C:\descargas\Caddyfile" -Pattern ":$puerto"
+                                    netsh advfirewall firewall add rule name="Caddy" dir=in action=allow protocol=TCP localport=$puerto
+                                    echo "Se instalo la version LTS $versionLTSCaddy de Caddy"
+                                }
+                                else {
+                                    echo "Selecciona una opcion valida (si/no)"
+                                }
                             }
                         }
-                    }
-                        }
-                        catch{
+                        catch {
                             echo $Error[0].ToString()
                         }
                     }
                     "2"{
-
+                        
                     }
                     "3"{
                         echo "Saliendo del menu de Caddy..."
@@ -275,12 +274,15 @@ https://192.168.100.38:$puerto {
                 
             }
             "3"{
-                
+            
             }
-            default { echo "Selecciona una opcion dentro del rango (1..4)" }
+            default { 
+                echo "Selecciona una opcion dentro del rango (1..4)" 
+            }
         }
-        
     }
+}
+
 elseif($opcDescarga.ToLower() -eq "web"){
     while($true){
     echo "Menu de instalacion Web"
