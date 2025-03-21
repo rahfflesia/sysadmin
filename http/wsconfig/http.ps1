@@ -608,7 +608,7 @@ http {
                 $archivoADescargar = Read-Host "Selecciona uno, al seleccionar incluye tanto el nombre como la extension en caso de necesitarse: "
                 if(Es-ArchivoExistente -rutaDirectorio "C:\FTP\LocalUser\Public\Otros" -archivoABuscar $archivoADescargar){
                     echo "Archivo encontrado, comenzando con la descarga..."
-                    curl.exe "$servidorFtp/Otros/$archivoADescargar" --ftp-ssl -k -o "C:\descargas"
+                    curl.exe "$servidorFtp/Otros/$archivoADescargar" --ftp-ssl -k -o "C:\descargas\$archivoADescargar"
                 }
                 else{
                     echo "El archivo no existe en el directorio, ingresa un archivo valido"
