@@ -126,7 +126,14 @@ function listarDirectoriosFtp {
     [System.Net.ServicePointManager]::ServerCertificateValidationCallback = $validacionOriginalCallback
 }
 
-
+function Es-ArchivoExistente($rutaDirectorio, $archivoABuscar){
+    forEach($file in Get-ChildItem -Path $rutaDirectorio){
+        if($file.Name -eq $archivoABuscar){
+            return $true
+        }
+    }
+    return $false
+}
 
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 
@@ -315,6 +322,7 @@ https://192.168.100.38:$puerto {
                 }
             }
             "2"{
+                listarDirectoriosFtp -servidorFtp "$servidorFtp/Nginx"
                 $nginxDescargas = "https://nginx.org/en/download.html"
                 $paginaNginx = (hacerPeticion -url $nginxDescargas).Content
                 $versiones = (encontrarValor -regex $versionRegex -pagina $paginaNginx)
@@ -595,6 +603,16 @@ http {
             }
             "3"{
                 echo "Otros"
+                echo "Archivos disponibles para descarga"
+                listarDirectoriosFtp -servidorFtp "$servidorFtp/Otros"
+                $archivoADescargar = Read-Host "Selecciona uno, al seleccionar incluye tanto el nombre como la extension en caso de necesitarse: "
+                if(Es-ArchivoExistente -rutaDirectorio "C:\FTP\LocalUser\Public\Otros" -archivoABuscar $archivoADescargar){
+                    echo "Archivo encontrado, comenzando con la descarga..."
+                    curl.exe "$servidorFtp/Otros/$archivoADescargar" --ftp-ssl -k -o "C:\descargas"
+                }
+                else{
+                    echo "El archivo no existe en el directorio, ingresa un archivo valido"
+                }
             }
             default { 
                 echo "Selecciona una opcion dentro del rango (1..4)" 
