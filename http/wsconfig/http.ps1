@@ -3,6 +3,8 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Script de powershell funcional, quizás falta depurarlo un poco
 
+$opcDescarga = Read-Host "Desde donde quieres realizar la instalacion de los servicios? (web/ftp)"
+
 function Es-PuertoValido([int]$puerto) {
     $puertosReservados = @{
         20 = "FTP"
@@ -69,9 +71,63 @@ function quitarPrimerCaracter([string]$string){
     return $stringSinPrimerCaracter
 }
 
+function listarDirectoriosFtp(){
+    $servidorFtp = "ftp://localhost/"
+
+    $peticion = [System.Net.FtpWebRequest]::Create($servidorFtp)
+    $peticion.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+
+    $peticion.Credentials = New-Object System.Net.NetworkCredential("anonymous", "")
+
+    $respuesta = $peticion.GetResponse()
+    $respuestaStream = $respuesta.GetResponseStream()
+    $lector = New-Object System.IO.StreamReader($respuestaStream)
+
+    while (-not $lector.EndOfStream) {
+        $linea = $lector.ReadLine()
+        Write-Output $linea
+    }
+
+    $lector.Close()
+    $respuestaStream.Close()
+    $respuesta.Close()
+}
+
 $versionRegex = "[0-9]+.[0-9]+.[0-9]"
 
-while($true){
+if($opcDescarga.ToLower() -eq "ftp"){
+    while($true){
+        echo "Menu de instalacion FTP"
+        echo "Elige el servicio a instalar"
+        echo "1. Caddy"
+        echo "2. Nginx"
+        echo "3. Otros"
+        echo "4. Salir"
+        $opc = Read-Host "Selecciona una opcion"
+
+        if($opc -eq "4"){
+            echo "Saliendo..."
+            break
+        }
+
+        switch($opc){
+            "1"{
+                listarDirectoriosFtp
+            }
+            "2"{
+                listarDirectoriosFtp
+            }
+            "3"{
+                listarDirectoriosFtp
+            }
+            default { echo "Selecciona una opcion dentro del rango (1..4)" }
+        }
+        
+    }
+}
+elseif($opcDescarga.ToLower() -eq "web"){
+    while($true){
+    echo "Menu de instalacion Web"
     echo "Elige el servicio a instalar"
     echo "1. IIS"
     echo "2. Caddy"
@@ -576,4 +632,8 @@ http {
         default {echo "Selecciona una opcion dentro del rango (1..4)"}
     }
     echo `n
+    }
+}
+else{
+    echo "Selecciona una opcion valida (web/ftp)"
 }
