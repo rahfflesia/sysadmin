@@ -175,6 +175,7 @@ function habilitarSSLApache(){
 function habilitarSSLNginx(){
     local ruta=$1
     local puerto=$2
+    local puertoSiguiente=$(($puerto + 1));
 
     > $ruta
     sudo bash -c "cat > $ruta" << EOF
@@ -190,16 +191,6 @@ http {
 
     sendfile        on;
     keepalive_timeout  65;
-
-    server {
-        listen 10017;
-        server_name localhost;
-
-        location / {
-            root   html;
-            index  index.html index.htm;
-        }
-    }
 
     server {
         listen $puerto ssl;
