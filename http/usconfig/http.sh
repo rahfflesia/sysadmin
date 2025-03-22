@@ -633,6 +633,14 @@ if [ "$opcInstall" = "ftp" ]; then
                             if [ "$opcSsl" = "si" ]; then
                                 echo "Habilitando SSL..."
                                 curl "$ftpUrl/ubuntu/nginx/nginx-$nginxVersionLTS.tar.gz" -O
+                                sudo tar -xvzf nginx-$nginxVersionLTS.tar.gz > /dev/null 2>&1
+                                # Entrar a la carpeta
+                                cd "nginx-$nginxVersionLTS"
+                                # Compilar
+                                ./configure --prefix=/usr/local/nginx --with-http_ssl_module > /dev/null 2>&1
+                                # Instalación
+                                make > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
                                 /usr/local/nginx/sbin/nginx -v
                                 habilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
                                 sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
@@ -642,6 +650,14 @@ if [ "$opcInstall" = "ftp" ]; then
                             elif [ "$opcSsl" = "no" ]; then
                                 echo "SSL no se habilitara"
                                 curl "$ftpUrl/ubuntu/nginx/nginx-$nginxVersionLTS.tar.gz" -O
+                                sudo tar -xvzf nginx-$nginxVersionLTS.tar.gz > /dev/null 2>&1
+                                # Entrar a la carpeta
+                                cd "nginx-$nginxVersionLTS"
+                                # Compilar
+                                ./configure --prefix=/usr/local/nginx --with-http_ssl_module > /dev/null 2>&1
+                                # Instalación
+                                make > /dev/null 2>&1
+                                sudo make install > /dev/null 2>&1
                                 /usr/local/nginx/sbin/nginx -v
                                 deshabilitarSSLNginx "$rutaArchivoConfiguracion" "$puerto"
                                 sudo grep -i "listen\s\s\s\s\s\s\s" "$rutaArchivoConfiguracion"
