@@ -707,6 +707,10 @@ if [ "$opcInstall" = "ftp" ]; then
                     ;;
                 esac
             ;;
+            "salir")
+                echo "Saliendo..."
+                break
+            ;;
             *)
                 echo "Archivos disponibles para descarga"
                 curl $ftpUrl/ubuntu/$opcion/
@@ -722,10 +726,6 @@ if [ "$opcInstall" = "ftp" ]; then
                 else
                     echo "El directorio no existe"
                 fi
-            ;;
-            "salir")
-                echo "Saliendo..."
-                break
             ;;
         esac
 
