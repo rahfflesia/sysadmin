@@ -145,7 +145,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
         $opc = Read-Host "Selecciona una opcion (escribe salir para salir)"
         $opc = $opc.ToLower()
 
-        if($opc -eq "4"){
+        if($opc -eq "salir"){
             echo "Saliendo..."
             break
         }
@@ -597,10 +597,6 @@ http {
                         echo "Saliendo del menu de Nginx..."
                     }
                 }
-            }
-            "salir"{
-                echo "Saliendo..."
-                break
             }
             default{
                 if(Test-Path "C:\FTP\LocalUser\Public\$opc"){
