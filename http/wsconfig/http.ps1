@@ -142,11 +142,8 @@ if($opcDescarga.ToLower() -eq "ftp"){
         listarDirectoriosFtp -servidorFtp $servidorFtp
         echo "Menu de instalacion FTP"
         echo "Elige el servicio a instalar"
-        echo "1. Caddy"
-        echo "2. Nginx"
-        echo "3. Otros"
-        echo "4. Salir"
-        $opc = Read-Host "Selecciona una opcion"
+        $opc = Read-Host "Selecciona una opcion (escribe salir para salir)"
+        $opc = $opc.ToLower()
 
         if($opc -eq "4"){
             echo "Saliendo..."
@@ -154,7 +151,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
         }
 
         switch($opc){
-            "1"{
+            "caddy"{
                 listarDirectoriosFtp -servidorFtp "$servidorFtp/Caddy"
                 $objetosCaddy = Invoke-RestMethod "https://api.github.com/repos/caddyserver/caddy/releases"
                 $versionesCaddy = $objetosCaddy
@@ -321,7 +318,7 @@ https://192.168.100.38:$puerto {
                     default { echo "Selecciona una opcion valida" } 
                 }
             }
-            "2"{
+            "nginx"{
                 listarDirectoriosFtp -servidorFtp "$servidorFtp/Nginx"
                 $nginxDescargas = "https://nginx.org/en/download.html"
                 $paginaNginx = (hacerPeticion -url $nginxDescargas).Content
@@ -601,21 +598,26 @@ http {
                     }
                 }
             }
-            "3"{
-                echo "Otros"
-                echo "Archivos disponibles para descarga"
-                listarDirectoriosFtp -servidorFtp "$servidorFtp/Otros"
-                $archivoADescargar = Read-Host "Selecciona uno, al seleccionar incluye tanto el nombre como la extension en caso de necesitarse: "
-                if(Es-ArchivoExistente -rutaDirectorio "C:\FTP\LocalUser\Public\Otros" -archivoABuscar $archivoADescargar){
-                    echo "Archivo encontrado, comenzando con la descarga..."
-                    curl.exe "$servidorFtp/Otros/$archivoADescargar" --ftp-ssl -k -o "C:\descargas\$archivoADescargar"
+            "salir"{
+                echo "Saliendo..."
+                break
+            }
+            default{
+                if(Test-Path "C:\FTP\LocalUser\Public\$opc"){
+                    echo "Archivos disponibles para descarga"
+                    listarDirectoriosFtp -servidorFtp "$servidorFtp/$opc"
+                    $archivoADescargar = Read-Host "Selecciona uno, al seleccionar incluye tanto el nombre como la extension en caso de necesitarse"
+                    if(Es-ArchivoExistente -rutaDirectorio "C:\FTP\LocalUser\Public\$opc\$archivoADescargar" -archivoABuscar $archivoADescargar){
+                        echo "Archivo encontrado, comenzando con la descarga..."
+                        curl.exe "$servidorFtp/$opc/$archivoADescargar" --ftp-ssl -k -o "C:\descargas\$archivoADescargar"
+                    }
+                    else{
+                        echo "El archivo no existe en el directorio, ingresa un archivo valido"
+                    }
                 }
                 else{
-                    echo "El archivo no existe en el directorio, ingresa un archivo valido"
+                    echo "El directorio no existe"
                 }
-            }
-            default { 
-                echo "Selecciona una opcion dentro del rango (1..4)" 
             }
         }
     }
