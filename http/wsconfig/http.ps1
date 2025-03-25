@@ -200,7 +200,7 @@ if($opcDescarga.ToLower() -eq "ftp"){
     debug
 }
 
-https://192.168.0.61:$puerto {
+https://192.168.168.83:$puerto {
     root * "C:\MiSitio"
     file_server
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
@@ -269,7 +269,7 @@ https://192.168.0.61:$puerto {
     debug
 }
 
-https://192.168.0.61:$puerto {
+https://192.168.168.83:$puerto {
     root * "C:\MiSitio"
     file_server
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
@@ -724,7 +724,7 @@ elseif($opcDescarga.ToLower() -eq "web"){
     debug
 }
 
-https://192.168.100.38:$puerto {
+https://192.168.168.83:$puerto {
     root * "C:\MiSitio"
     file_server
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
@@ -794,7 +794,7 @@ https://192.168.100.38:$puerto {
     debug
 }
 
-https://192.168.100.38:$puerto {
+https://192.168.168.83:$puerto {
     root * "C:\MiSitio"
     file_server
     tls C:\Descargas\certificate.crt C:\Descargas\private_decrypted.key
